@@ -77,9 +77,23 @@ public class EventModifyLabelsRequest extends ServiceRequest implements ApiPostR
 			return this;
 		}
 
+		public Builder addLabels(Collection<String> labels) {
+			this.addLabels.addAll(labels);
+			this.removeLabels.removeAll(labels);
+
+			return this;
+		}
+
 		public Builder removeLabel(String label) {
 			this.addLabels.remove(label);
 			this.removeLabels.add(label);
+
+			return this;
+		}
+
+		public Builder removeLabels(Collection<String> labels) {
+			this.addLabels.removeAll(labels);
+			this.removeLabels.addAll(labels);
 
 			return this;
 		}
