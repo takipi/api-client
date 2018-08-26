@@ -16,7 +16,7 @@ public class CreateFunctionRequest extends ServiceRequest implements ApiPostRequ
 
 	@Override
 	public String urlPath() {
-		return baseUrlPath() + "/udfs/create/";
+		return baseUrlPath() + "/udfs";
 	}
 
 	@Override

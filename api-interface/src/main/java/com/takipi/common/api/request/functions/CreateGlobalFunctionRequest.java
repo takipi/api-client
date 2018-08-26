@@ -16,7 +16,7 @@ public class CreateGlobalFunctionRequest extends GlobalSettingsRequest implement
 
 	@Override
 	public String urlPath() {
-		return baseUrlPath() + "/udfs/create/";
+		return baseUrlPath() + "/udfs";
 	}
 
 	@Override
