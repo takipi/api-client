@@ -9,6 +9,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.takipi.common.api.consts.ApiConstants;
+import com.takipi.common.api.request.intf.ApiDeleteRequest;
 import com.takipi.common.api.request.intf.ApiGetRequest;
 import com.takipi.common.api.request.intf.ApiPostRequest;
 import com.takipi.common.api.request.intf.ApiPutRequest;
@@ -68,7 +69,7 @@ public class ApiClient extends UrlClient {
 
 			return getApiResponse(response, request.resultClass());
 		} catch (Exception e) {
-			logger.error("Api url client GET {} failed.", request.getClass().getName(), e);
+			logger.error("Api url client PUT {} failed.", request.getClass().getName(), e);
 			return Response.of(HttpURLConnection.HTTP_INTERNAL_ERROR, null);
 		}
 	}
@@ -84,6 +85,17 @@ public class ApiClient extends UrlClient {
 		}
 	}
 
+	public <T extends ApiResult> Response<T> delete(ApiDeleteRequest<T> request) {
+		try {
+			Response<String> response = delete(buildTargetUrl(request), auth, request.contentType());
+
+			return getApiResponse(response, request.resultClass());
+		} catch (Exception e) {
+			logger.error("Api url client DELETE {} failed.", request.getClass().getName(), e);
+			return Response.of(HttpURLConnection.HTTP_INTERNAL_ERROR, null);
+		}
+	}
+	
 	private <T extends ApiResult> Response<T> getApiResponse(Response<String> response, Class<T> clazz) {
 		if ((response.isBadResponse()) || (Strings.isNullOrEmpty(response.data))) {
 			return Response.of(response.responseCode, null);

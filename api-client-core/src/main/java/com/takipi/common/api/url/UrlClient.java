@@ -61,7 +61,8 @@ public abstract class UrlClient {
 		}
 	}
 
-	public Response<String> put(String targetUrl, Pair<String, String> auth, byte[] data, String contentType, String... params) {
+	public Response<String> put(String targetUrl, Pair<String, String> auth, byte[] data, String contentType,
+			String... params) {
 		HttpURLConnection connection = null;
 
 		try {
@@ -153,6 +154,33 @@ public abstract class UrlClient {
 			return getResponse(targetUrl, connection);
 		} catch (Exception ex) {
 			logger.error("Url client POST {} failed.", targetUrl, ex);
+
+			return BAD_RESPONSE;
+		} finally {
+			closeQuietly(connection);
+		}
+	}
+
+	public Response<String> delete(String targetUrl, Pair<String, String> auth, String contentType) {
+		HttpURLConnection connection = null;
+
+		try {
+			URL url = new URL(targetUrl);
+
+			connection = (HttpURLConnection) url.openConnection();
+
+			if (auth != null) {
+				connection.setRequestProperty(auth.getFirst(), auth.getSecond());
+			}
+
+			connection.setRequestProperty("Content-Type", contentType);
+			connection.setConnectTimeout(connectTimeout);
+			connection.setReadTimeout(readTimeout);
+			connection.setRequestMethod("DELETE");
+
+			return getResponse(targetUrl, connection);
+		} catch (Exception ex) {
+			logger.error("Url client DELETE {} failed.", targetUrl, ex);
 
 			return BAD_RESPONSE;
 		} finally {
