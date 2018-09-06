@@ -2,8 +2,8 @@ package com.takipi.common.api.result.event;
 
 import java.util.List;
 
+import com.takipi.common.api.data.event.Stats;
 import com.takipi.common.api.data.event.Location;
-import com.takipi.common.api.data.volume.Stats;
 import com.takipi.common.api.result.intf.ApiResult;
 
 public class EventResult implements ApiResult {
