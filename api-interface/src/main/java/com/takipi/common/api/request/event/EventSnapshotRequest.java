@@ -3,36 +3,38 @@ package com.takipi.common.api.request.event;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 
-import com.takipi.common.api.request.ViewTimeframeRequest;
+import com.takipi.common.api.request.EventTimeframeRequest;
 import com.takipi.common.api.request.intf.ApiGetRequest;
-import com.takipi.common.api.result.event.EventsResult;
+import com.takipi.common.api.result.event.EventSnapshotResult;
 
-public class EventsRequest extends ViewTimeframeRequest implements ApiGetRequest<EventsResult> {
-	EventsRequest(String serviceId, String viewId, String from, String to, Collection<String> servers,
+public class EventSnapshotRequest extends EventTimeframeRequest implements ApiGetRequest<EventSnapshotResult> {
+
+	EventSnapshotRequest(String serviceId, String eventId, String from, String to, Collection<String> servers,
 			Collection<String> apps, Collection<String> deployments) {
-		super(serviceId, viewId, from, to, servers, apps, deployments);
+		super(serviceId, eventId, from, to, servers, apps, deployments);
 	}
-
+	
 	@Override
-	public Class<EventsResult> resultClass() {
-		return EventsResult.class;
+	public String[] getParams() throws UnsupportedEncodingException {
+		return buildParams();
 	}
 
 	@Override
 	public String urlPath() {
-		return baseUrlPath() + "/views/" + viewId + "/events";
+		return baseUrlPath() + "/events/" + eventId + "/snapshot";
 	}
 
 	@Override
-	public String[] getParams() throws UnsupportedEncodingException {
-		return buildParams();
+	public Class<EventSnapshotResult> resultClass() {
+		return EventSnapshotResult.class;
 	}
 
 	public static Builder newBuilder() {
 		return new Builder();
 	}
 
-	public static class Builder extends ViewTimeframeRequest.Builder {
+	public static class Builder extends EventTimeframeRequest.Builder {
+
 		@Override
 		public Builder setServiceId(String serviceId) {
 			super.setServiceId(serviceId);
@@ -41,8 +43,8 @@ public class EventsRequest extends ViewTimeframeRequest implements ApiGetRequest
 		}
 
 		@Override
-		public Builder setViewId(String viewId) {
-			super.setViewId(viewId);
+		public Builder setEventId(String eventId) {
+			super.setEventId(eventId);
 
 			return this;
 		}
@@ -81,11 +83,11 @@ public class EventsRequest extends ViewTimeframeRequest implements ApiGetRequest
 
 			return this;
 		}
-
-		public EventsRequest build() {
+		
+		public EventSnapshotRequest build() {
 			validate();
 
-			return new EventsRequest(serviceId, viewId, from, to, servers, apps, deployments);
+			return new EventSnapshotRequest(serviceId, eventId, from, to, servers, apps, deployments);		
 		}
 	}
 }

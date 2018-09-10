@@ -3,12 +3,12 @@ package com.takipi.common.api.request.metrics;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 
-import com.takipi.common.api.request.TimeframeRequest;
+import com.takipi.common.api.request.ViewTimeframeRequest;
 import com.takipi.common.api.request.intf.ApiGetRequest;
 import com.takipi.common.api.result.metrics.GraphResult;
 import com.takipi.common.api.util.ValidationUtil.GraphType;
 
-public class GraphRequest extends TimeframeRequest implements ApiGetRequest<GraphResult> {
+public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<GraphResult> {
 	public final GraphType graphType;
 	public final int wantedPointCount;
 
@@ -55,7 +55,7 @@ public class GraphRequest extends TimeframeRequest implements ApiGetRequest<Grap
 		return new Builder();
 	}
 
-	public static class Builder extends TimeframeRequest.Builder {
+	public static class Builder extends ViewTimeframeRequest.Builder {
 		private GraphType graphType;
 		private int wantedPointCount;
 

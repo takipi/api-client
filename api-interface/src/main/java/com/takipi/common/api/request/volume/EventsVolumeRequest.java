@@ -3,12 +3,12 @@ package com.takipi.common.api.request.volume;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 
-import com.takipi.common.api.request.TimeframeRequest;
+import com.takipi.common.api.request.ViewTimeframeRequest;
 import com.takipi.common.api.request.intf.ApiGetRequest;
 import com.takipi.common.api.result.volume.EventsVolumeResult;
 import com.takipi.common.api.util.ValidationUtil.VolumeType;
 
-public class EventsVolumeRequest extends TimeframeRequest implements ApiGetRequest<EventsVolumeResult> {
+public class EventsVolumeRequest extends ViewTimeframeRequest implements ApiGetRequest<EventsVolumeResult> {
 	public final VolumeType volumeType;
 
 	EventsVolumeRequest(String serviceId, String viewId, VolumeType volumeType, String from, String to,
@@ -53,7 +53,7 @@ public class EventsVolumeRequest extends TimeframeRequest implements ApiGetReque
 		return new Builder();
 	}
 
-	public static class Builder extends TimeframeRequest.Builder {
+	public static class Builder extends ViewTimeframeRequest.Builder {
 		private VolumeType volumeType;
 
 		@Override
