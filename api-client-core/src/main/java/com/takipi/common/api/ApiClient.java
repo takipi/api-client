@@ -32,10 +32,13 @@ public class ApiClient extends UrlClient {
 		this.apiVersion = apiVersion;
 	}
 
+	public Response<String> testConnection() {
+		return get(baseApiPath() + "/test", null, ApiConstants.CONTENT_TYPE_JSON);
+	}
+
 	public boolean validateConnection() {
 		try {
-			Response<String> response = get(baseApiPath() + "/test", null, ApiConstants.CONTENT_TYPE_JSON);
-
+			Response<String> response = testConnection();
 			return ((response != null) && (!response.isBadResponse()));
 		} catch (Exception e) {
 			logger.error("Api url client validate connection to {} failed.", getHostname(), e);
