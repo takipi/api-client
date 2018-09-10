@@ -3,11 +3,11 @@ package com.takipi.common.api.request.event;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 
-import com.takipi.common.api.request.TimeframeRequest;
+import com.takipi.common.api.request.ViewTimeframeRequest;
 import com.takipi.common.api.request.intf.ApiGetRequest;
 import com.takipi.common.api.result.event.EventsResult;
 
-public class EventsRequest extends TimeframeRequest implements ApiGetRequest<EventsResult> {
+public class EventsRequest extends ViewTimeframeRequest implements ApiGetRequest<EventsResult> {
 	EventsRequest(String serviceId, String viewId, String from, String to, Collection<String> servers,
 			Collection<String> apps, Collection<String> deployments) {
 		super(serviceId, viewId, from, to, servers, apps, deployments);
@@ -32,7 +32,7 @@ public class EventsRequest extends TimeframeRequest implements ApiGetRequest<Eve
 		return new Builder();
 	}
 
-	public static class Builder extends TimeframeRequest.Builder {
+	public static class Builder extends ViewTimeframeRequest.Builder {
 		@Override
 		public Builder setServiceId(String serviceId) {
 			super.setServiceId(serviceId);

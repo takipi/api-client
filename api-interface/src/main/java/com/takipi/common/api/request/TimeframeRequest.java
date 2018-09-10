@@ -7,21 +7,18 @@ import org.joda.time.DateTime;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
-import com.takipi.common.api.util.ValidationUtil;
 
 public abstract class TimeframeRequest extends ServiceRequest {
-	public final String viewId;
 	public final String from;
 	public final String to;
 	public final Collection<String> servers;
 	public final Collection<String> apps;
 	public final Collection<String> deployments;
 
-	protected TimeframeRequest(String serviceId, String viewId, String from, String to, Collection<String> servers,
+	protected TimeframeRequest(String serviceId, String from, String to, Collection<String> servers,
 			Collection<String> apps, Collection<String> deployments) {
 		super(serviceId);
 
-		this.viewId = viewId;
 		this.from = from;
 		this.to = to;
 		this.servers = servers;
@@ -69,7 +66,6 @@ public abstract class TimeframeRequest extends ServiceRequest {
 	}
 
 	public static class Builder extends ServiceRequest.Builder {
-		protected String viewId;
 		protected String from;
 		protected String to;
 		protected Collection<String> servers;
@@ -85,12 +81,6 @@ public abstract class TimeframeRequest extends ServiceRequest {
 		@Override
 		public Builder setServiceId(String serviceId) {
 			super.setServiceId(serviceId);
-
-			return this;
-		}
-
-		public Builder setViewId(String viewId) {
-			this.viewId = viewId;
 
 			return this;
 		}
@@ -140,10 +130,6 @@ public abstract class TimeframeRequest extends ServiceRequest {
 		@Override
 		protected void validate() {
 			super.validate();
-
-			if (!ValidationUtil.isLegalViewId(viewId)) {
-				throw new IllegalArgumentException("Illegal view id - " + viewId);
-			}
 
 			try {
 				DateTime.parse(from);

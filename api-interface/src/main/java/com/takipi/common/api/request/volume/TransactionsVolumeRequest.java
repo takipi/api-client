@@ -3,11 +3,11 @@ package com.takipi.common.api.request.volume;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 
-import com.takipi.common.api.request.TimeframeRequest;
+import com.takipi.common.api.request.ViewTimeframeRequest;
 import com.takipi.common.api.request.intf.ApiGetRequest;
 import com.takipi.common.api.result.volume.TransactionsVolumeResult;
 
-public class TransactionsVolumeRequest extends TimeframeRequest implements ApiGetRequest<TransactionsVolumeResult> {
+public class TransactionsVolumeRequest extends ViewTimeframeRequest implements ApiGetRequest<TransactionsVolumeResult> {
 	TransactionsVolumeRequest(String serviceId, String viewId, String from, String to, Collection<String> servers,
 			Collection<String> apps, Collection<String> deployments) {
 		super(serviceId, viewId, from, to, servers, apps, deployments);
@@ -32,7 +32,7 @@ public class TransactionsVolumeRequest extends TimeframeRequest implements ApiGe
 		return new Builder();
 	}
 
-	public static class Builder extends TimeframeRequest.Builder {
+	public static class Builder extends ViewTimeframeRequest.Builder {
 		@Override
 		public Builder setServiceId(String serviceId) {
 			super.setServiceId(serviceId);
