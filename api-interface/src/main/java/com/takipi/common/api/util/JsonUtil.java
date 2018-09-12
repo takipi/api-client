@@ -58,7 +58,7 @@ public class JsonUtil {
 
 			sb.append("\n\t");
 
-			sb.append("\"" + key + "\": ");
+			sb.append("\"").append(key).append("\": ");
 
 			if (stringifyValues) {
 				sb.append(stringify(value));

@@ -41,7 +41,7 @@ public class ValidationUtil {
 	// These values match valid expected values of the Api Server.
 	//
 	public enum GraphType {
-		view, entrypoint, event;
+		view, entrypoint, event
 	}
 
 	// These values match valid expected values of the Api Server.

@@ -1,10 +1,10 @@
 package com.takipi.common.api.request.timer;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
-import com.takipi.common.api.consts.ApiConstants;
 import com.takipi.common.api.request.ServiceRequest;
 import com.takipi.common.api.request.intf.ApiPostRequest;
 import com.takipi.common.api.result.EmptyResult;
@@ -30,7 +30,7 @@ public class EditTimerRequest extends ServiceRequest implements ApiPostRequest<E
 	public byte[] postData() throws UnsupportedEncodingException {
 		Map<String, String> map = ImmutableMap.of("threshold", Long.toString(threshold));
 
-		return JsonUtil.createSimpleJson(map, false).getBytes(ApiConstants.UTF8_ENCODING);
+		return JsonUtil.createSimpleJson(map, false).getBytes(StandardCharsets.UTF_8);
 	}
 
 	@Override

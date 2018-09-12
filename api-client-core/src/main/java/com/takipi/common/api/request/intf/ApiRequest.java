@@ -1,7 +1,7 @@
 package com.takipi.common.api.request.intf;
 
 public interface ApiRequest {
-	public String urlPath();
+	String urlPath();
 
-	public String contentType();
+	String contentType();
 }

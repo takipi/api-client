@@ -1,11 +1,11 @@
 package com.takipi.common.api.request.category;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import com.takipi.common.api.consts.ApiConstants;
 import com.takipi.common.api.request.ServiceRequest;
 import com.takipi.common.api.request.intf.ApiPostRequest;
 import com.takipi.common.api.result.category.CreateCategoryResult;
@@ -34,7 +34,7 @@ public class CreateCategoryRequest extends ServiceRequest implements ApiPostRequ
 		map.put("name", JsonUtil.stringify(name));
 		map.put("shared", Boolean.toString(shared));
 
-		return JsonUtil.createSimpleJson(map, false).getBytes(ApiConstants.UTF8_ENCODING);
+		return JsonUtil.createSimpleJson(map, false).getBytes(StandardCharsets.UTF_8);
 	}
 
 	@Override

@@ -1,11 +1,11 @@
 package com.takipi.common.api.request.timer;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
-import com.takipi.common.api.consts.ApiConstants;
 import com.takipi.common.api.request.ServiceRequest;
 import com.takipi.common.api.request.intf.ApiPostRequest;
 import com.takipi.common.api.result.EmptyResult;
@@ -34,7 +34,7 @@ public class CreateTimerRequest extends ServiceRequest implements ApiPostRequest
 		Map<String, String> map = ImmutableMap.of("class_name", JsonUtil.stringify(className), "method_name",
 				JsonUtil.stringify(methodName), "threshold", Long.toString(threshold));
 
-		return JsonUtil.createSimpleJson(map, false).getBytes(ApiConstants.UTF8_ENCODING);
+		return JsonUtil.createSimpleJson(map, false).getBytes(StandardCharsets.UTF_8);
 	}
 
 	@Override

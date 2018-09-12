@@ -5,7 +5,7 @@ import java.io.UnsupportedEncodingException;
 import com.takipi.common.api.result.intf.ApiResult;
 
 public interface ApiPostRequest<T extends ApiResult> extends ApiRequest {
-	public byte[] postData() throws UnsupportedEncodingException;
+	byte[] postData() throws UnsupportedEncodingException;
 
-	public Class<T> resultClass();
+	Class<T> resultClass();
 }

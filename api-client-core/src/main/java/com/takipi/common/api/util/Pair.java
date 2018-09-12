@@ -9,11 +9,11 @@ public class Pair<T, S> implements Serializable {
 	private final S second;
 
 	public static <T, S> Pair<T, S> of(T first, S second) {
-		return new Pair<T, S>(first, second);
+		return new Pair<>(first, second);
 	}
 
 	public static <T, S> Pair<T, S> nulls() {
-		return new Pair<T, S>(null, null);
+		return new Pair<>(null, null);
 	}
 
 	@SuppressWarnings("unchecked")

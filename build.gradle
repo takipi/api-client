@@ -1,0 +1,11 @@
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    group = 'com.takipi'
+    version = '1.0'
+}
