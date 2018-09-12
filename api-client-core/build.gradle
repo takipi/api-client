@@ -48,7 +48,7 @@ uploadArchives {
       pom.project {
         name 'api-client-core'
         packaging 'jar'
-        description 'OverOps API Client'
+        description 'OverOps API Client core components, used by api-interface project'
         url 'https://github.com/takipi/api-client'
 
         scm {
@@ -60,7 +60,7 @@ uploadArchives {
         licenses {
           license {
             name 'MIT License'
-            url 'https://github.com/takipi/api-client/blob/master/LICENSE'
+            url 'http://www.opensource.org/licenses/mit-license.php'
           }
         }
 
