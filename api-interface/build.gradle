@@ -1,75 +1,23 @@
-apply plugin: 'java'
-apply plugin: 'maven'
-apply plugin: 'signing'
-
-group = 'com.takipi'
 archivesBaseName = 'api-interface'
-version = '0.9'
 
-repositories {
-    mavenCentral()
-		mavenLocal()
-}
 dependencies {
 	compile(
 		"joda-time:joda-time:2.8.2",
 		"commons-codec:commons-codec:1.9",
-		"com.takipi:api-client-core:0.9"
+		project(':api-client-core')
 	)
-}
-
-task javadocJar(type: Jar) {
-    classifier = 'javadoc'
-    from javadoc
-}
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-artifacts {
-    archives javadocJar, sourcesJar
-}
-signing {
-    sign configurations.archives
 }
 uploadArchives {
   repositories {
     mavenDeployer {
-      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-        authentication(userName: findProperty('ossrhUsername'), password: findProperty('ossrhPassword'))
-      }
-
-      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-        authentication(userName: findProperty('ossrhUsername'), password: findProperty('ossrhPassword'))
-      }
-
       pom.project {
         name 'api-client-core'
-        packaging 'jar'
         description 'OverOps API Client, interacts with OverOps Server REST API'
-        url 'https://github.com/takipi/api-client'
-
+        
         scm {
           connection 'scm:git:https://github.com/takipi/api-client/tree/master/api-interface'
           developerConnection 'scm:git:https://github.com/takipi/api-client/tree/master/api-interface'
           url 'https://github.com/takipi/api-client/tree/master/api-interface'
-        }
-
-        licenses {
-          license {
-            name 'MIT License'
-            url 'http://www.opensource.org/licenses/mit-license.php'
-          }
-        }
-
-        developers {
-          developer {
-            id 'chook'
-            name 'Chen Harel'
-            email 'chen.harel@takipi.com'
-          }
         }
       }
     }
