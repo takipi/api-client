@@ -1,6 +1,25 @@
+archivesBaseName = 'api-interface'
+
 dependencies {
 	compile(
 		"joda-time:joda-time:2.8.2",
-		project(":api-client-core"),
+		"commons-codec:commons-codec:1.9",
+		project(':api-client-core')
 	)
+}
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      pom.project {
+        name 'api-client-core'
+        description 'OverOps API Client, interacts with OverOps Server REST API'
+        
+        scm {
+          connection 'scm:git:https://github.com/takipi/api-client/tree/master/api-interface'
+          developerConnection 'scm:git:https://github.com/takipi/api-client/tree/master/api-interface'
+          url 'https://github.com/takipi/api-client/tree/master/api-interface'
+        }
+      }
+    }
+  }
 }
