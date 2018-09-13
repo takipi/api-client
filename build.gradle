@@ -46,14 +46,6 @@ subprojects {
               url 'http://www.opensource.org/licenses/mit-license.php'
             }
           }
-
-          developers {
-            developer {
-              id 'chook'
-              name 'Chen Harel'
-              email 'chen.harel@takipi.com'
-            }
-          }
         }
       }
     }

@@ -1,4 +1,4 @@
-archivesBaseName = 'api-client-core'
+archivesBaseName = 'api-core'
 
 dependencies {
 	compile(
@@ -13,13 +13,13 @@ uploadArchives {
   repositories {
     mavenDeployer {
       pom.project {
-        name 'api-client-core'
+        name 'api-core'
         description 'OverOps API Client core components, used by api-interface project'
         
         scm {
-          connection 'scm:git:https://github.com/takipi/api-client/tree/master/api-client-core'
-          developerConnection 'scm:git:https://github.com/takipi/api-client/tree/master/api-client-core'
-          url 'https://github.com/takipi/api-client/tree/master/api-client-core'
+          connection 'scm:git:https://github.com/takipi/api-client/tree/master/api-core'
+          developerConnection 'scm:git:https://github.com/takipi/api-client/tree/master/api-core'
+          url 'https://github.com/takipi/api-client/tree/master/api-core'
         }
       }
     }
