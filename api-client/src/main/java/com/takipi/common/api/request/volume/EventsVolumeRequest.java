@@ -45,7 +45,7 @@ public class EventsVolumeRequest extends ViewTimeframeRequest implements ApiGetR
 	}
 
 	@Override
-	public String[] getParams() throws UnsupportedEncodingException {
+	public String[] queryParams() throws UnsupportedEncodingException {
 		return buildParams();
 	}
 

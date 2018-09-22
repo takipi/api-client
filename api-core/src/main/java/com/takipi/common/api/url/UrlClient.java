@@ -125,11 +125,12 @@ public abstract class UrlClient {
 		return sb.toString();
 	}
 
-	public Response<String> post(String targetUrl, Pair<String, String> auth, byte[] data, String contentType) {
+	public Response<String> post(String targetUrl, Pair<String, String> auth, byte[] data, String contentType,
+			String... params) {
 		HttpURLConnection connection = null;
 
 		try {
-			URL url = new URL(targetUrl);
+			URL url = new URL(appendQueryParams(targetUrl, params));
 
 			connection = (HttpURLConnection) url.openConnection();
 
@@ -161,11 +162,11 @@ public abstract class UrlClient {
 		}
 	}
 
-	public Response<String> delete(String targetUrl, Pair<String, String> auth, String contentType) {
+	public Response<String> delete(String targetUrl, Pair<String, String> auth, String contentType, String... params) {
 		HttpURLConnection connection = null;
 
 		try {
-			URL url = new URL(targetUrl);
+			URL url = new URL(appendQueryParams(targetUrl, params));
 
 			connection = (HttpURLConnection) url.openConnection();
 

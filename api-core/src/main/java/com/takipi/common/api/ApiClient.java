@@ -56,7 +56,8 @@ public class ApiClient extends UrlClient {
 
 	public <T extends ApiResult> Response<T> get(ApiGetRequest<T> request) {
 		try {
-			Response<String> response = get(buildTargetUrl(request), auth, request.contentType(), request.getParams());
+			Response<String> response = get(buildTargetUrl(request), auth, request.contentType(),
+					request.queryParams());
 
 			return getApiResponse(response, request.resultClass());
 		} catch (Exception e) {
@@ -67,8 +68,8 @@ public class ApiClient extends UrlClient {
 
 	public <T extends ApiResult> Response<T> put(ApiPutRequest<T> request) {
 		try {
-			Response<String> response = put(buildTargetUrl(request), auth, request.getData(), request.contentType(),
-					request.getParams());
+			Response<String> response = put(buildTargetUrl(request), auth, request.putData(), request.contentType(),
+					request.queryParams());
 
 			return getApiResponse(response, request.resultClass());
 		} catch (Exception e) {
@@ -79,7 +80,8 @@ public class ApiClient extends UrlClient {
 
 	public <T extends ApiResult> Response<T> post(ApiPostRequest<T> request) {
 		try {
-			Response<String> response = post(buildTargetUrl(request), auth, request.postData(), request.contentType());
+			Response<String> response = post(buildTargetUrl(request), auth, request.postData(), request.contentType(),
+					request.queryParams());
 
 			return getApiResponse(response, request.resultClass());
 		} catch (Exception e) {
@@ -90,7 +92,8 @@ public class ApiClient extends UrlClient {
 
 	public <T extends ApiResult> Response<T> delete(ApiDeleteRequest<T> request) {
 		try {
-			Response<String> response = delete(buildTargetUrl(request), auth, request.contentType());
+			Response<String> response = delete(buildTargetUrl(request), auth, request.contentType(),
+					request.queryParams());
 
 			return getApiResponse(response, request.resultClass());
 		} catch (Exception e) {
@@ -98,7 +101,7 @@ public class ApiClient extends UrlClient {
 			return Response.of(HttpURLConnection.HTTP_INTERNAL_ERROR, null);
 		}
 	}
-	
+
 	private <T extends ApiResult> Response<T> getApiResponse(Response<String> response, Class<T> clazz) {
 		if ((response.isBadResponse()) || (Strings.isNullOrEmpty(response.data))) {
 			return Response.of(response.responseCode, null);

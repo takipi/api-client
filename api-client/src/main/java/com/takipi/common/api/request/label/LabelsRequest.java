@@ -1,7 +1,5 @@
 package com.takipi.common.api.request.label;
 
-import java.io.UnsupportedEncodingException;
-
 import com.takipi.common.api.request.ServiceRequest;
 import com.takipi.common.api.request.intf.ApiGetRequest;
 import com.takipi.common.api.result.label.LabelsResult;
@@ -14,11 +12,6 @@ public class LabelsRequest extends ServiceRequest implements ApiGetRequest<Label
 	@Override
 	public String urlPath() {
 		return baseUrlPath() + "/labels/";
-	}
-
-	@Override
-	public String[] getParams() throws UnsupportedEncodingException {
-		return null;
 	}
 
 	@Override

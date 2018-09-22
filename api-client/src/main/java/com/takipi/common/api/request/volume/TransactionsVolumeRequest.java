@@ -24,7 +24,7 @@ public class TransactionsVolumeRequest extends ViewTimeframeRequest implements A
 	}
 
 	@Override
-	public String[] getParams() throws UnsupportedEncodingException {
+	public String[] queryParams() throws UnsupportedEncodingException {
 		return buildParams();
 	}
 

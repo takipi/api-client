@@ -15,7 +15,7 @@ public class EventSnapshotRequest extends EventTimeframeRequest implements ApiGe
 	}
 	
 	@Override
-	public String[] getParams() throws UnsupportedEncodingException {
+	public String[] queryParams() throws UnsupportedEncodingException {
 		return buildParams();
 	}
 

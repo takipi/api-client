@@ -1,7 +1,5 @@
 package com.takipi.common.api.request.event;
 
-import java.io.UnsupportedEncodingException;
-
 import com.takipi.common.api.request.ServiceRequest;
 import com.takipi.common.api.request.intf.ApiGetRequest;
 import com.takipi.common.api.result.event.EventResult;
@@ -19,11 +17,6 @@ public class EventRequest extends ServiceRequest implements ApiGetRequest<EventR
 	@Override
 	public String urlPath() {
 		return baseUrlPath() + "/events/" + eventId;
-	}
-
-	@Override
-	public String[] getParams() throws UnsupportedEncodingException {
-		return null;
 	}
 
 	@Override
