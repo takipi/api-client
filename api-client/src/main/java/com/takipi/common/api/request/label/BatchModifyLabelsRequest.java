@@ -8,17 +8,15 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.takipi.common.api.consts.ApiConstants;
-import com.takipi.common.api.request.ServiceRequest;
-import com.takipi.common.api.request.intf.ApiPostRequest;
-import com.takipi.common.api.result.EmptyResult;
 import com.takipi.common.api.util.JsonUtil;
 import com.takipi.common.api.util.ValidationUtil;
 
-public class BatchModifyLabelsRequest extends ServiceRequest implements ApiPostRequest<EmptyResult> {
+public class BatchModifyLabelsRequest extends ModifyLabelsRequest {
 	private final Collection<Modification> modifications;
 
-	BatchModifyLabelsRequest(String serviceId, Collection<Modification> modifications) {
-		super(serviceId);
+	BatchModifyLabelsRequest(String serviceId, Collection<Modification> modifications, boolean forceHistory,
+			boolean handleSimilarEvents) {
+		super(serviceId, forceHistory, handleSimilarEvents);
 
 		this.modifications = modifications;
 	}
@@ -45,11 +43,6 @@ public class BatchModifyLabelsRequest extends ServiceRequest implements ApiPostR
 				.getBytes(ApiConstants.UTF8_ENCODING);
 	}
 
-	@Override
-	public Class<EmptyResult> resultClass() {
-		return EmptyResult.class;
-	}
-
 	static class Modification {
 		final String eventId;
 		final Collection<String> addLabels;
@@ -70,7 +63,7 @@ public class BatchModifyLabelsRequest extends ServiceRequest implements ApiPostR
 		return new Builder();
 	}
 
-	public static class Builder extends ServiceRequest.Builder {
+	public static class Builder extends ModifyLabelsRequest.Builder {
 		private final Map<String, Modification> modifications;
 
 		Builder() {
@@ -80,6 +73,20 @@ public class BatchModifyLabelsRequest extends ServiceRequest implements ApiPostR
 		@Override
 		public Builder setServiceId(String serviceId) {
 			super.setServiceId(serviceId);
+
+			return this;
+		}
+
+		@Override
+		public Builder setForceHistory(boolean forceHistory) {
+			super.setForceHistory(forceHistory);
+
+			return this;
+		}
+
+		@Override
+		public Builder setHandleSimilarEvents(boolean handleSimilarEvents) {
+			super.setHandleSimilarEvents(handleSimilarEvents);
 
 			return this;
 		}
@@ -113,7 +120,7 @@ public class BatchModifyLabelsRequest extends ServiceRequest implements ApiPostR
 		public BatchModifyLabelsRequest build() {
 			validate();
 
-			return new BatchModifyLabelsRequest(serviceId, modifications.values());
+			return new BatchModifyLabelsRequest(serviceId, modifications.values(), forceHistory, handleSimilarEvents);
 		}
 	}
 }

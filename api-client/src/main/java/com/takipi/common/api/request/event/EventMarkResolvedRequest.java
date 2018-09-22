@@ -1,15 +1,13 @@
 package com.takipi.common.api.request.event;
 
-import com.takipi.common.api.request.ServiceRequest;
-import com.takipi.common.api.request.intf.ApiPostRequest;
-import com.takipi.common.api.result.EmptyResult;
+import com.takipi.common.api.request.label.ModifyLabelsRequest;
 import com.takipi.common.api.util.ValidationUtil;
 
-public class EventMarkResolvedRequest extends ServiceRequest implements ApiPostRequest<EmptyResult> {
+public class EventMarkResolvedRequest extends ModifyLabelsRequest {
 	private final String eventId;
 
-	EventMarkResolvedRequest(String serviceId, String eventId) {
-		super(serviceId);
+	EventMarkResolvedRequest(String serviceId, String eventId, boolean forceHistory, boolean handleSimilarEvents) {
+		super(serviceId, forceHistory, handleSimilarEvents);
 
 		this.eventId = eventId;
 	}
@@ -19,21 +17,11 @@ public class EventMarkResolvedRequest extends ServiceRequest implements ApiPostR
 		return baseUrlPath() + "/events/" + eventId + "/resolve";
 	}
 
-	@Override
-	public byte[] postData() {
-		return null;
-	}
-
-	@Override
-	public Class<EmptyResult> resultClass() {
-		return EmptyResult.class;
-	}
-
 	public static Builder newBuilder() {
 		return new Builder();
 	}
 
-	public static class Builder extends ServiceRequest.Builder {
+	public static class Builder extends ModifyLabelsRequest.Builder {
 		private String eventId;
 
 		Builder() {
@@ -43,6 +31,20 @@ public class EventMarkResolvedRequest extends ServiceRequest implements ApiPostR
 		@Override
 		public Builder setServiceId(String serviceId) {
 			super.setServiceId(serviceId);
+
+			return this;
+		}
+
+		@Override
+		public Builder setForceHistory(boolean forceHistory) {
+			super.setForceHistory(forceHistory);
+
+			return this;
+		}
+
+		@Override
+		public Builder setHandleSimilarEvents(boolean handleSimilarEvents) {
+			super.setHandleSimilarEvents(handleSimilarEvents);
 
 			return this;
 		}
@@ -65,7 +67,7 @@ public class EventMarkResolvedRequest extends ServiceRequest implements ApiPostR
 		public EventMarkResolvedRequest build() {
 			validate();
 
-			return new EventMarkResolvedRequest(serviceId, eventId);
+			return new EventMarkResolvedRequest(serviceId, eventId, forceHistory, handleSimilarEvents);
 		}
 	}
 }

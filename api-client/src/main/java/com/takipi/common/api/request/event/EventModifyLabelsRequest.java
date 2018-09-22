@@ -6,20 +6,18 @@ import java.util.Collection;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import com.takipi.common.api.consts.ApiConstants;
-import com.takipi.common.api.request.ServiceRequest;
-import com.takipi.common.api.request.intf.ApiPostRequest;
-import com.takipi.common.api.result.EmptyResult;
+import com.takipi.common.api.request.label.ModifyLabelsRequest;
 import com.takipi.common.api.util.JsonUtil;
 import com.takipi.common.api.util.ValidationUtil;
 
-public class EventModifyLabelsRequest extends ServiceRequest implements ApiPostRequest<EmptyResult> {
+public class EventModifyLabelsRequest extends ModifyLabelsRequest {
 	private final String eventId;
 	private final Collection<String> addLabels;
 	private final Collection<String> removeLabels;
 
 	EventModifyLabelsRequest(String serviceId, String eventId, Collection<String> addLabels,
-			Collection<String> removeLabels) {
-		super(serviceId);
+			Collection<String> removeLabels, boolean forceHistory, boolean handleSimilarEvents) {
+		super(serviceId, forceHistory, handleSimilarEvents);
 
 		this.eventId = eventId;
 		this.addLabels = addLabels;
@@ -37,16 +35,11 @@ public class EventModifyLabelsRequest extends ServiceRequest implements ApiPostR
 				JsonUtil.createSimpleJson(removeLabels, true))).getBytes(ApiConstants.UTF8_ENCODING);
 	}
 
-	@Override
-	public Class<EmptyResult> resultClass() {
-		return EmptyResult.class;
-	}
-
 	public static Builder newBuilder() {
 		return new Builder();
 	}
 
-	public static class Builder extends ServiceRequest.Builder {
+	public static class Builder extends ModifyLabelsRequest.Builder {
 		private String eventId;
 
 		private final Collection<String> addLabels;
@@ -60,6 +53,20 @@ public class EventModifyLabelsRequest extends ServiceRequest implements ApiPostR
 		@Override
 		public Builder setServiceId(String serviceId) {
 			super.setServiceId(serviceId);
+
+			return this;
+		}
+
+		@Override
+		public Builder setForceHistory(boolean forceHistory) {
+			super.setForceHistory(forceHistory);
+
+			return this;
+		}
+
+		@Override
+		public Builder setHandleSimilarEvents(boolean handleSimilarEvents) {
+			super.setHandleSimilarEvents(handleSimilarEvents);
 
 			return this;
 		}
@@ -114,7 +121,8 @@ public class EventModifyLabelsRequest extends ServiceRequest implements ApiPostR
 		public EventModifyLabelsRequest build() {
 			validate();
 
-			return new EventModifyLabelsRequest(serviceId, eventId, addLabels, removeLabels);
+			return new EventModifyLabelsRequest(serviceId, eventId, addLabels, removeLabels, forceHistory,
+					handleSimilarEvents);
 		}
 	}
 }
