@@ -27,7 +27,7 @@ public class ViewsRequest extends ServiceRequest implements ApiGetRequest<ViewsR
 	}
 
 	@Override
-	public String[] getParams() throws UnsupportedEncodingException {
+	public String[] queryParams() throws UnsupportedEncodingException {
 		if (Strings.isNullOrEmpty(viewName)) {
 			return null;
 		}

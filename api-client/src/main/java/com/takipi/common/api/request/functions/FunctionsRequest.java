@@ -19,11 +19,6 @@ public class FunctionsRequest extends ServiceRequest implements ApiGetRequest<Fu
 		return baseUrlPath() + "/udfs";
 	}
 
-	@Override
-	public String[] getParams() {
-		return null;
-	}
-
 	public static Builder newBuilder() {
 		return new Builder();
 	}

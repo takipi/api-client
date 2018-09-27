@@ -1,7 +1,5 @@
 package com.takipi.common.api.request.deployment;
 
-import java.io.UnsupportedEncodingException;
-
 import com.takipi.common.api.request.ServiceRequest;
 import com.takipi.common.api.request.intf.ApiGetRequest;
 import com.takipi.common.api.result.deployment.DeploymentsResult;
@@ -19,11 +17,6 @@ public class DeploymentsRequest extends ServiceRequest implements ApiGetRequest<
 	@Override
 	public String urlPath() {
 		return baseUrlPath() + "/deployments";
-	}
-
-	@Override
-	public String[] getParams() throws UnsupportedEncodingException {
-		return null;
 	}
 
 	public static Builder newBuilder() {

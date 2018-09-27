@@ -19,4 +19,9 @@ public abstract class BaseRequest implements ApiRequest {
 	public String contentType() {
 		return ApiConstants.CONTENT_TYPE_JSON;
 	}
+	
+	@Override
+	public String[] queryParams() throws UnsupportedEncodingException {
+		return null;
+	}
 }

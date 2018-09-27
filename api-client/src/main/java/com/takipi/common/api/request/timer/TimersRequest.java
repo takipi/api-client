@@ -1,7 +1,5 @@
 package com.takipi.common.api.request.timer;
 
-import java.io.UnsupportedEncodingException;
-
 import com.takipi.common.api.request.ServiceRequest;
 import com.takipi.common.api.request.intf.ApiGetRequest;
 import com.takipi.common.api.result.timer.TimersResult;
@@ -19,11 +17,6 @@ public class TimersRequest extends ServiceRequest implements ApiGetRequest<Timer
 	@Override
 	public String urlPath() {
 		return baseUrlPath() + "/timers";
-	}
-
-	@Override
-	public String[] getParams() throws UnsupportedEncodingException {
-		return null;
 	}
 
 	public static Builder newBuilder() {

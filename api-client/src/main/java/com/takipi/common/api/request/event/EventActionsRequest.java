@@ -1,7 +1,5 @@
 package com.takipi.common.api.request.event;
 
-import java.io.UnsupportedEncodingException;
-
 import com.takipi.common.api.request.ServiceRequest;
 import com.takipi.common.api.request.intf.ApiGetRequest;
 import com.takipi.common.api.result.event.EventActionsResult;
@@ -24,11 +22,6 @@ public class EventActionsRequest extends ServiceRequest implements ApiGetRequest
 	@Override
 	public Class<EventActionsResult> resultClass() {
 		return EventActionsResult.class;
-	}
-
-	@Override
-	public String[] getParams() throws UnsupportedEncodingException {
-		return null;
 	}
 
 	public static Builder newBuilder() {

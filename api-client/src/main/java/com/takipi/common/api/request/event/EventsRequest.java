@@ -24,7 +24,7 @@ public class EventsRequest extends ViewTimeframeRequest implements ApiGetRequest
 	}
 
 	@Override
-	public String[] getParams() throws UnsupportedEncodingException {
+	public String[] queryParams() throws UnsupportedEncodingException {
 		return buildParams();
 	}
 
