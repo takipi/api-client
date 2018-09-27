@@ -18,6 +18,7 @@ Release*/
 .project
 .classpath
 .settings
+my.*
 
 *.iml
 .idea
