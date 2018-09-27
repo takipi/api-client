@@ -27,7 +27,7 @@ public abstract class ModifyLabelsRequest extends ServiceRequest implements ApiP
 		String[] params = new String[2];
 
 		params[0] = "force=" + Boolean.toString(forceHistory);
-		params[0] = "handle_similar_events=" + Boolean.toString(handleSimilarEvents);
+		params[1] = "handle_similar_events=" + Boolean.toString(handleSimilarEvents);
 
 		return params;
 	}
