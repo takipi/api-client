@@ -13,7 +13,11 @@ public abstract class ProcessTagRequest extends ServiceRequest {
 
 	@Override
 	public String[] queryParams() throws UnsupportedEncodingException {
-		return new String[] { "active=" + String.valueOf(active) };
+		String[] params = new String[1];
+
+		params[0] = "active=" + String.valueOf(active);
+
+		return params;
 	}
 
 	public static Builder newBuilder() {
