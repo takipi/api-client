@@ -1,22 +1,22 @@
-package com.takipi.common.api.request.deployment;
+package com.takipi.common.api.request.application;
 
 import com.takipi.common.api.request.ProcessTagRequest;
 import com.takipi.common.api.request.intf.ApiGetRequest;
-import com.takipi.common.api.result.deployment.DeploymentsResult;
+import com.takipi.common.api.result.application.ApplicationsResult;
 
-public class DeploymentsRequest extends ProcessTagRequest implements ApiGetRequest<DeploymentsResult> {
-	DeploymentsRequest(String serviceId, boolean active) {
+public class ApplicationsRequest extends ProcessTagRequest implements ApiGetRequest<ApplicationsResult> {
+	ApplicationsRequest(String serviceId, boolean active) {
 		super(serviceId, active);
 	}
 
 	@Override
-	public Class<DeploymentsResult> resultClass() {
-		return DeploymentsResult.class;
+	public Class<ApplicationsResult> resultClass() {
+		return ApplicationsResult.class;
 	}
 
 	@Override
 	public String urlPath() {
-		return baseUrlPath() + "/deployments";
+		return baseUrlPath() + "/applications";
 	}
 
 	public static Builder newBuilder() {
@@ -42,10 +42,10 @@ public class DeploymentsRequest extends ProcessTagRequest implements ApiGetReque
 			return this;
 		}
 
-		public DeploymentsRequest build() {
+		public ApplicationsRequest build() {
 			validate();
 
-			return new DeploymentsRequest(serviceId, active);
+			return new ApplicationsRequest(serviceId, active);
 		}
 	}
 }
