@@ -6,18 +6,19 @@ import com.takipi.common.api.result.service.ServicesResult;
 
 public class ServicesRequest extends BaseRequest implements ApiGetRequest<ServicesResult> {
 	ServicesRequest() {
+
 	}
 
 	@Override
 	public Class<ServicesResult> resultClass() {
 		return ServicesResult.class;
 	}
-	
+
 	@Override
 	public String urlPath() {
 		return "/services";
 	}
-	
+
 	public static Builder newBuilder() {
 		return new Builder();
 	}
@@ -26,6 +27,7 @@ public class ServicesRequest extends BaseRequest implements ApiGetRequest<Servic
 		Builder() {
 
 		}
+
 		public ServicesRequest build() {
 			return new ServicesRequest();
 		}
