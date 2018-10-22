@@ -2,8 +2,8 @@ package com.takipi.api.client.request.alert;
 
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.GenericResult;
+import com.takipi.api.client.util.validation.ValidationUtil;
 import com.takipi.api.core.request.intf.ApiPostRequest;
-import com.takipi.common.util.ValidationUtil;
 
 public abstract class AlertRequest extends ServiceRequest implements ApiPostRequest<GenericResult> {
 	private final String viewId;

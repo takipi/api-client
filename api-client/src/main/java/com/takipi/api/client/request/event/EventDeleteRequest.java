@@ -1,7 +1,7 @@
 package com.takipi.api.client.request.event;
 
 import com.takipi.api.client.request.label.ModifyLabelsRequest;
-import com.takipi.common.util.ValidationUtil;
+import com.takipi.api.client.util.validation.ValidationUtil;
 
 public class EventDeleteRequest extends ModifyLabelsRequest {
 	private final String eventId;

@@ -2,7 +2,7 @@ package com.takipi.api.client.request;
 
 import java.util.Collection;
 
-import com.takipi.common.util.ValidationUtil;
+import com.takipi.api.client.util.validation.ValidationUtil;
 
 public abstract class EventTimeframeRequest extends TimeframeRequest {
 	public final String eventId;

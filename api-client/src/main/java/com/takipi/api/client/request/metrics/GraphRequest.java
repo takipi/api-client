@@ -5,9 +5,9 @@ import java.util.Collection;
 
 import com.takipi.api.client.request.ViewTimeframeRequest;
 import com.takipi.api.client.result.metrics.GraphResult;
+import com.takipi.api.client.util.validation.ValidationUtil.GraphType;
+import com.takipi.api.client.util.validation.ValidationUtil.VolumeType;
 import com.takipi.api.core.request.intf.ApiGetRequest;
-import com.takipi.common.util.ValidationUtil.GraphType;
-import com.takipi.common.util.ValidationUtil.VolumeType;
 
 public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<GraphResult> {
 	public final GraphType graphType;

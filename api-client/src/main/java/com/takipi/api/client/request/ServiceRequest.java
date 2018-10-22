@@ -1,6 +1,6 @@
 package com.takipi.api.client.request;
 
-import com.takipi.common.util.ValidationUtil;
+import com.takipi.api.client.util.validation.ValidationUtil;
 
 public abstract class ServiceRequest extends BaseRequest {
 	public final String serviceId;

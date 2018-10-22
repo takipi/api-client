@@ -28,11 +28,11 @@ import com.takipi.api.client.result.event.EventsVolumeResult;
 import com.takipi.api.client.result.metrics.GraphResult;
 import com.takipi.api.client.result.view.CreateViewResult;
 import com.takipi.api.client.result.view.ViewsResult;
+import com.takipi.api.client.util.validation.ValidationUtil.GraphType;
+import com.takipi.api.client.util.validation.ValidationUtil.VolumeType;
 import com.takipi.api.core.url.UrlClient.Response;
 import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.Pair;
-import com.takipi.common.util.ValidationUtil.GraphType;
-import com.takipi.common.util.ValidationUtil.VolumeType;
 
 public class ViewUtil {
 	private static final DateTimeFormatter fmt = ISODateTimeFormat.dateTime().withZoneUTC();

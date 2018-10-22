@@ -5,8 +5,8 @@ import java.util.Collection;
 
 import com.takipi.api.client.request.ViewTimeframeRequest;
 import com.takipi.api.client.result.event.EventsVolumeResult;
+import com.takipi.api.client.util.validation.ValidationUtil.VolumeType;
 import com.takipi.api.core.request.intf.ApiGetRequest;
-import com.takipi.common.util.ValidationUtil.VolumeType;
 
 public class EventsVolumeRequest extends ViewTimeframeRequest implements ApiGetRequest<EventsVolumeResult> {
 	public final VolumeType volumeType;

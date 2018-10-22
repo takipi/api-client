@@ -6,9 +6,9 @@ import java.util.Collection;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import com.takipi.api.client.request.label.ModifyLabelsRequest;
+import com.takipi.api.client.util.validation.ValidationUtil;
 import com.takipi.api.core.consts.ApiConstants;
 import com.takipi.common.util.JsonUtil;
-import com.takipi.common.util.ValidationUtil;
 
 public class EventModifyLabelsRequest extends ModifyLabelsRequest {
 	private final String eventId;

@@ -7,9 +7,9 @@ import java.util.Map;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.takipi.api.client.util.validation.ValidationUtil;
 import com.takipi.api.core.consts.ApiConstants;
 import com.takipi.common.util.JsonUtil;
-import com.takipi.common.util.ValidationUtil;
 
 public class BatchModifyLabelsRequest extends ModifyLabelsRequest {
 	private final Collection<Modification> modifications;

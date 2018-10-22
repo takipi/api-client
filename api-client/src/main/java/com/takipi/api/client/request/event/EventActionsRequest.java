@@ -2,8 +2,8 @@ package com.takipi.api.client.request.event;
 
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.event.EventActionsResult;
+import com.takipi.api.client.util.validation.ValidationUtil;
 import com.takipi.api.core.request.intf.ApiGetRequest;
-import com.takipi.common.util.ValidationUtil;
 
 public class EventActionsRequest extends ServiceRequest implements ApiGetRequest<EventActionsResult> {
 

@@ -1,4 +1,4 @@
-package com.takipi.common.util;
+package com.takipi.api.client.util.validation;
 
 import com.google.common.base.Strings;
 import com.takipi.api.core.consts.ApiConstants;
