@@ -1,0 +1,23 @@
+archivesBaseName = 'api-client-util'
+
+dependencies {
+	compile(
+		project(':api-client')
+	)
+}
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      pom.project {
+        name 'api-client-util'
+        description 'OverOps API Client utility classes, interacts with OverOps Server REST API'
+        
+        scm {
+          connection 'scm:git:https://github.com/takipi/api-client/tree/master/api-client-util'
+          developerConnection 'scm:git:https://github.com/takipi/api-client/tree/master/api-client-util'
+          url 'https://github.com/takipi/api-client/tree/master/api-client-util'
+        }
+      }
+    }
+  }
+}

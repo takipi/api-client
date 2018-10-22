@@ -4,7 +4,10 @@ dependencies {
 	compile(
 		"joda-time:joda-time:2.8.2",
 		"commons-codec:commons-codec:1.9",
-		project(':api-core')
+		"commons-io:commons-io:2.5",
+		"com.google.guava:guava:20.0",
+		"com.google.code.gson:gson:2.8.2",
+		"org.slf4j:slf4j-api:1.7.25"
 	)
 }
 uploadArchives {
