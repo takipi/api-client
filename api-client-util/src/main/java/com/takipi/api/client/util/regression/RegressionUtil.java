@@ -99,6 +99,11 @@ public class RegressionUtil {
 				this.halfVolumePeriods = halfVolumePeriods;
 				this.largerVolumePriodIndex = largerVolumePriodIndex;
 			}
+
+			static SeasonlityResult create(long largerVolumePeriod, long halfVolumePeriods,
+					int largerVolumePriodIndex) {
+				return new SeasonlityResult(largerVolumePeriod, halfVolumePeriods, largerVolumePriodIndex);
+			}
 		}
 
 		static RegressionStats of(long hits, long invocations, double rate, double hitsAvg, double invocationsAvg,
@@ -438,7 +443,7 @@ public class RegressionUtil {
 			}
 		}
 
-		return new SeasonlityResult(largerVolumePeriod, halfVolumePeriods, largerVolumePriodIndex);
+		return SeasonlityResult.create(largerVolumePeriod, halfVolumePeriods, largerVolumePriodIndex);
 	}
 
 	private static Regression processVolumeRegression(EventResult activeEvent, int activeTimespan, int baselineTimespan,
@@ -476,15 +481,8 @@ public class RegressionUtil {
 			if ((verbose) && (printStream != null)) {
 				printStream.println("Not regressed " + printEvent(activeEvent));
 			}
+			
 			return Regression.NO;
-		}
-
-		SeasonlityResult seasonlityResult;
-
-		if (applySeasonality) {
-			seasonlityResult = calculateSeasonality(activeEvent, periodVolumes);
-		} else {
-			seasonlityResult = null;
 		}
 
 		if (printStream != null) {
@@ -495,22 +493,26 @@ public class RegressionUtil {
 					+ f(regressionStats.invocations) + " -> " + f(activeEvent.stats.invocations));
 		}
 
-		if ((applySeasonality) && (seasonlityResult.largerVolumePeriod >= 0)) {
-			if (printStream != null) {
-				printStream.println("Period " + seasonlityResult.largerVolumePriodIndex + " = "
-						+ seasonlityResult.largerVolumePeriod + " > active volume. Aborting regression\n");
+		if (applySeasonality) {
+			SeasonlityResult seasonlityResult = calculateSeasonality(activeEvent, periodVolumes);
+
+			if (seasonlityResult.largerVolumePeriod >= 0) {
+				if (printStream != null) {
+					printStream.println("Period " + seasonlityResult.largerVolumePriodIndex + " = "
+							+ seasonlityResult.largerVolumePeriod + " > active volume. Aborting regression\n");
+				}
+
+				return Regression.NO;
 			}
 
-			return Regression.NO;
-		}
+			if (seasonlityResult.halfVolumePeriods >= 2) {
+				if (printStream != null) {
+					printStream.println(seasonlityResult.halfVolumePeriods
+							+ " periods > 50% active volume detected. Aborting regression\n");
+				}
 
-		if ((applySeasonality) && (seasonlityResult.halfVolumePeriods >= 2)) {
-			if (printStream != null) {
-				printStream.println(seasonlityResult.halfVolumePeriods
-						+ " periods > 50% active volume detected. Aborting regression\n");
+				return Regression.NO;
 			}
-
-			return Regression.NO;
 		}
 
 		rateRegression.addRegression(activeEvent.id, activeEvent, regressionStats.hits, regressionStats.invocations);
