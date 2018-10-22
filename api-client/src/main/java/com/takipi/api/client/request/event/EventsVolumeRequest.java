@@ -111,6 +111,15 @@ public class EventsVolumeRequest extends ViewTimeframeRequest implements ApiGetR
 			return this;
 		}
 
+		@Override
+		protected void validate() {
+			super.validate();
+
+			if (volumeType == null) {
+				throw new IllegalArgumentException("Missing volume type");
+			}
+		}
+
 		public EventsVolumeRequest build() {
 			validate();
 
