@@ -39,6 +39,7 @@ public class ViewUtil {
 
 	public static void createLabelViewsIfNotExists(ApiClient apiClient, String serviceId,
 			Collection<Pair<String, String>> viewsAndLabels, String categoryId) {
+
 		Map<String, SummarizedView> views = getServiceViewsByName(apiClient, serviceId);
 
 		for (Pair<String, String> pair : viewsAndLabels) {
@@ -174,6 +175,7 @@ public class ViewUtil {
 
 	public static Graph getEventsGraph(ApiClient apiClient, String serviceId, String viewId, int pointsCount,
 			VolumeType volumeType, DateTime from, DateTime to) {
+
 		GraphRequest graphRequest = GraphRequest.newBuilder().setServiceId(serviceId).setViewId(viewId)
 				.setGraphType(GraphType.view).setFrom(from.toString(fmt)).setTo(to.toString(fmt))
 				.setVolumeType(volumeType).setWantedPointCount(pointsCount).build();
