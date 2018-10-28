@@ -7,7 +7,6 @@ import com.google.common.collect.Maps;
 import com.takipi.api.client.result.event.EventResult;
 
 public class RateRegression {
-	
 	private final Map<String, EventResult> allNewEvents;
 
 	private final Map<String, RegressionResult> allRegressions;
@@ -46,7 +45,7 @@ public class RateRegression {
 	public Map<String, EventResult> getCriticalNewEvents() {
 		return criticalNewEvents;
 	}
-	
+
 	public static class Builder {
 		private final Map<String, EventResult> allNewEvents;
 

@@ -3,10 +3,17 @@ package com.takipi.api.client.util.regression;
 import com.takipi.api.client.result.event.EventResult;
 
 public class RegressionResult {
-	private EventResult event;
-	private long baselineHits;
-	private long baselinInvocations;
+	private final EventResult event;
+	private final long baselineHits;
+	private final long baselineInvocations;
 
+	private RegressionResult(EventResult event, long baselineHits, long baselineInvocations)
+	{
+		this.event = event;
+		this.baselineHits = baselineHits;
+		this.baselineInvocations = baselineInvocations;
+	}
+	
 	public EventResult getEvent() {
 		return event;
 	}
@@ -16,15 +23,10 @@ public class RegressionResult {
 	}
 
 	public long getBaselineInvocations() {
-		return baselinInvocations;
+		return baselineInvocations;
 	}
 
-	public static RegressionResult of(EventResult event, long baselineHits, long baselinInvocations) {
-		RegressionResult result = new RegressionResult();
-		result.event = event;
-		result.baselineHits = baselineHits;
-		result.baselinInvocations = baselinInvocations;
-
-		return result;
+	public static RegressionResult of(EventResult event, long baselineHits, long baselineInvocations) {
+		return new RegressionResult(event, baselineHits, baselineInvocations);
 	}
 }
