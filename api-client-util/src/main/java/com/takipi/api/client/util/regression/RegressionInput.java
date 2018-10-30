@@ -24,29 +24,28 @@ public class RegressionInput {
 	public String toString() {
 		return "Environment: " + serviceId + " View: " + viewId;
 	}
-	
+
 	public void validate() {
-		
 		if ((serviceId == null) || (serviceId.isEmpty())) {
 			throw new IllegalStateException("Missing Environment Id");
 		}
-		
+
 		if ((viewId == null) || (viewId.isEmpty())) {
 			throw new IllegalStateException("Missing View Id");
 		}
-		
+
 		if (activeTimespan <= 0) {
 			throw new IllegalStateException("Missing Active timespan");
 		}
-		
+
 		if (baselineTimespan <= 0) {
 			throw new IllegalStateException("Missing Active timespan");
 		}
-		
+
 		if (regressionDelta <= 0) {
 			throw new IllegalStateException("Missing Regression Delta");
 		}
-		
+
 		if (criticalRegressionDelta <= 0) {
 			throw new IllegalStateException("Missing Critical Regression Delta");
 		}

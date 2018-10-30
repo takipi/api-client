@@ -28,23 +28,6 @@ public class RegressionStats {
 		this.rateAvgStdDev = rateAvgStdDev;
 	}
 
-	public static class SeasonlityResult {
-		public final long largerVolumePeriod;
-		public final long halfVolumePeriods;
-		public final int largerVolumePriodIndex;
-
-		private SeasonlityResult(long largerVolumePeriod, long halfVolumePeriods, int largerVolumePriodIndex) {
-			this.largerVolumePeriod = largerVolumePeriod;
-			this.halfVolumePeriods = halfVolumePeriods;
-			this.largerVolumePriodIndex = largerVolumePriodIndex;
-		}
-
-		static SeasonlityResult create(long largerVolumePeriod, long halfVolumePeriods,
-				int largerVolumePriodIndex) {
-			return new SeasonlityResult(largerVolumePeriod, halfVolumePeriods, largerVolumePriodIndex);
-		}
-	}
-
 	static RegressionStats of(long hits, long invocations, double rate, double hitsAvg, double invocationsAvg,
 			double rateAvg, double hitsAvgStdDev, double invocationsAvgStdDev, double rateAvgStdDev) {
 		return new RegressionStats(hits, invocations, rate, hitsAvg, invocationsAvg, rateAvg, hitsAvgStdDev,
