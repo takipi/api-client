@@ -1,10 +1,10 @@
 package com.takipi.api.client.util.regression;
 
+import java.util.Arrays;
 import java.util.Collection;
 
-import org.joda.time.DateTime;
-
 public class RegressionInput {
+	
 	public String serviceId;
 	public String viewId;
 	public int activeTimespan;
@@ -14,18 +14,54 @@ public class RegressionInput {
 	public double regressionDelta;
 	public double criticalRegressionDelta;
 	public boolean applySeasonality;
-	public DateTime startTime;
 	public Collection<String> criticalExceptionTypes;
 	public Collection<String> applictations;
 	public Collection<String> deployments;
 	public Collection<String> servers;
 
+	private static void appendCollection(StringBuilder builder, String name, Collection<String> value) {
+		builder.append(name);
+		builder.append(" = ");
+		
+		if (value != null) {
+			builder.append(Arrays.toString(value.toArray()));
+		} else {
+			builder.append("");
+		}
+		
+		builder.append("\n");
+	}
+	
+	private static void appendVariable(StringBuilder builder, String name, Object value) {
+		builder.append(name);
+		builder.append(" = ");
+		builder.append(value);
+		builder.append("\n");
+	}
+	
 	@Override
 	public String toString() {
-		return "Environment: " + serviceId + " View: " + viewId;
+		StringBuilder result = new StringBuilder();
+		
+		appendVariable(result, "Environment ID", serviceId);
+		appendVariable(result, "View ID", viewId);
+		appendVariable(result, "Active Timespan", activeTimespan);
+		appendVariable(result, "Baseline Timespan", baselineTimespan);
+		appendVariable(result, "Min Volume Threshold", minVolumeThreshold);
+		appendVariable(result, "Min Rate Threshold", minErrorRateThreshold);
+		appendVariable(result, "Regression Delta", regressionDelta);
+		appendVariable(result, "Critical Regression Delta", criticalRegressionDelta);
+		appendVariable(result, "Apply Seasonality", applySeasonality);
+		appendVariable(result, "Critical Exception Types", serviceId);
+		appendCollection(result, "Deployments", deployments);
+		appendCollection(result, "Applications", applictations);
+		appendCollection(result, "Severs", servers);
+		
+		return result.toString();
 	}
 
 	public void validate() {
+		
 		if ((serviceId == null) || (serviceId.isEmpty())) {
 			throw new IllegalStateException("Missing Environment Id");
 		}
