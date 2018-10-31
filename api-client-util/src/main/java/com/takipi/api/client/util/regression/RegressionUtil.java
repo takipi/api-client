@@ -19,6 +19,7 @@ import com.takipi.api.client.data.event.Stats;
 import com.takipi.api.client.data.metrics.Graph;
 import com.takipi.api.client.data.metrics.Graph.GraphPoint;
 import com.takipi.api.client.data.metrics.Graph.GraphPointContributor;
+import com.takipi.api.client.request.ViewTimeframeRequest;
 import com.takipi.api.client.request.event.EventsVolumeRequest;
 import com.takipi.api.client.request.metrics.GraphRequest;
 import com.takipi.api.client.result.event.EventResult;
@@ -334,6 +335,35 @@ public class RegressionUtil {
 
 		return Regression.YES;
 	}
+	
+	private static void ApplyFilter(ViewTimeframeRequest.Builder builder, 
+		RegressionInput input, boolean applyDeps) {
+		
+		if (input.applictations != null) {
+			for (String app : input.applictations) {
+				
+				if (!app.isEmpty()) {
+					builder.addApp(app);
+				}
+			}
+		}
+
+		if ((applyDeps) && (input.deployments != null)) {
+			for (String dep : input.deployments) {
+				if (!dep.isEmpty()) {
+					builder.addDeployment(dep);
+				}
+			}
+		}
+
+		if (input.servers != null) {
+			for (String srv : input.servers) {
+				if (!srv.isEmpty()) {
+					builder.addServer(srv);
+				}
+			}
+		}
+	}
 
 	public static EventsVolumeResult getEventsVolume(ApiClient apiClient, RegressionInput input, DateTime from,
 			DateTime to) {
@@ -343,23 +373,7 @@ public class RegressionUtil {
 		EventsVolumeRequest.Builder builder = EventsVolumeRequest.newBuilder().setServiceId(input.serviceId)
 				.setViewId(input.viewId).setFrom(fromStr).setTo(toStr).setVolumeType(VolumeType.all);
 
-		if (input.applictations != null) {
-			for (String app : input.applictations) {
-				builder.addApp(app);
-			}
-		}
-
-		if (input.deployments != null) {
-			for (String dep : input.deployments) {
-				builder.addDeployment(dep);
-			}
-		}
-
-		if (input.servers != null) {
-			for (String srv : input.servers) {
-				builder.addServer(srv);
-			}
-		}
+		ApplyFilter(builder, input, true);
 
 		Response<EventsVolumeResult> response = apiClient.get(builder.build());
 
@@ -373,7 +387,7 @@ public class RegressionUtil {
 		return result;
 	}
 
-	private static GraphResult getEventsGraph(ApiClient apiClient, RegressionInput input, int pointsCount,
+	private static GraphResult getBaselineEventsGraph(ApiClient apiClient, RegressionInput input, int pointsCount,
 			VolumeType volumeType, DateTime from, DateTime to) {
 		String fromStr = from.toString(ISODateTimeFormat.dateTime().withZoneUTC());
 		String toStr = to.toString(ISODateTimeFormat.dateTime().withZoneUTC());
@@ -382,23 +396,7 @@ public class RegressionUtil {
 				.setGraphType(GraphType.view).setFrom(fromStr).setTo(toStr).setVolumeType(volumeType)
 				.setWantedPointCount(pointsCount);
 
-		if (input.applictations != null) {
-			for (String app : input.applictations) {
-				builder.addApp(app);
-			}
-		}
-
-		if (input.deployments != null) {
-			for (String dep : input.deployments) {
-				builder.addDeployment(dep);
-			}
-		}
-
-		if (input.servers != null) {
-			for (String srv : input.servers) {
-				builder.addServer(srv);
-			}
-		}
+		ApplyFilter(builder, input, false);
 
 		Response<GraphResult> response = apiClient.get(builder.build());
 
@@ -489,7 +487,7 @@ public class RegressionUtil {
 		int pointsWanted = input.baselineTimespan / input.activeTimespan * 2;
 
 		if (pointsWanted > 0) {
-			GraphResult graphResult = getEventsGraph(apiClient, input, pointsWanted, VolumeType.all, baselineFrom,
+			GraphResult graphResult = getBaselineEventsGraph(apiClient, input, pointsWanted, VolumeType.all, baselineFrom,
 					activeFrom);
 
 			baselineGraph = validateGraph(apiClient, graphResult, input, printStream);
