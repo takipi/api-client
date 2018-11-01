@@ -72,4 +72,6 @@ public class RegressionStringUtil {
 	public static String getIntroducedBy(EventResult event) {
 		return event.introduced_by;
 	}
+	
+	
 }

@@ -463,7 +463,7 @@ public class RegressionUtil {
 		return true;
 	}
 	
-	private static DateTime getDeploymentStartTime(ApiClient apiClient, 
+	public static DateTime getDeploymentStartTime(ApiClient apiClient, 
 		RegressionInput input, PrintStream printStream) {
 
 		GraphResult graphResult = getEventGraph(apiClient, input, 10, VolumeType.hits, 
@@ -490,7 +490,9 @@ public class RegressionUtil {
 			return null;
 		}
 
-		DateTime result = ISODateTimeFormat.dateTime().withZoneUTC().parseDateTime(graph.points.get(0).time);
+		GraphPoint point = graph.points.get(0);
+		
+		DateTime result = ISODateTimeFormat.dateTime().withZoneUTC().parseDateTime(point.time);
 
 		return result;
 	}
@@ -514,6 +516,8 @@ public class RegressionUtil {
 		if (activeWindowStart == null ) {
 			activeWindowStart = DateTime.now().minus(input.activeTimespan);
 		}
+		
+		result.setActiveWndowStart(activeWindowStart);
 		
 		DateTime baselineStart = activeWindowStart.minusMinutes(input.baselineTimespan);
 
