@@ -2,7 +2,8 @@ archivesBaseName = 'api-client-util'
 
 dependencies {
 	compile(
-		project(':api-client')
+		project(':api-client'),
+		"org.ocpsoft.prettytime:prettytime:4.0.2.Final"
 	)
 }
 uploadArchives {
