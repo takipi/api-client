@@ -1,6 +1,7 @@
 package com.takipi.api.client.util.event;
 
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -14,16 +15,32 @@ import com.takipi.api.core.url.UrlClient.Response;
 
 public class EventUtil {
 	
+	public static int DEFAULT_PERIOD = (int)TimeUnit.DAYS.toMinutes(30);
+	
 	private static DateTimeFormatter formatter = DateTimeFormat.forPattern("dd-MMM-yy-hh-mm");
 
+	public static String getEventRecentLinkDefault(ApiClient apiClient, String serviceId, 
+			String eventId, DateTime from, DateTime to, Collection<String> applications, Collection<String> servers,
+			Collection<String> deployments, int defaultSpan) {
+		
+		String result = getEventRecentLink(apiClient, serviceId, eventId, 
+			from, to, applications, servers, deployments);
+		
+		if (result == null) {
+			
+			DateTime now = DateTime.now();
+			
+			result =  getEventRecentLink(apiClient, serviceId, eventId, 
+					now.minusMinutes(defaultSpan), now, null, null, null);
+		}
+		
+		return result;
+	}
 	
 	public static String getEventRecentLink(ApiClient apiClient, String serviceId, 
-		String eventId, DateTime start, DateTime end, int timeSpan, Collection<String> applications, Collection<String> servers,
+		String eventId, DateTime from, DateTime to, Collection<String> applications, Collection<String> servers,
 		Collection<String> deployments) {
 		
-		DateTime to = DateTime.now();
-		DateTime from = to.minusMinutes(timeSpan);
-
 		DateTimeFormatter fmt = ISODateTimeFormat.dateTime().withZoneUTC();
 
 		EventSnapshotRequest.Builder builder = EventSnapshotRequest.newBuilder().setServiceId(serviceId)
@@ -63,7 +80,7 @@ public class EventUtil {
 		
 		StringBuilder result = new StringBuilder(link);
 		result.append("&timeframe=custom&from=");
-		result.append(now.minusMinutes(timeSpan).toString(formatter));
+		result.append(from.toString(formatter));
 		result.append("&to=");
 		result.append(now.toString(formatter));
 

@@ -52,7 +52,7 @@ public class RegressionInput {
 		appendVariable(result, "Regression Delta", regressionDelta);
 		appendVariable(result, "Critical Regression Delta", criticalRegressionDelta);
 		appendVariable(result, "Apply Seasonality", applySeasonality);
-		appendVariable(result, "Critical Exception Types", serviceId);
+		appendCollection(result, "Critical Exception Types", criticalExceptionTypes);
 		appendCollection(result, "Deployments", deployments);
 		appendCollection(result, "Applications", applictations);
 		appendCollection(result, "Severs", servers);

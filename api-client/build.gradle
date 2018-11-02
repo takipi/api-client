@@ -7,7 +7,8 @@ dependencies {
 		"commons-io:commons-io:2.5",
 		"com.google.guava:guava:20.0",
 		"com.google.code.gson:gson:2.8.2",
-		"org.slf4j:slf4j-api:1.7.25"
+		"org.slf4j:slf4j-api:1.7.25",
+    "org.ocpsoft.prettytime:prettytime:4.0.2.Final"
 	)
 }
 uploadArchives {

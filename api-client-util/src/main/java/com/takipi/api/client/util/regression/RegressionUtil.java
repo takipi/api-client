@@ -168,8 +168,11 @@ public class RegressionUtil {
 
 		boolean isEventNew = firstSeen.isAfter(activeFrom);
 		boolean hasOlderSmiliarEvent = hasOlderRelatedEvents(activeEvent, printStream, verbose);
-
-		boolean isNew = (isEventNew) && (!hasOlderSmiliarEvent);
+		boolean isFromDep = (input.deployments == null) || (input.deployments.size() == 0) ||
+				(input.deployments.contains(activeEvent.introduced_by));
+		
+		
+		boolean isNew = (isEventNew) && (!hasOlderSmiliarEvent) && (isFromDep);
 
 		if (isNew) {
 			rateRegression.addNewEvent(activeEvent.id, activeEvent);
@@ -509,12 +512,12 @@ public class RegressionUtil {
 
 		DateTime activeWindowStart = null;
 	
-		if (input.deployments != null) {
+		if ((input.deployments != null) && (input.deployments.size() > 0)) {
 			activeWindowStart = getDeploymentStartTime(apiClient, input, printStream);
 		}
 		
 		if (activeWindowStart == null ) {
-			activeWindowStart = DateTime.now().minus(input.activeTimespan);
+			activeWindowStart = DateTime.now().minusMinutes(input.activeTimespan);
 		}
 		
 		result.setActiveWndowStart(activeWindowStart);
