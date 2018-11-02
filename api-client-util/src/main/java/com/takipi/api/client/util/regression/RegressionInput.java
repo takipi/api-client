@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public class RegressionInput {
-	
 	public String serviceId;
 	public String viewId;
 	public int activeTimespan;
@@ -22,27 +21,27 @@ public class RegressionInput {
 	private static void appendCollection(StringBuilder builder, String name, Collection<String> value) {
 		builder.append(name);
 		builder.append(" = ");
-		
+
 		if (value != null) {
 			builder.append(Arrays.toString(value.toArray()));
 		} else {
 			builder.append("");
 		}
-		
+
 		builder.append("\n");
 	}
-	
+
 	private static void appendVariable(StringBuilder builder, String name, Object value) {
 		builder.append(name);
 		builder.append(" = ");
 		builder.append(value);
 		builder.append("\n");
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();
-		
+
 		appendVariable(result, "Environment ID", serviceId);
 		appendVariable(result, "View ID", viewId);
 		appendVariable(result, "Active Timespan", activeTimespan);
@@ -56,12 +55,11 @@ public class RegressionInput {
 		appendCollection(result, "Deployments", deployments);
 		appendCollection(result, "Applications", applictations);
 		appendCollection(result, "Severs", servers);
-		
+
 		return result.toString();
 	}
 
 	public void validate() {
-		
 		if ((serviceId == null) || (serviceId.isEmpty())) {
 			throw new IllegalStateException("Missing Environment Id");
 		}

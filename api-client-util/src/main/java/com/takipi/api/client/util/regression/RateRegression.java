@@ -16,8 +16,8 @@ public class RateRegression {
 
 	private final Map<String, EventResult> exceededNewEvents;
 	private final Map<String, EventResult> criticalNewEvents;
-	
-	private DateTime activeWndowStart;
+
+	private final DateTime activeWndowStart;
 
 	RateRegression(Map<String, EventResult> allNewEvents, Map<String, RegressionResult> allRegressions,
 			Map<String, RegressionResult> criticalRegressions, Map<String, EventResult> exceededNewEvents,
@@ -34,7 +34,7 @@ public class RateRegression {
 	public DateTime getActiveWndowStart() {
 		return activeWndowStart;
 	}
-	
+
 	public Map<String, EventResult> getAllNewEvents() {
 		return allNewEvents;
 	}
@@ -65,7 +65,7 @@ public class RateRegression {
 		private final Map<String, EventResult> criticalNewEvents;
 
 		private DateTime activeWndowStart;
-		
+
 		Builder() {
 			allRegressions = Maps.newHashMap();
 			criticalNewEvents = Maps.newHashMap();
@@ -77,7 +77,7 @@ public class RateRegression {
 		public void setActiveWndowStart(DateTime activeWndowStart) {
 			this.activeWndowStart = activeWndowStart;
 		}
-		
+
 		public void addNewEvent(String id, EventResult event) {
 			allNewEvents.put(id, event);
 		}

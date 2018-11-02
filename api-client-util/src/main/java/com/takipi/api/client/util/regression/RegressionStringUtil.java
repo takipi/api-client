@@ -128,7 +128,6 @@ public class RegressionStringUtil {
 		String result = String.format(TIME_WINDOW_FORMAT, activeWindowDuration, baselineDuration);
 
 		return result;
-
 	}
 
 	private static String getRegressionDeploymentName(RegressionInput regressionInput, DateTime activeWindowStart) {
@@ -156,6 +155,5 @@ public class RegressionStringUtil {
 
 		DateTime activeWindowStart = RegressionUtil.getDeploymentStartTime(apiClient, regressionInput, System.out);
 		return getRegressionDeploymentName(regressionInput, activeWindowStart);
-
 	}
 }
