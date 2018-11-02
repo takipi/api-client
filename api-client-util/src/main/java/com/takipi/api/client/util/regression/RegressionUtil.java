@@ -3,7 +3,7 @@ package com.takipi.api.client.util.regression;
 import java.io.PrintStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -124,7 +124,7 @@ public class RegressionUtil {
 			int baselineTimespan) {
 		Map<String, long[]> result = Maps.newHashMap();
 
-		DateTime baselineStart = startTime.minusMinutes(baselineTimespan + activeTimespan);
+		DateTime baselineStart = startTime.minusMinutes(baselineTimespan);
 		int timeWindows = baselineTimespan / activeTimespan;
 
 		for (GraphPoint graphPoint : baselineGraph.points) {
@@ -161,15 +161,17 @@ public class RegressionUtil {
 		return "(" + stats.hits + "/" + stats.invocations + ")";
 	}
 
-	private static Regression processNewsIssue(EventResult activeEvent, DateTime activeFrom, int minVolumeThreshold,
-			double minErrorRateThreshold, Collection<String> criticalExceptionTypes,
+	private static Regression processNewsIssue(EventResult activeEvent, DateTime activeFrom, RegressionInput input,
 			RateRegression.Builder rateRegression, PrintStream printStream, boolean verbose) {
+
 		DateTime firstSeen = ISODateTimeFormat.dateTimeParser().parseDateTime(activeEvent.first_seen);
 
 		boolean isEventNew = firstSeen.isAfter(activeFrom);
 		boolean hasOlderSmiliarEvent = hasOlderRelatedEvents(activeEvent, printStream, verbose);
+		boolean isFromDep = (input.deployments == null) || (input.deployments.size() == 0)
+				|| (input.deployments.contains(activeEvent.introduced_by));
 
-		boolean isNew = (isEventNew) && (!hasOlderSmiliarEvent);
+		boolean isNew = (isEventNew) && (!hasOlderSmiliarEvent) && (isFromDep);
 
 		if (isNew) {
 			rateRegression.addNewEvent(activeEvent.id, activeEvent);
@@ -178,8 +180,9 @@ public class RegressionUtil {
 			// threshold
 
 			boolean isUncaught = activeEvent.type.equals("Uncaught Exception");
-			boolean isCriticalEventType = (criticalExceptionTypes != null)
-					&& (criticalExceptionTypes.contains(activeEvent.name));
+
+			boolean isCriticalEventType = (input.criticalExceptionTypes != null)
+					&& (input.criticalExceptionTypes.contains(activeEvent.name));
 
 			if ((isUncaught) || (isCriticalEventType)) {
 				rateRegression.addCriticalNewEvent(activeEvent.id, activeEvent);
@@ -194,6 +197,7 @@ public class RegressionUtil {
 		}
 
 		if ((activeEvent.stats == null) || (activeEvent.stats.invocations == 0) || (activeEvent.stats.hits == 0)) {
+
 			if ((verbose) && (printStream != null)) {
 				printStream.println("No stats " + ps(activeEvent.stats) + printEvent(activeEvent));
 			}
@@ -203,11 +207,12 @@ public class RegressionUtil {
 
 		double activeEventRatio = ((double) activeEvent.stats.hits / (double) activeEvent.stats.invocations);
 
-		if ((activeEventRatio < minErrorRateThreshold) || (activeEvent.stats.hits < minVolumeThreshold)) {
+		if ((activeEventRatio < input.minErrorRateThreshold) || (activeEvent.stats.hits < input.minVolumeThreshold)) {
+
 			if ((verbose) && (printStream != null)) {
 
-				printStream.println("Min thrs " + ps(activeEvent.stats) + printEvent(activeEvent) + "fails " + "hits"
-						+ activeEvent.stats.hits + "ratio: " + activeEventRatio);
+				printStream.println("Min threshold " + ps(activeEvent.stats) + printEvent(activeEvent) + "fails "
+						+ "hits" + activeEvent.stats.hits + "ratio: " + activeEventRatio);
 			}
 
 			return Regression.NO_DATA;
@@ -335,13 +340,11 @@ public class RegressionUtil {
 
 		return Regression.YES;
 	}
-	
-	private static void ApplyFilter(ViewTimeframeRequest.Builder builder, 
-		RegressionInput input, boolean applyDeps) {
-		
+
+	private static void ApplyFilter(ViewTimeframeRequest.Builder builder, RegressionInput input, boolean applyDeps) {
 		if (input.applictations != null) {
 			for (String app : input.applictations) {
-				
+
 				if (!app.isEmpty()) {
 					builder.addApp(app);
 				}
@@ -378,8 +381,7 @@ public class RegressionUtil {
 		Response<EventsVolumeResult> response = apiClient.get(builder.build());
 
 		if (response.isBadResponse()) {
-			throw new IllegalStateException("Error querying volume data from " + apiClient.getHostname() + " for "
-					+ input.toString() + " .Code: " + response.responseCode);
+			throw new IllegalStateException("Error querying volume data with code " + response.responseCode);
 		}
 
 		EventsVolumeResult result = response.data;
@@ -387,8 +389,9 @@ public class RegressionUtil {
 		return result;
 	}
 
-	private static GraphResult getBaselineEventsGraph(ApiClient apiClient, RegressionInput input, int pointsCount,
-			VolumeType volumeType, DateTime from, DateTime to) {
+	private static GraphResult getEventGraph(ApiClient apiClient, RegressionInput input, int pointsCount,
+			VolumeType volumeType, DateTime from, DateTime to, boolean applyDeps) {
+
 		String fromStr = from.toString(ISODateTimeFormat.dateTime().withZoneUTC());
 		String toStr = to.toString(ISODateTimeFormat.dateTime().withZoneUTC());
 
@@ -396,13 +399,12 @@ public class RegressionUtil {
 				.setGraphType(GraphType.view).setFrom(fromStr).setTo(toStr).setVolumeType(volumeType)
 				.setWantedPointCount(pointsCount);
 
-		ApplyFilter(builder, input, false);
+		ApplyFilter(builder, input, applyDeps);
 
 		Response<GraphResult> response = apiClient.get(builder.build());
 
 		if (response.isBadResponse()) {
-			throw new IllegalStateException("Error querying graph data from " + apiClient.getHostname() + " for "
-					+ input.toString() + " .Code: " + response.responseCode);
+			throw new IllegalStateException("Error querying graph data with code " + response.responseCode);
 		}
 
 		GraphResult graphResult = response.data;
@@ -458,26 +460,70 @@ public class RegressionUtil {
 		return true;
 	}
 
-	public static RateRegression calculateRateRegressions(ApiClient apiClient, RegressionInput input,
-			PrintStream printStream, boolean verbose) {
-		RateRegression.Builder result = new RateRegression.Builder();
+	public static DateTime getDeploymentStartTime(ApiClient apiClient, RegressionInput input, PrintStream printStream) {
 
-		DateTime fromTime;
+		GraphResult graphResult = getEventGraph(apiClient, input, 10, VolumeType.hits,
+				DateTime.now().minusMinutes(input.baselineTimespan + input.activeTimespan), DateTime.now(), true);
 
-		if (input.startTime != null) {
-			fromTime = input.startTime;
-		} else {
-			fromTime = DateTime.now();
+		if ((graphResult == null) || (graphResult.graphs == null) || (graphResult.graphs.size() == 0)) {
+
+			if (printStream != null) {
+				printStream.println(
+						"Could not acquire graph for deployment " + Arrays.toString(input.deployments.toArray()));
+			}
+
+			return null;
 		}
 
-		DateTime activeFrom = fromTime.minusMinutes(input.activeTimespan);
-		DateTime baselineFrom = activeFrom.minusMinutes(input.baselineTimespan);
+		Graph graph = graphResult.graphs.get(0);
+
+		if ((graph.points == null) | (graph.points.size() == 0)) {
+
+			if (printStream != null) {
+				printStream.println("Could not acquire graph points for deployment "
+						+ Arrays.toString(input.deployments.toArray()));
+			}
+
+			return null;
+		}
+
+		GraphPoint point = graph.points.get(0);
+
+		DateTime result = ISODateTimeFormat.dateTime().withZoneUTC().parseDateTime(point.time);
+
+		return result;
+	}
+
+	public static RateRegression calculateRateRegressions(ApiClient apiClient, RegressionInput input,
+			PrintStream printStream, boolean verbose) {
 
 		if (printStream != null) {
 			printStream.println("Begin regression analysis");
+			printStream.println(input + "\n");
 		}
 
-		EventsVolumeResult activeEventVolume = getEventsVolume(apiClient, input, activeFrom, fromTime);
+		RateRegression.Builder result = new RateRegression.Builder();
+
+		DateTime activeWindowStart = null;
+
+		if ((input.deployments != null) && (input.deployments.size() > 0)) {
+			activeWindowStart = getDeploymentStartTime(apiClient, input, printStream);
+		}
+
+		if (activeWindowStart == null) {
+			activeWindowStart = DateTime.now().minusMinutes(input.activeTimespan);
+		}
+
+		result.setActiveWndowStart(activeWindowStart);
+
+		DateTime baselineStart = activeWindowStart.minusMinutes(input.baselineTimespan);
+
+		if (printStream != null) {
+			printStream.println("Regression Active window starts at: " + activeWindowStart);
+			printStream.println("Regression Baseline window starts at: " + baselineStart);
+		}
+
+		EventsVolumeResult activeEventVolume = getEventsVolume(apiClient, input, activeWindowStart, DateTime.now());
 
 		if (!validateVolume(apiClient, activeEventVolume, input, printStream)) {
 			return result.build();
@@ -487,20 +533,21 @@ public class RegressionUtil {
 		int pointsWanted = input.baselineTimespan / input.activeTimespan * 2;
 
 		if (pointsWanted > 0) {
-			GraphResult graphResult = getBaselineEventsGraph(apiClient, input, pointsWanted, VolumeType.all, baselineFrom,
-					activeFrom);
+			GraphResult graphResult = getEventGraph(apiClient, input, pointsWanted, VolumeType.all, baselineStart,
+					activeWindowStart, false);
 
 			baselineGraph = validateGraph(apiClient, graphResult, input, printStream);
 		} else {
 			baselineGraph = null;
 		}
 
-		Map<String, RegressionStats> regressionsStats;
 		Map<String, long[]> periodVolumes;
+		Map<String, RegressionStats> regressionsStats;
 
 		if (baselineGraph != null) {
 			regressionsStats = processEventsGraph(baselineGraph);
-			periodVolumes = getPeriodVolumes(fromTime, baselineGraph, input.activeTimespan, input.baselineTimespan);
+			periodVolumes = getPeriodVolumes(activeWindowStart, baselineGraph, input.activeTimespan,
+					input.baselineTimespan);
 		} else {
 			regressionsStats = null;
 			periodVolumes = null;
@@ -509,8 +556,9 @@ public class RegressionUtil {
 		List<EventResult> nonRegressions = new ArrayList<EventResult>();
 
 		for (EventResult activeEvent : activeEventVolume.events) {
-			Regression isNewIssue = processNewsIssue(activeEvent, activeFrom, input.minVolumeThreshold,
-					input.minErrorRateThreshold, input.criticalExceptionTypes, result, printStream, verbose);
+
+			Regression isNewIssue = processNewsIssue(activeEvent, activeWindowStart, input, result, printStream,
+					verbose);
 
 			if (isNewIssue.equals(Regression.YES)) {
 				continue;
@@ -522,10 +570,10 @@ public class RegressionUtil {
 			}
 
 			if (baselineGraph != null) {
-				Regression regResult = processVolumeRegression(activeEvent, input, regressionsStats, periodVolumes,
+				Regression regression = processVolumeRegression(activeEvent, input, regressionsStats, periodVolumes,
 						result, printStream, verbose);
 
-				if (!regResult.equals(Regression.YES)) {
+				if (!regression.equals(Regression.YES)) {
 					nonRegressions.add(activeEvent);
 				}
 			}
