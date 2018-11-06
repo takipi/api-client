@@ -3,9 +3,14 @@ package com.takipi.api.client.util.regression;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.joda.time.DateTime;
+
+import com.takipi.api.client.result.event.EventResult;
+
 public class RegressionInput {
 	public String serviceId;
 	public String viewId;
+	public DateTime activeWindowStart;
 	public int activeTimespan;
 	public int baselineTimespan;
 	public int minVolumeThreshold;
@@ -17,6 +22,7 @@ public class RegressionInput {
 	public Collection<String> applictations;
 	public Collection<String> deployments;
 	public Collection<String> servers;
+	public Collection<EventResult> events;
 
 	private static void appendCollection(StringBuilder builder, String name, Collection<String> value) {
 		builder.append(name);

@@ -4,6 +4,7 @@ import java.io.PrintStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -506,12 +507,16 @@ public class RegressionUtil {
 
 		DateTime activeWindowStart = null;
 
-		if ((input.deployments != null) && (input.deployments.size() > 0)) {
-			activeWindowStart = getDeploymentStartTime(apiClient, input, printStream);
-		}
+		if (input.activeWindowStart != null) {
+			activeWindowStart = input.activeWindowStart;
+		} else {
+			if (!CollectionUtil.safeIsEmpty(input.deployments)) {
+				activeWindowStart = getDeploymentStartTime(apiClient, input, printStream);
+			}
 
-		if (activeWindowStart == null) {
-			activeWindowStart = DateTime.now().minusMinutes(input.activeTimespan);
+			if (activeWindowStart == null) {
+				activeWindowStart = DateTime.now().minusMinutes(input.activeTimespan);
+			}
 		}
 
 		result.setActiveWndowStart(activeWindowStart);
@@ -523,10 +528,18 @@ public class RegressionUtil {
 			printStream.println("Regression Baseline window starts at: " + baselineStart);
 		}
 
-		EventsVolumeResult activeEventVolume = getEventsVolume(apiClient, input, activeWindowStart, DateTime.now());
+		Collection<EventResult> events;
 
-		if (!validateVolume(apiClient, activeEventVolume, input, printStream)) {
-			return result.build();
+		if (input.events != null) {
+			events = input.events;
+		} else {
+			EventsVolumeResult activeEventVolume = getEventsVolume(apiClient, input, activeWindowStart, DateTime.now());
+
+			if (!validateVolume(apiClient, activeEventVolume, input, printStream)) {
+				return result.build();
+			}
+
+			events = activeEventVolume.events;
 		}
 
 		Graph baselineGraph;
@@ -555,7 +568,7 @@ public class RegressionUtil {
 
 		List<EventResult> nonRegressions = new ArrayList<EventResult>();
 
-		for (EventResult activeEvent : activeEventVolume.events) {
+		for (EventResult activeEvent : events) {
 
 			Regression isNewIssue = processNewsIssue(activeEvent, activeWindowStart, input, result, printStream,
 					verbose);
