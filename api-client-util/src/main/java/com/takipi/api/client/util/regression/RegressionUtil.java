@@ -508,12 +508,12 @@ public class RegressionUtil {
 		DateTime activeWindowStart = null;
 
 		if (input.activeWindowStart != null) {
-			activeWindowStart = 	input.activeWindowStart;
+			activeWindowStart = input.activeWindowStart;
 		} else {
-			if ((input.deployments != null) && (input.deployments.size() > 0)) {
+			if (!CollectionUtil.safeIsEmpty(input.deployments)) {
 				activeWindowStart = getDeploymentStartTime(apiClient, input, printStream);
 			}
-	
+
 			if (activeWindowStart == null) {
 				activeWindowStart = DateTime.now().minusMinutes(input.activeTimespan);
 			}
@@ -529,17 +529,16 @@ public class RegressionUtil {
 		}
 
 		Collection<EventResult> events;
-		
+
 		if (input.events != null) {
 			events = input.events;
 		} else {
-		
 			EventsVolumeResult activeEventVolume = getEventsVolume(apiClient, input, activeWindowStart, DateTime.now());
-	
+
 			if (!validateVolume(apiClient, activeEventVolume, input, printStream)) {
 				return result.build();
 			}
-			
+
 			events = activeEventVolume.events;
 		}
 
