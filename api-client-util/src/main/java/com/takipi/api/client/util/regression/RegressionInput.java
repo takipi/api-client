@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import org.joda.time.DateTime;
 
+import com.takipi.api.client.data.metrics.Graph;
 import com.takipi.api.client.result.event.EventResult;
 
 public class RegressionInput {
@@ -23,6 +24,7 @@ public class RegressionInput {
 	public Collection<String> deployments;
 	public Collection<String> servers;
 	public Collection<EventResult> events;
+	public Graph baselineGraph;
 
 	private static void appendCollection(StringBuilder builder, String name, Collection<String> value) {
 		builder.append(name);
