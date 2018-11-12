@@ -20,11 +20,13 @@ import com.takipi.api.client.result.service.ServicesResult;
 import com.takipi.api.core.url.UrlClient.Response;
 
 public class ClientUtil {
+
 	public static List<String> getDeployments(ApiClient apiClient, String serviceId) {
 		return getDeployments(apiClient, serviceId, false);
 	}
 
 	public static List<String> getDeployments(ApiClient apiClient, String serviceId, boolean active) {
+
 		DeploymentsRequest request = DeploymentsRequest.newBuilder().setServiceId(serviceId).setActive(active).build();
 
 		Response<DeploymentsResult> response = apiClient.get(request);

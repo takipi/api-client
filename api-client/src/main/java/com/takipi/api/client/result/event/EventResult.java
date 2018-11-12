@@ -6,7 +6,7 @@ import com.takipi.api.client.data.event.Location;
 import com.takipi.api.client.data.event.Stats;
 import com.takipi.api.core.result.intf.ApiResult;
 
-public class EventResult implements ApiResult {
+public class EventResult implements ApiResult, Cloneable {
 	public String id;
 	public String summary;
 	public String type;
@@ -57,12 +57,33 @@ public class EventResult implements ApiResult {
 		}
 
 		EventResult other = (EventResult) obj;
-		
+
 		return ((this.id != null) && (other.id != null) && (id.equals(other.id)));
 	}
 
 	@Override
 	public int hashCode() {
 		return (id != null ? id.hashCode() : super.hashCode());
+	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		EventResult result = new EventResult();
+
+		result.id = this.id;
+		result.summary = this.summary;
+		result.type = this.type;
+		result.name = this.name;
+		result.message = this.message;
+		result.first_seen = this.first_seen;
+		result.error_location = this.error_location;
+		result.entry_point = this.entry_point;
+		result.error_origin = this.error_origin;
+		result.introduced_by = this.introduced_by;
+		result.labels = this.labels;
+		result.similar_event_ids = this.similar_event_ids;
+		result.stats = this.stats;
+
+		return result;
 	}
 }
