@@ -170,44 +170,28 @@ public class ViewUtil {
 
 	public static Graph getEventsGraph(ApiClient apiClient, String serviceId, String viewId, int pointsCount,
 			VolumeType volumeType, DateTime from, DateTime to) {
-	
+
 		GraphResult graphResult = getEventsGraphResult(apiClient, serviceId, viewId, pointsCount, volumeType, from, to);
-		
+
 		if (CollectionUtil.safeIsEmpty(graphResult.graphs)) {
 			return null;
 		}
-	
+
 		Graph graph = graphResult.graphs.get(0);
-	
+
 		if (!viewId.equals(graph.id)) {
 			return null;
 		}
-	
+
 		if (CollectionUtil.safeIsEmpty(graph.points)) {
 			return null;
 		}
-	
-		
-		if (CollectionUtil.safeIsEmpty(graphResult.graphs)) {
-			return null;
-		}
-	
-	
-		if (!viewId.equals(graph.id)) {
-			return null;
-		}
-	
-		if (CollectionUtil.safeIsEmpty(graph.points)) {
-			return null;
-		}
-		
+
 		return graph;
 	}
 
-	
-	
-	public static GraphResult getEventsGraphResult(ApiClient apiClient, String serviceId, String viewId, int pointsCount,
-			VolumeType volumeType, DateTime from, DateTime to) {
+	public static GraphResult getEventsGraphResult(ApiClient apiClient, String serviceId, String viewId,
+			int pointsCount, VolumeType volumeType, DateTime from, DateTime to) {
 
 		GraphRequest graphRequest = GraphRequest.newBuilder().setServiceId(serviceId).setViewId(viewId)
 				.setGraphType(GraphType.view).setFrom(from.toString(fmt)).setTo(to.toString(fmt))
@@ -224,7 +208,6 @@ public class ViewUtil {
 		if (graphResult == null) {
 			return null;
 		}
-
 
 		return graphResult;
 	}

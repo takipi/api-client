@@ -40,7 +40,7 @@ import com.takipi.common.util.Pair;
 public class RegressionUtil {
 
 	private static final DateTimeFormatter fmt = ISODateTimeFormat.dateTime().withZoneUTC();
-	
+
 	enum Regression {
 		YES, NO, NO_DATA;
 	}
@@ -133,7 +133,7 @@ public class RegressionUtil {
 
 		DateTime baselineStart = startTime.minusMinutes(baselineTimespan);
 		int timeWindows = baselineTimespan / activeTimespan;
-		
+
 		for (GraphPoint graphPoint : baselineGraph.points) {
 			DateTime firstSeen = ISODateTimeFormat.dateTimeParser().parseDateTime(graphPoint.time);
 			Minutes timeDelta = Minutes.minutesBetween(baselineStart, firstSeen);
@@ -149,7 +149,7 @@ public class RegressionUtil {
 					timeWindowVolumes = new long[timeWindows];
 					result.put(gpc.id, timeWindowVolumes);
 				}
-			
+
 				int minutes = timeDelta.getMinutes();
 				int index = Math.min(minutes / activeTimespan, timeWindowVolumes.length - 1);
 
@@ -289,7 +289,7 @@ public class RegressionUtil {
 
 			return Regression.NO_DATA;
 		}
-		
+
 		double normalizedActiveVolume = (double) (activeEvent.stats.hits) / (double) (activeTimespan);
 		double normalizedActiveInv = (double) (activeEvent.stats.invocations) / (double) (activeTimespan);
 
@@ -320,11 +320,9 @@ public class RegressionUtil {
 					+ f(regressionStats.invocations) + " -> " + f(activeEvent.stats.invocations));
 		}
 
-		SeasonlityResult seasonlityResult = null;
-
 		if (input.applySeasonality) {
 
-			seasonlityResult = calculateSeasonality(activeEvent, periodVolumes);
+			SeasonlityResult seasonlityResult = calculateSeasonality(activeEvent, periodVolumes);
 
 			if (seasonlityResult.largerVolumePeriod >= 0) {
 				if (printStream != null) {
@@ -460,9 +458,9 @@ public class RegressionUtil {
 
 		return true;
 	}
-	
-	private static DateTime getDeploymentStartTime(ApiClient apiClient, String serviceId, 
-		String viewId, DateTime from, DateTime to, int pointsCount, Collection<String> deployments) {
+
+	private static DateTime getDeploymentStartTime(ApiClient apiClient, String serviceId, String viewId, DateTime from,
+			DateTime to, int pointsCount, Collection<String> deployments) {
 
 		GraphRequest.Builder builder = GraphRequest.newBuilder().setServiceId(serviceId).setViewId(viewId)
 				.setGraphType(GraphType.view).setFrom(from.toString(fmt)).setTo(to.toString(fmt))
@@ -471,7 +469,7 @@ public class RegressionUtil {
 		for (String dep : deployments) {
 			builder.addDeployment(dep);
 		}
-		
+
 		Response<GraphResult> graphResponse = apiClient.get(builder.build());
 
 		if (graphResponse.isBadResponse()) {
@@ -483,17 +481,17 @@ public class RegressionUtil {
 		if (graphResult == null) {
 			return null;
 		}
-		
+
 		if (CollectionUtil.safeIsEmpty(graphResult.graphs)) {
 			return null;
 		}
-	
+
 		Graph graph = graphResult.graphs.get(0);
-		
+
 		if (CollectionUtil.safeIsEmpty(graph.points)) {
 			return null;
 		}
-	
+
 		for (GraphPoint gp : graph.points) {
 			if ((gp.stats.hits != 0) || (gp.stats.invocations != 0)) {
 				return ISODateTimeFormat.dateTime().withZoneUTC().parseDateTime(gp.time);
@@ -502,7 +500,7 @@ public class RegressionUtil {
 
 		return null;
 	}
-	
+
 	public static Pair<DateTime, Integer> getActiveWindow(ApiClient apiClient, RegressionInput input,
 			PrintStream printStream) {
 
@@ -520,9 +518,9 @@ public class RegressionUtil {
 
 				DateTime from = now.minusMinutes(input.baselineTimespan + input.activeTimespan);
 				int pointsWanted = Days.daysBetween(from, now).getDays() * 4;
-				
-				activeWindowStart = getDeploymentStartTime(apiClient, input.serviceId, input.viewId,
-						from, now, pointsWanted, input.deployments);
+
+				activeWindowStart = getDeploymentStartTime(apiClient, input.serviceId, input.viewId, from, now,
+						pointsWanted, input.deployments);
 
 				if ((activeWindowStart == null) && (printStream != null)) {
 					printStream.println("Could not acquire start time for deployment "

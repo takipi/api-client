@@ -18,7 +18,6 @@ public class RegressionStringUtil {
 	private static final String TIME_WINDOW_FORMAT = "last %s against a baseline of %s";
 	private static final String NOW_WINDOW_FORMAT = " time range vs. baseline of %s";
 
-
 	public static final String NEW_ISSUE = "New";
 	public static final String SEVERE_NEW = "Severe New";
 	public static final String REGRESSION = "Regression";
@@ -129,7 +128,7 @@ public class RegressionStringUtil {
 		String baselineDuration = prettyTime.formatDuration(new Date(baselineWindow.getMillis()));
 
 		String result;
-		
+
 		if (input.activeTimespan > 0) {
 			result = String.format(TIME_WINDOW_FORMAT, activeWindowDuration, baselineDuration);
 		} else {
@@ -162,7 +161,8 @@ public class RegressionStringUtil {
 
 	private static String getRegressionDeploymentName(ApiClient apiClient, RegressionInput regressionInput) {
 
-		Pair<DateTime, Integer> activeWindowStart = RegressionUtil.getActiveWindow(apiClient, regressionInput, System.out);
+		Pair<DateTime, Integer> activeWindowStart = RegressionUtil.getActiveWindow(apiClient, regressionInput,
+				System.out);
 		return getRegressionDeploymentName(regressionInput, activeWindowStart.getFirst());
 	}
 }

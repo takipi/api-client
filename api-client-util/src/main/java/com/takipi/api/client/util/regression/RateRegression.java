@@ -1,6 +1,5 @@
 package com.takipi.api.client.util.regression;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -9,6 +8,7 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.takipi.api.client.result.event.EventResult;
 
@@ -40,7 +40,7 @@ public class RateRegression {
 
 	private static List<RegressionResult> getSortedRegressions(Collection<RegressionResult> regressions) {
 
-		List<RegressionResult> result = new ArrayList<RegressionResult>(regressions);
+		List<RegressionResult> result = Lists.newArrayList(regressions);
 
 		result.sort(new Comparator<RegressionResult>() {
 
@@ -53,10 +53,10 @@ public class RateRegression {
 		return result;
 
 	}
-	
+
 	private static List<EventResult> getSortedNewEvents(Collection<EventResult> events) {
 
-		List<EventResult> result = new ArrayList<EventResult>(events);
+		List<EventResult> result = Lists.newArrayList(events);
 
 		result.sort(new Comparator<EventResult>() {
 
@@ -89,15 +89,15 @@ public class RateRegression {
 	public Collection<RegressionResult> getSortedCriticalRegressions() {
 		return getSortedRegressions(criticalRegressions.values());
 	}
-	
+
 	public Collection<EventResult> getSortedExceededNewEvents() {
 		return getSortedNewEvents(exceededNewEvents.values());
 	}
-	
+
 	public Collection<EventResult> getSortedCriticalNewEvents() {
 		return getSortedNewEvents(criticalNewEvents.values());
 	}
-		
+
 	public Collection<EventResult> getNonRegressions() {
 		return nonRegressions;
 	}
@@ -141,7 +141,7 @@ public class RateRegression {
 			exceededNewEvents = Maps.newHashMap();
 			allNewEvents = Maps.newHashMap();
 			criticalRegressions = Maps.newHashMap();
-			nonRegressions = new ArrayList<EventResult>();
+			nonRegressions = Lists.newArrayList();
 		}
 
 		public void setActiveWndowStart(DateTime activeWndowStart) {

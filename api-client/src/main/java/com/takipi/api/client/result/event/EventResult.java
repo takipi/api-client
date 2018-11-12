@@ -57,7 +57,7 @@ public class EventResult implements ApiResult, Cloneable {
 		}
 
 		EventResult other = (EventResult) obj;
-		
+
 		return ((this.id != null) && (other.id != null) && (id.equals(other.id)));
 	}
 
@@ -65,12 +65,11 @@ public class EventResult implements ApiResult, Cloneable {
 	public int hashCode() {
 		return (id != null ? id.hashCode() : super.hashCode());
 	}
-	
+
 	@Override
 	public Object clone() throws CloneNotSupportedException {
-		
 		EventResult result = new EventResult();
-		
+
 		result.id = this.id;
 		result.summary = this.summary;
 		result.type = this.type;
@@ -84,8 +83,7 @@ public class EventResult implements ApiResult, Cloneable {
 		result.labels = this.labels;
 		result.similar_event_ids = this.similar_event_ids;
 		result.stats = this.stats;
-		
+
 		return result;
-		
 	}
 }
