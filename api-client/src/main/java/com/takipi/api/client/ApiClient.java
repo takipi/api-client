@@ -4,6 +4,7 @@ import java.net.HttpURLConnection;
 
 import org.apache.commons.codec.binary.Base64;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -32,6 +33,35 @@ public class ApiClient extends UrlClient {
 		this.apiVersion = apiVersion;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		
+		if (!(obj instanceof ApiClient)) {
+			return false;
+		}
+		
+		ApiClient other = (ApiClient)obj;
+		
+		if (apiVersion != other.apiVersion) {
+			return false;
+		}
+		
+		if (!Objects.equal(getHostname(), other.getHostname())) {
+			return false;
+		}
+		
+		if (!Objects.equal(auth, other.auth)) {
+			return false;
+		}
+		
+		return true;
+	}
+	
+	@Override
+	public int hashCode() {
+		return getHostname().hashCode() ^ auth.hashCode();
+	}
+	
 	public Response<String> testConnection() {
 		return get(baseApiPath() + "/test", null, ApiConstants.CONTENT_TYPE_JSON);
 	}

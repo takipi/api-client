@@ -20,13 +20,13 @@ import com.takipi.api.client.result.service.ServicesResult;
 import com.takipi.api.core.url.UrlClient.Response;
 
 public class ClientUtil {
-
+	
 	public static List<String> getDeployments(ApiClient apiClient, String serviceId) {
 		return getDeployments(apiClient, serviceId, false);
 	}
-
+	
 	public static List<String> getDeployments(ApiClient apiClient, String serviceId, boolean active) {
-
+		
 		DeploymentsRequest request = DeploymentsRequest.newBuilder().setServiceId(serviceId).setActive(active).build();
 
 		Response<DeploymentsResult> response = apiClient.get(request);
@@ -50,8 +50,12 @@ public class ClientUtil {
 	}
 
 	public static List<String> getApplications(ApiClient apiClient, String serviceId) {
+		return getApplications(apiClient, serviceId, false);
+	}
+	
+	public static List<String> getApplications(ApiClient apiClient, String serviceId, boolean active) {
 
-		ApplicationsRequest request = ApplicationsRequest.newBuilder().setServiceId(serviceId).build();
+		ApplicationsRequest request = ApplicationsRequest.newBuilder().setServiceId(serviceId).setActive(active).build();
 
 		Response<ApplicationsResult> response = apiClient.get(request);
 

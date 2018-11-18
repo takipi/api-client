@@ -39,6 +39,12 @@ import com.takipi.common.util.Pair;
 
 public class RegressionUtil {
 
+	public static class RegressionWindow {
+		public DateTime activeWindowStart;
+		public int activeTimespan;
+		public boolean deploymentFound;
+	}
+
 	private static final DateTimeFormatter fmt = ISODateTimeFormat.dateTime().withZoneUTC();
 
 	enum Regression {
@@ -320,9 +326,11 @@ public class RegressionUtil {
 					+ f(regressionStats.invocations) + " -> " + f(activeEvent.stats.invocations));
 		}
 
+		SeasonlityResult seasonlityResult = null;
+
 		if (input.applySeasonality) {
 
-			SeasonlityResult seasonlityResult = calculateSeasonality(activeEvent, periodVolumes);
+			seasonlityResult = calculateSeasonality(activeEvent, periodVolumes);
 
 			if (seasonlityResult.largerVolumePeriod >= 0) {
 				if (printStream != null) {
@@ -501,15 +509,14 @@ public class RegressionUtil {
 		return null;
 	}
 
-	public static Pair<DateTime, Integer> getActiveWindow(ApiClient apiClient, RegressionInput input,
+	public static RegressionWindow getActiveWindow(ApiClient apiClient, RegressionInput input,
 			PrintStream printStream) {
 
-		int activeTimespan;
-		DateTime activeWindowStart = null;
+		RegressionWindow result = new RegressionWindow();
 
 		if (input.activeWindowStart != null) {
-			activeWindowStart = input.activeWindowStart;
-			activeTimespan = input.activeTimespan;
+			result.activeWindowStart = input.activeWindowStart;
+			result.activeTimespan = input.activeTimespan;
 		} else {
 
 			DateTime now = DateTime.now();
@@ -517,27 +524,41 @@ public class RegressionUtil {
 			if (!CollectionUtil.safeIsEmpty(input.deployments)) {
 
 				DateTime from = now.minusMinutes(input.baselineTimespan + input.activeTimespan);
-				int pointsWanted = Days.daysBetween(from, now).getDays() * 4;
+				int pointsWanted = Days.daysBetween(from, now).getDays() * 3;
 
-				activeWindowStart = getDeploymentStartTime(apiClient, input.serviceId, input.viewId, from, now,
+				result.activeWindowStart = getDeploymentStartTime(apiClient, input.serviceId, input.viewId, from, now,
 						pointsWanted, input.deployments);
 
-				if ((activeWindowStart == null) && (printStream != null)) {
-					printStream.println("Could not acquire start time for deployment "
-							+ Arrays.toString(input.deployments.toArray()));
+				if (result.activeWindowStart != null) {
+					result.deploymentFound = true;
+				} else {
+					if (printStream != null) {
+						printStream.println("Could not acquire start time for deployment "
+								+ Arrays.toString(input.deployments.toArray()));
+					}
 				}
 			}
+			
+			if (result.activeWindowStart != null) {
+				
+				result.activeTimespan = (int) TimeUnit.MILLISECONDS
+						.toMinutes(now.minus(result.activeWindowStart.getMillis()).getMillis());
 
-			if (activeWindowStart != null) {
-				activeTimespan = (int) TimeUnit.MILLISECONDS
-						.toMinutes(now.minus(activeWindowStart.getMillis()).getMillis());
+				if (result.activeTimespan <= 0) {
+					result.activeTimespan = (int) (TimeUnit.DAYS.toMinutes(1));
+					result.activeWindowStart = DateTime.now().minusDays(1);
+				}
 			} else {
-				activeWindowStart = now.minusMinutes(input.activeTimespan);
-				activeTimespan = input.activeTimespan;
+				result.activeWindowStart = now.minusMinutes(input.activeTimespan);
+				result.activeTimespan = input.activeTimespan;
 			}
 		}
+		
+		if (result.activeTimespan == 0) {
+			System.out.println();
+		}
 
-		return Pair.of(activeWindowStart, Integer.valueOf(activeTimespan));
+		return result;
 	}
 
 	private static Graph getBaselineGraph(ApiClient apiClient, RegressionInput input, DateTime baselineStart,
@@ -594,34 +615,33 @@ public class RegressionUtil {
 
 		RateRegression.Builder builder = new RateRegression.Builder();
 
-		Pair<DateTime, Integer> activeWindow = getActiveWindow(apiClient, input, printStream);
+		RegressionWindow regressionWindow = getActiveWindow(apiClient, input, printStream);
 
-		int activeTimespan = activeWindow.getSecond().intValue();
-		DateTime activeWindowStart = activeWindow.getFirst();
-
-		builder.setActiveWndowStart(activeWindowStart);
-		DateTime baselineStart = activeWindowStart.minusMinutes(input.baselineTimespan);
+		builder.setActiveWndowStart(regressionWindow.activeWindowStart);
+		DateTime baselineStart = regressionWindow.activeWindowStart.minusMinutes(input.baselineTimespan);
 
 		if (printStream != null) {
-			printStream.println("Regression Active window starts at: " + activeWindowStart);
+			printStream.println("Regression Active window starts at: " + regressionWindow.activeWindowStart);
 			printStream.println("Regression Baseline window starts at: " + baselineStart);
 		}
 
-		Collection<EventResult> events = getActiveEventVolume(apiClient, input, activeWindowStart, printStream);
+		Collection<EventResult> events = getActiveEventVolume(apiClient, input, regressionWindow.activeWindowStart,
+				printStream);
 
 		if (events == null) {
 			return builder.build();
 		}
 
-		Graph baselineGraph = getBaselineGraph(apiClient, input, baselineStart, activeWindowStart, activeTimespan,
-				printStream);
+		Graph baselineGraph = getBaselineGraph(apiClient, input, baselineStart, regressionWindow.activeWindowStart,
+				regressionWindow.activeTimespan, printStream);
 
 		Map<String, long[]> periodVolumes;
 		Map<String, RegressionStats> regressionsStats;
 
 		if (baselineGraph != null) {
 			regressionsStats = processEventsGraph(baselineGraph);
-			periodVolumes = getPeriodVolumes(activeWindowStart, baselineGraph, activeTimespan, input.baselineTimespan);
+			periodVolumes = getPeriodVolumes(regressionWindow.activeWindowStart, baselineGraph,
+					regressionWindow.activeTimespan, input.baselineTimespan);
 		} else {
 			regressionsStats = null;
 			periodVolumes = null;
@@ -629,16 +649,23 @@ public class RegressionUtil {
 
 		for (EventResult activeEvent : events) {
 
-			Regression isNewIssue = processNewsIssueRegression(activeEvent, activeWindowStart, input, builder,
-					printStream, verbose);
+			if (activeEvent.error_location == null) {
+				if (printStream != null) {
+					printStream.println("vent has no location: " + activeEvent.summary);
+				}
+				continue;
+			}
+
+			Regression isNewIssue = processNewsIssueRegression(activeEvent, regressionWindow.activeWindowStart, input,
+					builder, printStream, verbose);
 
 			if ((isNewIssue.equals(Regression.YES)) || (isNewIssue.equals(Regression.NO_DATA))) {
 				continue;
 			}
 
 			if (baselineGraph != null) {
-				processVolumeRegression(activeEvent, input, regressionsStats, periodVolumes, activeTimespan, builder,
-						printStream, verbose);
+				processVolumeRegression(activeEvent, input, regressionsStats, periodVolumes,
+						regressionWindow.activeTimespan, builder, printStream, verbose);
 			}
 		}
 

@@ -10,13 +10,14 @@ import org.ocpsoft.prettytime.PrettyTime;
 
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.result.event.EventResult;
-import com.takipi.common.util.Pair;
+import com.takipi.api.client.util.regression.RegressionUtil.RegressionWindow;
 
 public class RegressionStringUtil {
 
 	private static final String DEPLOYMENT_FORMAT = "%s first seen %s against a baseline of %s";
 	private static final String TIME_WINDOW_FORMAT = "last %s against a baseline of %s";
 	private static final String NOW_WINDOW_FORMAT = " time range vs. baseline of %s";
+
 
 	public static final String NEW_ISSUE = "New";
 	public static final String SEVERE_NEW = "Severe New";
@@ -128,7 +129,7 @@ public class RegressionStringUtil {
 		String baselineDuration = prettyTime.formatDuration(new Date(baselineWindow.getMillis()));
 
 		String result;
-
+		
 		if (input.activeTimespan > 0) {
 			result = String.format(TIME_WINDOW_FORMAT, activeWindowDuration, baselineDuration);
 		} else {
@@ -161,8 +162,7 @@ public class RegressionStringUtil {
 
 	private static String getRegressionDeploymentName(ApiClient apiClient, RegressionInput regressionInput) {
 
-		Pair<DateTime, Integer> activeWindowStart = RegressionUtil.getActiveWindow(apiClient, regressionInput,
-				System.out);
-		return getRegressionDeploymentName(regressionInput, activeWindowStart.getFirst());
+		RegressionWindow regressionWindow = RegressionUtil.getActiveWindow(apiClient, regressionInput, System.out);
+		return getRegressionDeploymentName(regressionInput, regressionWindow.activeWindowStart);
 	}
 }

@@ -1,4 +1,4 @@
-package com.takipi.api.client.util.infra;
+package com.takipi.api.client.util.categories;
 
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -15,7 +15,7 @@ import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.Pair;
 
 public class Categories {
-	private static final String DEFAULT_CATEGORIES = "infra/categories.json";
+	private static final String DEFAULT_CATEGORIES = "categories/categories.json";
 	private static final Categories EMPTY_CATEGORIES = new Categories();
 
 	private static boolean initialized;
