@@ -10,7 +10,7 @@ import org.ocpsoft.prettytime.PrettyTime;
 
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.result.event.EventResult;
-import com.takipi.common.util.Pair;
+import com.takipi.api.client.util.regression.RegressionUtil.RegressionWindow;
 
 public class RegressionStringUtil {
 
@@ -161,8 +161,7 @@ public class RegressionStringUtil {
 
 	private static String getRegressionDeploymentName(ApiClient apiClient, RegressionInput regressionInput) {
 
-		Pair<DateTime, Integer> activeWindowStart = RegressionUtil.getActiveWindow(apiClient, regressionInput,
-				System.out);
-		return getRegressionDeploymentName(regressionInput, activeWindowStart.getFirst());
+		RegressionWindow regressionWindow = RegressionUtil.getActiveWindow(apiClient, regressionInput, System.out);
+		return getRegressionDeploymentName(regressionInput, regressionWindow.activeWindowStart);
 	}
 }
