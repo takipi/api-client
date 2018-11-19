@@ -50,8 +50,13 @@ public class ClientUtil {
 	}
 
 	public static List<String> getApplications(ApiClient apiClient, String serviceId) {
+		return getApplications(apiClient, serviceId, false);
+	}
 
-		ApplicationsRequest request = ApplicationsRequest.newBuilder().setServiceId(serviceId).build();
+	public static List<String> getApplications(ApiClient apiClient, String serviceId, boolean active) {
+
+		ApplicationsRequest request = ApplicationsRequest.newBuilder().setServiceId(serviceId).setActive(active)
+				.build();
 
 		Response<ApplicationsResult> response = apiClient.get(request);
 
