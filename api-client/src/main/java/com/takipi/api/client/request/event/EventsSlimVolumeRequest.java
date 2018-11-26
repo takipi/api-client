@@ -11,9 +11,9 @@ import com.takipi.api.core.request.intf.ApiGetRequest;
 public class EventsSlimVolumeRequest extends ViewTimeframeRequest implements ApiGetRequest<EventsSlimVolumeResult> {
 	public final VolumeType volumeType;
 
-	EventsSlimVolumeRequest(String serviceId, String viewId, VolumeType volumeType, String from, String to,
+	EventsSlimVolumeRequest(String serviceId, String viewId, VolumeType volumeType, String from, String to, boolean raw,
 			Collection<String> servers, Collection<String> apps, Collection<String> deployments) {
-		super(serviceId, viewId, from, to, servers, apps, deployments);
+		super(serviceId, viewId, from, to, raw, servers, apps, deployments);
 
 		this.volumeType = volumeType;
 	}
@@ -66,6 +66,13 @@ public class EventsSlimVolumeRequest extends ViewTimeframeRequest implements Api
 		@Override
 		public Builder setViewId(String viewId) {
 			super.setViewId(viewId);
+
+			return this;
+		}
+
+		@Override
+		public Builder setRaw(boolean raw) {
+			super.setRaw(raw);
 
 			return this;
 		}
@@ -123,7 +130,8 @@ public class EventsSlimVolumeRequest extends ViewTimeframeRequest implements Api
 		public EventsSlimVolumeRequest build() {
 			validate();
 
-			return new EventsSlimVolumeRequest(serviceId, viewId, volumeType, from, to, servers, apps, deployments);
+			return new EventsSlimVolumeRequest(serviceId, viewId, volumeType, from, to, raw, servers, apps,
+					deployments);
 		}
 	}
 }

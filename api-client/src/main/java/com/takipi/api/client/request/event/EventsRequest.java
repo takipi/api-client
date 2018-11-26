@@ -8,9 +8,9 @@ import com.takipi.api.client.result.event.EventsResult;
 import com.takipi.api.core.request.intf.ApiGetRequest;
 
 public class EventsRequest extends ViewTimeframeRequest implements ApiGetRequest<EventsResult> {
-	EventsRequest(String serviceId, String viewId, String from, String to, Collection<String> servers,
+	EventsRequest(String serviceId, String viewId, String from, String to, boolean raw, Collection<String> servers,
 			Collection<String> apps, Collection<String> deployments) {
-		super(serviceId, viewId, from, to, servers, apps, deployments);
+		super(serviceId, viewId, from, to, raw, servers, apps, deployments);
 	}
 
 	@Override
@@ -43,6 +43,13 @@ public class EventsRequest extends ViewTimeframeRequest implements ApiGetRequest
 		@Override
 		public Builder setViewId(String viewId) {
 			super.setViewId(viewId);
+
+			return this;
+		}
+
+		@Override
+		public Builder setRaw(boolean raw) {
+			super.setRaw(raw);
 
 			return this;
 		}
@@ -85,7 +92,7 @@ public class EventsRequest extends ViewTimeframeRequest implements ApiGetRequest
 		public EventsRequest build() {
 			validate();
 
-			return new EventsRequest(serviceId, viewId, from, to, servers, apps, deployments);
+			return new EventsRequest(serviceId, viewId, from, to, raw, servers, apps, deployments);
 		}
 	}
 }

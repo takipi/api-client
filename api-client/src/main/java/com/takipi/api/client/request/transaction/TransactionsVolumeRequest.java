@@ -8,9 +8,9 @@ import com.takipi.api.client.result.transaction.TransactionsVolumeResult;
 import com.takipi.api.core.request.intf.ApiGetRequest;
 
 public class TransactionsVolumeRequest extends ViewTimeframeRequest implements ApiGetRequest<TransactionsVolumeResult> {
-	TransactionsVolumeRequest(String serviceId, String viewId, String from, String to, Collection<String> servers,
-			Collection<String> apps, Collection<String> deployments) {
-		super(serviceId, viewId, from, to, servers, apps, deployments);
+	TransactionsVolumeRequest(String serviceId, String viewId, String from, String to, boolean raw,
+			Collection<String> servers, Collection<String> apps, Collection<String> deployments) {
+		super(serviceId, viewId, from, to, raw, servers, apps, deployments);
 	}
 
 	@Override
@@ -43,6 +43,13 @@ public class TransactionsVolumeRequest extends ViewTimeframeRequest implements A
 		@Override
 		public Builder setViewId(String viewId) {
 			super.setViewId(viewId);
+
+			return this;
+		}
+
+		@Override
+		public Builder setRaw(boolean raw) {
+			super.setRaw(raw);
 
 			return this;
 		}
@@ -85,7 +92,7 @@ public class TransactionsVolumeRequest extends ViewTimeframeRequest implements A
 		public TransactionsVolumeRequest build() {
 			validate();
 
-			return new TransactionsVolumeRequest(serviceId, viewId, from, to, servers, apps, deployments);
+			return new TransactionsVolumeRequest(serviceId, viewId, from, to, raw, servers, apps, deployments);
 		}
 	}
 }
