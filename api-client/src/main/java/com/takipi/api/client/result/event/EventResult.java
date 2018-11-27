@@ -22,6 +22,7 @@ public class EventResult implements ApiResult, Cloneable {
 	public List<String> labels;
 
 	public List<String> similar_event_ids;
+	public boolean is_rethrow;
 
 	public Stats stats;
 
