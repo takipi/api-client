@@ -1,26 +1,47 @@
-package com.takipi.api.client.request.transaction;
+package com.takipi.api.client.request.event;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 
 import com.takipi.api.client.request.ViewTimeframeRequest;
-import com.takipi.api.client.result.transaction.TransactionsVolumeResult;
+import com.takipi.api.client.result.event.EventsSlimVolumeResult;
+import com.takipi.api.client.util.validation.ValidationUtil.VolumeType;
 import com.takipi.api.core.request.intf.ApiGetRequest;
 
-public class TransactionsVolumeRequest extends ViewTimeframeRequest implements ApiGetRequest<TransactionsVolumeResult> {
-	TransactionsVolumeRequest(String serviceId, String viewId, String from, String to, boolean raw,
+public class EventsSlimVolumeRequest extends ViewTimeframeRequest implements ApiGetRequest<EventsSlimVolumeResult> {
+	public final VolumeType volumeType;
+
+	EventsSlimVolumeRequest(String serviceId, String viewId, VolumeType volumeType, String from, String to, boolean raw,
 			Collection<String> servers, Collection<String> apps, Collection<String> deployments) {
 		super(serviceId, viewId, from, to, raw, servers, apps, deployments);
+
+		this.volumeType = volumeType;
 	}
 
 	@Override
-	public Class<TransactionsVolumeResult> resultClass() {
-		return TransactionsVolumeResult.class;
+	public Class<EventsSlimVolumeResult> resultClass() {
+		return EventsSlimVolumeResult.class;
 	}
 
 	@Override
 	public String urlPath() {
-		return baseUrlPath() + "/views/" + viewId + "/entrypoints/";
+		return baseUrlPath() + "/views/" + viewId + "/events/stats/";
+	}
+
+	@Override
+	protected int paramsCount() {
+		// One slot for the volume type.
+		//
+		return super.paramsCount() + 1;
+	}
+
+	@Override
+	protected int fillParams(String[] params, int startIndex) throws UnsupportedEncodingException {
+		int index = super.fillParams(params, startIndex);
+
+		params[index++] = "stats=" + volumeType.toString();
+
+		return index;
 	}
 
 	@Override
@@ -33,6 +54,8 @@ public class TransactionsVolumeRequest extends ViewTimeframeRequest implements A
 	}
 
 	public static class Builder extends ViewTimeframeRequest.Builder {
+		private VolumeType volumeType;
+
 		@Override
 		public Builder setServiceId(String serviceId) {
 			super.setServiceId(serviceId);
@@ -50,6 +73,12 @@ public class TransactionsVolumeRequest extends ViewTimeframeRequest implements A
 		@Override
 		public Builder setRaw(boolean raw) {
 			super.setRaw(raw);
+
+			return this;
+		}
+
+		public Builder setVolumeType(VolumeType volumeType) {
+			this.volumeType = volumeType;
 
 			return this;
 		}
@@ -89,10 +118,20 @@ public class TransactionsVolumeRequest extends ViewTimeframeRequest implements A
 			return this;
 		}
 
-		public TransactionsVolumeRequest build() {
+		@Override
+		protected void validate() {
+			super.validate();
+
+			if (volumeType == null) {
+				throw new IllegalArgumentException("Missing volume type");
+			}
+		}
+
+		public EventsSlimVolumeRequest build() {
 			validate();
 
-			return new TransactionsVolumeRequest(serviceId, viewId, from, to, raw, servers, apps, deployments);
+			return new EventsSlimVolumeRequest(serviceId, viewId, volumeType, from, to, raw, servers, apps,
+					deployments);
 		}
 	}
 }

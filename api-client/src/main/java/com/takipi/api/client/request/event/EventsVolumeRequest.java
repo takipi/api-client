@@ -11,9 +11,9 @@ import com.takipi.api.core.request.intf.ApiGetRequest;
 public class EventsVolumeRequest extends ViewTimeframeRequest implements ApiGetRequest<EventsVolumeResult> {
 	public final VolumeType volumeType;
 
-	EventsVolumeRequest(String serviceId, String viewId, VolumeType volumeType, String from, String to,
+	EventsVolumeRequest(String serviceId, String viewId, VolumeType volumeType, String from, String to, boolean raw,
 			Collection<String> servers, Collection<String> apps, Collection<String> deployments) {
-		super(serviceId, viewId, from, to, servers, apps, deployments);
+		super(serviceId, viewId, from, to, raw, servers, apps, deployments);
 
 		this.volumeType = volumeType;
 	}
@@ -66,6 +66,13 @@ public class EventsVolumeRequest extends ViewTimeframeRequest implements ApiGetR
 		@Override
 		public Builder setViewId(String viewId) {
 			super.setViewId(viewId);
+
+			return this;
+		}
+
+		@Override
+		public Builder setRaw(boolean raw) {
+			super.setRaw(raw);
 
 			return this;
 		}
@@ -123,7 +130,7 @@ public class EventsVolumeRequest extends ViewTimeframeRequest implements ApiGetR
 		public EventsVolumeRequest build() {
 			validate();
 
-			return new EventsVolumeRequest(serviceId, viewId, volumeType, from, to, servers, apps, deployments);
+			return new EventsVolumeRequest(serviceId, viewId, volumeType, from, to, raw, servers, apps, deployments);
 		}
 	}
 }

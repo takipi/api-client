@@ -10,9 +10,9 @@ import com.takipi.api.core.request.intf.ApiGetRequest;
 public class TransactionsGraphRequest extends ViewTimeframeRequest implements ApiGetRequest<TransactionsGraphResult> {
 	public final int wantedPointCount;
 
-	TransactionsGraphRequest(String serviceId, String viewId, String from, String to, int wantedPointCount,
+	TransactionsGraphRequest(String serviceId, String viewId, String from, String to, boolean raw, int wantedPointCount,
 			Collection<String> servers, Collection<String> apps, Collection<String> deployments) {
-		super(serviceId, viewId, from, to, servers, apps, deployments);
+		super(serviceId, viewId, from, to, raw, servers, apps, deployments);
 
 		this.wantedPointCount = wantedPointCount;
 	}
@@ -70,6 +70,13 @@ public class TransactionsGraphRequest extends ViewTimeframeRequest implements Ap
 		}
 
 		@Override
+		public Builder setRaw(boolean raw) {
+			super.setRaw(raw);
+
+			return this;
+		}
+
+		@Override
 		public Builder setFrom(String from) {
 			super.setFrom(from);
 
@@ -122,7 +129,7 @@ public class TransactionsGraphRequest extends ViewTimeframeRequest implements Ap
 		public TransactionsGraphRequest build() {
 			validate();
 
-			return new TransactionsGraphRequest(serviceId, viewId, from, to, wantedPointCount, servers, apps,
+			return new TransactionsGraphRequest(serviceId, viewId, from, to, raw, wantedPointCount, servers, apps,
 					deployments);
 		}
 	}

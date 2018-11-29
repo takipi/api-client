@@ -15,8 +15,9 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 	public final int wantedPointCount;
 
 	GraphRequest(String serviceId, String viewId, GraphType graphType, VolumeType volumeType, String from, String to,
-			int wantedPointCount, Collection<String> servers, Collection<String> apps, Collection<String> deployments) {
-		super(serviceId, viewId, from, to, servers, apps, deployments);
+			boolean raw, int wantedPointCount, Collection<String> servers, Collection<String> apps,
+			Collection<String> deployments) {
+		super(serviceId, viewId, from, to, raw, servers, apps, deployments);
 
 		this.graphType = graphType;
 		this.volumeType = volumeType;
@@ -77,6 +78,13 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 		@Override
 		public Builder setViewId(String viewId) {
 			super.setViewId(viewId);
+
+			return this;
+		}
+
+		@Override
+		public Builder setRaw(boolean raw) {
+			super.setRaw(raw);
 
 			return this;
 		}
@@ -150,8 +158,8 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 		public GraphRequest build() {
 			validate();
 
-			return new GraphRequest(serviceId, viewId, graphType, volumeType, from, to, wantedPointCount, servers, apps,
-					deployments);
+			return new GraphRequest(serviceId, viewId, graphType, volumeType, from, to, raw, wantedPointCount, servers,
+					apps, deployments);
 		}
 	}
 }
