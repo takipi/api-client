@@ -7,6 +7,7 @@ import org.joda.time.DateTime;
 
 import com.takipi.api.client.data.metrics.Graph;
 import com.takipi.api.client.result.event.EventResult;
+import com.takipi.common.util.CollectionUtil;
 
 public class RegressionInput {
 	public String serviceId;
@@ -68,6 +69,7 @@ public class RegressionInput {
 	}
 
 	public void validate() {
+		
 		if ((serviceId == null) || (serviceId.isEmpty())) {
 			throw new IllegalStateException("Missing Environment Id");
 		}
@@ -76,20 +78,24 @@ public class RegressionInput {
 			throw new IllegalStateException("Missing View Id");
 		}
 
-		if (activeTimespan <= 0) {
-			throw new IllegalStateException("Missing Active timespan");
+		if (activeTimespan < 0) {
+			throw new IllegalStateException("Negative Active timespan");
+		}
+		
+		if ((CollectionUtil.safeIsEmpty(deployments)) && (activeTimespan == 0)) {
+			throw new IllegalStateException("Either active timespan or deployment name must be provided");
 		}
 
 		if (baselineTimespan <= 0) {
-			throw new IllegalStateException("Missing Active timespan");
+			throw new IllegalStateException("Missing Baseline timespan");
 		}
 
-		if (regressionDelta <= 0) {
-			throw new IllegalStateException("Missing Regression Delta");
+		if (regressionDelta < 0) {
+			throw new IllegalStateException("Negative Regression Delta");
 		}
 
-		if (criticalRegressionDelta <= 0) {
-			throw new IllegalStateException("Missing Critical Regression Delta");
+		if (criticalRegressionDelta < 0) {
+			throw new IllegalStateException("Negative Critical Regression Delta");
 		}
 	}
 }

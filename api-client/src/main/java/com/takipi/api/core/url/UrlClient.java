@@ -6,16 +6,25 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.takipi.api.core.consts.ApiConstants;
 import com.takipi.common.util.Pair;
 
 public abstract class UrlClient {
+	
+	public enum Operation {GET, DELETE, POST, PUT } 
+	
+	public interface UrlClientObserver {
+		public void observe(Operation operation, String url, String response, long time);
+	}
+	
 	protected static final Logger logger = LoggerFactory.getLogger(UrlClient.class);
 
 	static final Response<String> BAD_RESPONSE = Response.of(HttpURLConnection.HTTP_INTERNAL_ERROR, null);
@@ -23,17 +32,66 @@ public abstract class UrlClient {
 	private final String hostname;
 	private final int connectTimeout;
 	private final int readTimeout;
-
+	private final Object observerLock;
+	private volatile List<UrlClientObserver> observers;
+	
 	protected UrlClient(String hostname, int connectTimeout, int readTimeout) {
 		this.hostname = hostname;
 		this.connectTimeout = connectTimeout;
 		this.readTimeout = readTimeout;
+		this.observerLock = new Object();
+	}
+	
+	private void iterateObservers(Operation operation, String url, String response, long time) {
+		
+		List<UrlClientObserver> observers = this.observers;
+		
+		if (observers == null) {
+			return;
+		}
+		
+		for (UrlClientObserver observer : observers) {
+			observer.observe(operation, url, response, time);
+		}
+	}
+
+	public void addObserver(UrlClientObserver observer) {
+		
+		if (observer == null) {
+			throw new IllegalArgumentException("observer");
+		}
+		
+		synchronized (observerLock)
+		{
+			if (observers != null) {
+				observers = Lists.newArrayList(observers);
+			} else {
+				observers = Lists.newArrayList();
+			}
+			
+			observers.add(observer);
+		}
+	}
+	
+	public void removeObserver(UrlClientObserver observer) {
+		
+		if (observer == null) {
+			throw new IllegalArgumentException("observer");
+		}
+		
+		synchronized (observerLock)
+		{
+			if ((observers != null) && (observers.contains(observer))) {
+				observers = Lists.newArrayList(observers);
+				observers.remove(observer);
+			}			
+		}
 	}
 
 	public String getHostname() {
 		return hostname;
 	}
-
+	
 	public Response<String> get(String targetUrl, Pair<String, String> auth, String contentType, String... params) {
 		HttpURLConnection connection = null;
 
@@ -51,7 +109,13 @@ public abstract class UrlClient {
 			connection.setReadTimeout(readTimeout);
 			connection.setRequestMethod("GET");
 
-			return getResponse(targetUrl, connection);
+			long t1 = System.currentTimeMillis();
+			Response<String> result = getResponse(targetUrl, connection);
+			long t2 = System.currentTimeMillis();
+			
+			iterateObservers(Operation.GET, url.toString(), result.data, t2- t1);
+
+			return result;
 		} catch (Exception ex) {
 			logger.error("Url client GET {} failed.", targetUrl, ex);
 
@@ -88,7 +152,14 @@ public abstract class UrlClient {
 				out.close();
 			}
 
-			return getResponse(targetUrl, connection);
+			long t1 = System.currentTimeMillis();
+			Response<String> result = getResponse(targetUrl, connection);
+			long t2 = System.currentTimeMillis();
+			
+			iterateObservers(Operation.PUT, url.toString(), result.data, t2- t1);
+			
+			return result;
+			
 		} catch (Exception ex) {
 			logger.error("Url client POST {} failed.", targetUrl, ex);
 
@@ -152,7 +223,14 @@ public abstract class UrlClient {
 				out.close();
 			}
 
-			return getResponse(targetUrl, connection);
+			long t1 = System.currentTimeMillis();
+			Response<String> result = getResponse(targetUrl, connection);
+			long t2 = System.currentTimeMillis();
+			
+			iterateObservers(Operation.POST, url.toString(), result.data, t2- t1);
+			
+			return result;
+			
 		} catch (Exception ex) {
 			logger.error("Url client POST {} failed.", targetUrl, ex);
 
@@ -179,7 +257,13 @@ public abstract class UrlClient {
 			connection.setReadTimeout(readTimeout);
 			connection.setRequestMethod("DELETE");
 
-			return getResponse(targetUrl, connection);
+			long t1 = System.currentTimeMillis();
+			Response<String> result = getResponse(targetUrl, connection);
+			long t2 = System.currentTimeMillis();
+			
+			iterateObservers(Operation.DELETE, url.toString(), result.data, t2- t1);
+			
+			return result;
 		} catch (Exception ex) {
 			logger.error("Url client DELETE {} failed.", targetUrl, ex);
 

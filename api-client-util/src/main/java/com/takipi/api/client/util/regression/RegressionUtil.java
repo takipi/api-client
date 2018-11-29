@@ -302,11 +302,23 @@ public class RegressionUtil {
 		double normalizedBaselineVolume = (double) (regressionStats.hits) / (double) (input.baselineTimespan);
 		double normalizedBaselineInv = (double) (regressionStats.invocations) / (double) (input.baselineTimespan);
 
-		double volRateDelta = ((double) (normalizedActiveVolume) / (double) (normalizedBaselineVolume)) - 1;
-		double invRateDelta = ((double) (normalizedActiveInv) / (double) (normalizedBaselineInv)) - 1;
+		double volRateDelta = ((normalizedActiveVolume) / (normalizedBaselineVolume)) - 1;
+		double invRateDelta = ((normalizedActiveInv) / (normalizedBaselineInv)) - 1;
 
-		boolean isRegression = volRateDelta - Math.max(invRateDelta * 2, 0) > input.regressionDelta;
-		boolean isCriticalRegression = volRateDelta - Math.max(invRateDelta * 2, 0) > input.criticalRegressionDelta;
+		boolean isRegression;
+		boolean isCriticalRegression;
+		
+		if (input.regressionDelta > 0) {
+			isRegression = volRateDelta - Math.max(invRateDelta * 2, 0) > input.regressionDelta;
+		} else {
+			isRegression = false;
+		}
+		
+		if (input.criticalRegressionDelta > 0) { 
+			isCriticalRegression = volRateDelta - Math.max(invRateDelta * 2, 0) > input.criticalRegressionDelta;
+		} else {
+			isCriticalRegression = false;
+		}
 
 		if (!isRegression) {
 			if ((verbose) && (printStream != null)) {
@@ -552,10 +564,6 @@ public class RegressionUtil {
 			}
 		}
 
-		if (result.activeTimespan == 0) {
-			System.out.println();
-		}
-
 		return result;
 	}
 
@@ -629,27 +637,41 @@ public class RegressionUtil {
 		if (events == null) {
 			return builder.build();
 		}
-
-		Graph baselineGraph = getBaselineGraph(apiClient, input, baselineStart, regressionWindow.activeWindowStart,
-				regressionWindow.activeTimespan, printStream);
-
+		
+		Graph baselineGraph;
 		Map<String, long[]> periodVolumes;
 		Map<String, RegressionStats> regressionsStats;
-
-		if (baselineGraph != null) {
-			regressionsStats = processEventsGraph(baselineGraph);
-			periodVolumes = getPeriodVolumes(regressionWindow.activeWindowStart, baselineGraph,
-					regressionWindow.activeTimespan, input.baselineTimespan);
+		
+		boolean hasRegressionDeltas = (input.regressionDelta > 0) || (input.criticalRegressionDelta > 0);
+		
+		if ((!hasRegressionDeltas) && (printStream != null)) {
+			printStream.println("No regression deltas set for input. Regressions will not be calcualated.");
+		}
+		
+		if (hasRegressionDeltas) {
+			
+			baselineGraph = getBaselineGraph(apiClient, input, baselineStart, regressionWindow.activeWindowStart,
+				regressionWindow.activeTimespan, printStream);
+			 
+			 if (baselineGraph != null) {
+					regressionsStats = processEventsGraph(baselineGraph);
+					periodVolumes = getPeriodVolumes(regressionWindow.activeWindowStart, baselineGraph,
+							regressionWindow.activeTimespan, input.baselineTimespan);
+				} else {
+					regressionsStats = null;
+					periodVolumes = null;
+				}
 		} else {
 			regressionsStats = null;
 			periodVolumes = null;
-		}
+			baselineGraph = null;
+		}	
 
 		for (EventResult activeEvent : events) {
 
 			if (activeEvent.error_location == null) {
 				if (printStream != null) {
-					printStream.println("vent has no location: " + activeEvent.summary);
+					printStream.println("Event has no location: " + activeEvent.summary);
 				}
 				continue;
 			}
@@ -661,7 +683,7 @@ public class RegressionUtil {
 				continue;
 			}
 
-			if (baselineGraph != null) {
+			if ((baselineGraph != null) && (regressionsStats != null) && (periodVolumes != null)) {
 				processVolumeRegression(activeEvent, input, regressionsStats, periodVolumes,
 						regressionWindow.activeTimespan, builder, printStream, verbose);
 			}
