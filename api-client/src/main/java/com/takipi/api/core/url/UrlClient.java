@@ -63,13 +63,16 @@ public abstract class UrlClient {
 		
 		synchronized (observerLock)
 		{
-			if (observers != null) {
-				observers = Lists.newArrayList(observers);
+			List<UrlClientObserver> observers;
+			
+			if (this.observers != null) {
+				observers = Lists.newArrayList(this.observers);
 			} else {
 				observers = Lists.newArrayList();
 			}
 			
 			observers.add(observer);
+			this.observers = observers;
 		}
 	}
 	
@@ -82,8 +85,9 @@ public abstract class UrlClient {
 		synchronized (observerLock)
 		{
 			if ((observers != null) && (observers.contains(observer))) {
-				observers = Lists.newArrayList(observers);
+				List<UrlClientObserver> observers = Lists.newArrayList(this.observers);
 				observers.remove(observer);
+				this.observers = observers;
 			}			
 		}
 	}
