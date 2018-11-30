@@ -15,12 +15,19 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.takipi.api.core.consts.ApiConstants;
-import com.takipi.api.core.url.UrlClientObserver.Operation;
 import com.takipi.common.util.Pair;
 
 public abstract class UrlClient {
 
 	protected static final Logger logger = LoggerFactory.getLogger(UrlClient.class);
+
+	public enum Operation {
+		GET, DELETE, POST, PUT
+	}
+
+	public interface UrlClientObserver {
+		public void observe(Operation operation, String url, String response, long time);
+	}
 
 	static final Response<String> BAD_RESPONSE = Response.of(HttpURLConnection.HTTP_INTERNAL_ERROR, null);
 
