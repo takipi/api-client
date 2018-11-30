@@ -47,7 +47,7 @@ public class RegressionUtil {
 
 	private static final DateTimeFormatter fmt = ISODateTimeFormat.dateTime().withZoneUTC();
 
-	enum Regression {
+	enum RegressionState {
 		YES, NO, NO_DATA;
 	}
 
@@ -174,7 +174,7 @@ public class RegressionUtil {
 		return "(" + stats.hits + "/" + stats.invocations + ")";
 	}
 
-	private static Regression processNewsIssueRegression(EventResult activeEvent, DateTime activeFrom,
+	private static RegressionState processNewsIssueRegression(EventResult activeEvent, DateTime activeFrom,
 			RegressionInput input, RateRegression.Builder rateRegression, PrintStream printStream, boolean verbose) {
 
 		DateTime firstSeen = ISODateTimeFormat.dateTimeParser().parseDateTime(activeEvent.first_seen);
@@ -205,7 +205,7 @@ public class RegressionUtil {
 							.println(printEvent(activeEvent) + " is critical new event with " + activeEvent.stats.hits);
 				}
 
-				return Regression.YES;
+				return RegressionState.YES;
 			}
 		}
 
@@ -217,7 +217,7 @@ public class RegressionUtil {
 
 			rateRegression.addNonRegressions(activeEvent);
 
-			return Regression.NO_DATA;
+			return RegressionState.NO_DATA;
 		}
 
 		double activeEventRatio = ((double) activeEvent.stats.hits / (double) activeEvent.stats.invocations);
@@ -232,7 +232,7 @@ public class RegressionUtil {
 
 			rateRegression.addNonRegressions(activeEvent);
 
-			return Regression.NO_DATA;
+			return RegressionState.NO_DATA;
 		}
 
 		if (isNew) {
@@ -243,10 +243,10 @@ public class RegressionUtil {
 						+ activeEvent.stats.hits);
 			}
 
-			return Regression.YES;
+			return RegressionState.YES;
 		}
 
-		return Regression.NO;
+		return RegressionState.NO;
 	}
 
 	private static SeasonlityResult calculateSeasonality(EventResult activeEvent, Map<String, long[]> periodVolumes) {
@@ -276,12 +276,12 @@ public class RegressionUtil {
 		return SeasonlityResult.create(largerVolumePeriod, halfVolumePeriods, largerVolumePriodIndex);
 	}
 
-	private static Regression processVolumeRegression(EventResult activeEvent, RegressionInput input,
+	private static RegressionState processVolumeRegression(EventResult activeEvent, RegressionInput input,
 			Map<String, RegressionStats> regressionsStats, Map<String, long[]> periodVolumes, int activeTimespan,
 			RateRegression.Builder rateRegression, PrintStream printStream, boolean verbose) {
 
 		if (input.regressionDelta == 0) {
-			return Regression.NO;
+			return RegressionState.NO;
 		}
 
 		RegressionStats regressionStats = regressionsStats.get(activeEvent.id);
@@ -293,7 +293,7 @@ public class RegressionUtil {
 
 			rateRegression.addNonRegressions(activeEvent);
 
-			return Regression.NO_DATA;
+			return RegressionState.NO_DATA;
 		}
 
 		double normalizedActiveVolume = (double) (activeEvent.stats.hits) / (double) (activeTimespan);
@@ -302,11 +302,23 @@ public class RegressionUtil {
 		double normalizedBaselineVolume = (double) (regressionStats.hits) / (double) (input.baselineTimespan);
 		double normalizedBaselineInv = (double) (regressionStats.invocations) / (double) (input.baselineTimespan);
 
-		double volRateDelta = ((double) (normalizedActiveVolume) / (double) (normalizedBaselineVolume)) - 1;
-		double invRateDelta = ((double) (normalizedActiveInv) / (double) (normalizedBaselineInv)) - 1;
+		double volRateDelta = ((normalizedActiveVolume) / (normalizedBaselineVolume)) - 1;
+		double invRateDelta = ((normalizedActiveInv) / (normalizedBaselineInv)) - 1;
 
-		boolean isRegression = volRateDelta - Math.max(invRateDelta * 2, 0) > input.regressionDelta;
-		boolean isCriticalRegression = volRateDelta - Math.max(invRateDelta * 2, 0) > input.criticalRegressionDelta;
+		boolean isRegression;
+		boolean isCriticalRegression;
+		
+		if (input.regressionDelta > 0) {
+			isRegression = volRateDelta - Math.max(invRateDelta * 2, 0) > input.regressionDelta;
+		} else {
+			isRegression = false;
+		}
+		
+		if (input.criticalRegressionDelta > 0) { 
+			isCriticalRegression = volRateDelta - Math.max(invRateDelta * 2, 0) > input.criticalRegressionDelta;
+		} else {
+			isCriticalRegression = false;
+		}
 
 		if (!isRegression) {
 			if ((verbose) && (printStream != null)) {
@@ -315,7 +327,7 @@ public class RegressionUtil {
 
 			rateRegression.addNonRegressions(activeEvent);
 
-			return Regression.NO;
+			return RegressionState.NO;
 		}
 
 		if (printStream != null) {
@@ -338,7 +350,7 @@ public class RegressionUtil {
 
 				rateRegression.addNonRegressions(activeEvent);
 
-				return Regression.NO;
+				return RegressionState.NO;
 			}
 
 			if (seasonlityResult.halfVolumePeriods >= 2) {
@@ -349,7 +361,7 @@ public class RegressionUtil {
 
 				rateRegression.addNonRegressions(activeEvent);
 
-				return Regression.NO;
+				return RegressionState.NO;
 			}
 		}
 
@@ -364,7 +376,7 @@ public class RegressionUtil {
 			printStream.println("\n");
 		}
 
-		return Regression.YES;
+		return RegressionState.YES;
 	}
 
 	private static void ApplyFilter(ViewTimeframeRequest.Builder builder, RegressionInput input, boolean applyDeps) {
@@ -552,10 +564,6 @@ public class RegressionUtil {
 			}
 		}
 
-		if (result.activeTimespan == 0) {
-			System.out.println();
-		}
-
 		return result;
 	}
 
@@ -629,41 +637,57 @@ public class RegressionUtil {
 		if (events == null) {
 			return builder.build();
 		}
-
-		Graph baselineGraph = getBaselineGraph(apiClient, input, baselineStart, regressionWindow.activeWindowStart,
-				regressionWindow.activeTimespan, printStream);
-
+		
+		Graph baselineGraph;
 		Map<String, long[]> periodVolumes;
 		Map<String, RegressionStats> regressionsStats;
-
-		if (baselineGraph != null) {
-			regressionsStats = processEventsGraph(baselineGraph);
-			periodVolumes = getPeriodVolumes(regressionWindow.activeWindowStart, baselineGraph,
-					regressionWindow.activeTimespan, input.baselineTimespan);
+		
+		boolean hasRegressionDeltas = (input.regressionDelta > 0) || (input.criticalRegressionDelta > 0);
+		
+		if ((!hasRegressionDeltas) && (printStream != null)) {
+			printStream.println("No regression deltas set for input. Regressions will not be calcualated.");
+		}
+		
+		if (hasRegressionDeltas) {
+			
+			baselineGraph = getBaselineGraph(apiClient, input, baselineStart, regressionWindow.activeWindowStart,
+				regressionWindow.activeTimespan, printStream);
+			 
+			 if (baselineGraph != null) {
+					regressionsStats = processEventsGraph(baselineGraph);
+					periodVolumes = getPeriodVolumes(regressionWindow.activeWindowStart, baselineGraph,
+							regressionWindow.activeTimespan, input.baselineTimespan);
+				} else {
+					regressionsStats = null;
+					periodVolumes = null;
+				}
 		} else {
 			regressionsStats = null;
 			periodVolumes = null;
-		}
+			baselineGraph = null;
+		}	
 
 		for (EventResult activeEvent : events) {
 
 			if (activeEvent.error_location == null) {
 				if (printStream != null) {
-					printStream.println("vent has no location: " + activeEvent.summary);
+					printStream.println("Event has no location: " + activeEvent.summary);
 				}
 				continue;
 			}
 
-			Regression isNewIssue = processNewsIssueRegression(activeEvent, regressionWindow.activeWindowStart, input,
+			RegressionState newIssueState = processNewsIssueRegression(activeEvent, regressionWindow.activeWindowStart, input,
 					builder, printStream, verbose);
 
-			if ((isNewIssue.equals(Regression.YES)) || (isNewIssue.equals(Regression.NO_DATA))) {
+			if ((newIssueState.equals(RegressionState.YES)) || (newIssueState.equals(RegressionState.NO_DATA))) {
 				continue;
 			}
 
-			if (baselineGraph != null) {
+			if ((baselineGraph != null) && (regressionsStats != null) && (periodVolumes != null)) {
 				processVolumeRegression(activeEvent, input, regressionsStats, periodVolumes,
 						regressionWindow.activeTimespan, builder, printStream, verbose);
+			} else {
+				builder.addNonRegressions(activeEvent);
 			}
 		}
 
