@@ -14,6 +14,9 @@ public class EventResult implements ApiResult, Cloneable {
 	public String message;
 	public String first_seen;
 
+	public String class_group;
+	public String call_stack_group;
+
 	public Location error_location;
 	public Location entry_point;
 	public Location error_origin;
