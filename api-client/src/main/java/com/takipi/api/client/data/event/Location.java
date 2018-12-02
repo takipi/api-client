@@ -15,7 +15,7 @@ public class Location {
 			return false;
 		}
 
-		Location other = (Location)obj;
+		Location other = (Location) obj;
 
 		if (!Objects.equal(class_name, other.class_name)) {
 			return false;
@@ -28,11 +28,11 @@ public class Location {
 		if (!Objects.equal(method_desc, other.method_desc)) {
 			return false;
 		}
-		
+
 		if (method_position != other.method_position) {
 			return false;
 		}
-		
+
 		return true;
 	}
 
