@@ -24,13 +24,23 @@ public class RegressionStringUtil {
 	public static final String SEVERE_REGRESSION = "Severe Regression";
 
 	private static final DecimalFormat decimalFormat = new DecimalFormat("#.00");
+	private static final int MAX_MESSAGE_LENGTH = 100;
 
 	public static String getEventSummary(EventResult event) {
 
 		String message;
 
 		if ((event.message != null) && (event.message.trim().length() > 0) && (!event.message.equals(event.name))) {
-			message = ": " + event.message;
+			
+			String messageBody;
+			
+			if (event.message.length() > MAX_MESSAGE_LENGTH) {
+				messageBody = event.message.substring(0, MAX_MESSAGE_LENGTH) + "...";
+			} else {
+				messageBody = event.message;
+			}
+			
+			message = ": " + messageBody;
 		} else {
 			String[] parts = event.error_location.class_name.split(Pattern.quote("."));
 
@@ -63,13 +73,19 @@ public class RegressionStringUtil {
 		result.append("/");
 		result.append(event.stats.invocations);
 		result.append(" (");
-		String fmt = decimalFormat.format(rate);
-
-		if (fmt.startsWith(".")) {
-			result.append("0");
+		
+		if (rate != (int)rate) {
+			String fmt = decimalFormat.format(rate);
+	
+			if (fmt.startsWith(".")) {
+				result.append("0");
+			}
+	
+			result.append(fmt);
+		} else {
+			result.append((int)rate);
 		}
-
-		result.append(fmt);
+		
 		result.append("%)");
 
 		return result.toString();

@@ -27,7 +27,8 @@ public class RegressionInput {
 	public Collection<EventResult> events;
 	public Graph baselineGraph;
 
-	private static void appendCollection(StringBuilder builder, String name, Collection<String> value) {
+	private static void appendCollection(StringBuilder builder, String name, 
+		Collection<String> value, boolean newline) {
 		builder.append(name);
 		builder.append(" = ");
 
@@ -36,8 +37,10 @@ public class RegressionInput {
 		} else {
 			builder.append("");
 		}
-
-		builder.append("\n");
+		
+		if (newline) {
+			builder.append("\n");
+		}
 	}
 
 	private static void appendVariable(StringBuilder builder, String name, Object value) {
@@ -60,10 +63,10 @@ public class RegressionInput {
 		appendVariable(result, "Regression Delta", regressionDelta);
 		appendVariable(result, "Critical Regression Delta", criticalRegressionDelta);
 		appendVariable(result, "Apply Seasonality", applySeasonality);
-		appendCollection(result, "Critical Exception Types", criticalExceptionTypes);
-		appendCollection(result, "Deployments", deployments);
-		appendCollection(result, "Applications", applictations);
-		appendCollection(result, "Servers", servers);
+		appendCollection(result, "Critical Exception Types", criticalExceptionTypes, true);
+		appendCollection(result, "Deployments", deployments, true);
+		appendCollection(result, "Applications", applictations, true);
+		appendCollection(result, "Servers", servers, false);
 
 		return result.toString();
 	}

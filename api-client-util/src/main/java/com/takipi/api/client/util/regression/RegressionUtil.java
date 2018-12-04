@@ -235,7 +235,7 @@ public class RegressionUtil {
 
 			rateRegression.addNonRegressions(activeEvent);
 
-			return RegressionState.NO;
+			return RegressionState.NO_DATA;
 		}
 
 		if (isNew) {
@@ -308,14 +308,8 @@ public class RegressionUtil {
 		double volRateDelta = ((normalizedActiveVolume) / (normalizedBaselineVolume)) - 1;
 		double invRateDelta = ((normalizedActiveInv) / (normalizedBaselineInv)) - 1;
 
-		boolean isRegression;
 		boolean isCriticalRegression;
-
-		if (input.regressionDelta > 0) {
-			isRegression = volRateDelta - Math.max(invRateDelta * 2, 0) > input.regressionDelta;
-		} else {
-			isRegression = false;
-		}
+		boolean 	isRegression = volRateDelta - Math.max(invRateDelta * 2, 0) > input.regressionDelta;
 
 		if (input.criticalRegressionDelta > 0) {
 			isCriticalRegression = volRateDelta - Math.max(invRateDelta * 2, 0) > input.criticalRegressionDelta;
@@ -619,7 +613,6 @@ public class RegressionUtil {
 
 		if (printStream != null) {
 			printStream.println("Begin regression analysis");
-			printStream.println(input + "\n");
 		}
 
 		RateRegression.Builder builder = new RateRegression.Builder();
