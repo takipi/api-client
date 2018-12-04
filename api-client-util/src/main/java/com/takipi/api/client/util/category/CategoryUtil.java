@@ -32,8 +32,12 @@ public class CategoryUtil {
 	}
 
 	public static String createCategory(String categoryName, String serviceId, ApiClient apiClient) {
+		return createCategory(categoryName, serviceId, apiClient, true);
+	}
+
+	public static String createCategory(String categoryName, String serviceId, ApiClient apiClient, boolean shared) {
 		CreateCategoryRequest createCategoryRequest = CreateCategoryRequest.newBuilder().setServiceId(serviceId)
-				.setName(categoryName).setShared(true).build();
+				.setName(categoryName).setShared(shared).build();
 
 		Response<CreateCategoryResult> createCategoryResponse = apiClient.post(createCategoryRequest);
 

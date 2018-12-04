@@ -21,7 +21,7 @@ import com.takipi.api.client.result.EmptyResult;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.result.view.CreateViewResult;
 import com.takipi.api.client.result.view.ViewsResult;
-import com.takipi.api.client.util.view.ViewUtil;
+import com.takipi.api.client.util.category.CategoryUtil;
 import com.takipi.api.core.url.UrlClient.Response;
 import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.Pair;
@@ -110,7 +110,7 @@ public class InfraUtil {
 		}
 
 		String viewId = createInfraView(locationLabel, serviceId, apiClient);
-		ViewUtil.addViewToCategory(categoryId, viewId, serviceId, apiClient);
+		CategoryUtil.addViewToCategory(categoryId, viewId, serviceId, apiClient);
 	}
 
 	// Returns true if the label already existed.
