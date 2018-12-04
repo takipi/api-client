@@ -222,7 +222,10 @@ public class RegressionUtil {
 
 		double activeEventRatio = ((double) activeEvent.stats.hits / (double) activeEvent.stats.invocations);
 
-		if ((activeEventRatio < input.minErrorRateThreshold) || (activeEvent.stats.hits < input.minVolumeThreshold)) {
+		boolean volumeExceeeded = (input.minVolumeThreshold > 0) && (activeEvent.stats.hits > input.minVolumeThreshold);
+		boolean rateExceeded = (input.minErrorRateThreshold > 0) && (activeEventRatio > input.minErrorRateThreshold);
+
+		if ((!volumeExceeeded) || (!rateExceeded)) {
 
 			if ((verbose) && (printStream != null)) {
 
@@ -232,11 +235,11 @@ public class RegressionUtil {
 
 			rateRegression.addNonRegressions(activeEvent);
 
-			return RegressionState.NO_DATA;
+			return RegressionState.NO;
 		}
 
 		if (isNew) {
-			rateRegression.addExceddedNewEvent(activeEvent.id, activeEvent);
+			rateRegression.addExceededNewEvent(activeEvent.id, activeEvent);
 
 			if (printStream != null) {
 				printStream.println(printEvent(activeEvent) + " is new with ER: " + activeEventRatio + " hits: "
@@ -307,14 +310,14 @@ public class RegressionUtil {
 
 		boolean isRegression;
 		boolean isCriticalRegression;
-		
+
 		if (input.regressionDelta > 0) {
 			isRegression = volRateDelta - Math.max(invRateDelta * 2, 0) > input.regressionDelta;
 		} else {
 			isRegression = false;
 		}
-		
-		if (input.criticalRegressionDelta > 0) { 
+
+		if (input.criticalRegressionDelta > 0) {
 			isCriticalRegression = volRateDelta - Math.max(invRateDelta * 2, 0) > input.criticalRegressionDelta;
 		} else {
 			isCriticalRegression = false;
@@ -637,35 +640,35 @@ public class RegressionUtil {
 		if (events == null) {
 			return builder.build();
 		}
-		
+
 		Graph baselineGraph;
 		Map<String, long[]> periodVolumes;
 		Map<String, RegressionStats> regressionsStats;
-		
+
 		boolean hasRegressionDeltas = (input.regressionDelta > 0) || (input.criticalRegressionDelta > 0);
-		
+
 		if ((!hasRegressionDeltas) && (printStream != null)) {
 			printStream.println("No regression deltas set for input. Regressions will not be calcualated.");
 		}
-		
+
 		if (hasRegressionDeltas) {
-			
+
 			baselineGraph = getBaselineGraph(apiClient, input, baselineStart, regressionWindow.activeWindowStart,
-				regressionWindow.activeTimespan, printStream);
-			 
-			 if (baselineGraph != null) {
-					regressionsStats = processEventsGraph(baselineGraph);
-					periodVolumes = getPeriodVolumes(regressionWindow.activeWindowStart, baselineGraph,
-							regressionWindow.activeTimespan, input.baselineTimespan);
-				} else {
-					regressionsStats = null;
-					periodVolumes = null;
-				}
+					regressionWindow.activeTimespan, printStream);
+
+			if (baselineGraph != null) {
+				regressionsStats = processEventsGraph(baselineGraph);
+				periodVolumes = getPeriodVolumes(regressionWindow.activeWindowStart, baselineGraph,
+						regressionWindow.activeTimespan, input.baselineTimespan);
+			} else {
+				regressionsStats = null;
+				periodVolumes = null;
+			}
 		} else {
 			regressionsStats = null;
 			periodVolumes = null;
 			baselineGraph = null;
-		}	
+		}
 
 		for (EventResult activeEvent : events) {
 
@@ -676,8 +679,8 @@ public class RegressionUtil {
 				continue;
 			}
 
-			RegressionState newIssueState = processNewsIssueRegression(activeEvent, regressionWindow.activeWindowStart, input,
-					builder, printStream, verbose);
+			RegressionState newIssueState = processNewsIssueRegression(activeEvent, regressionWindow.activeWindowStart,
+					input, builder, printStream, verbose);
 
 			if ((newIssueState.equals(RegressionState.YES)) || (newIssueState.equals(RegressionState.NO_DATA))) {
 				continue;

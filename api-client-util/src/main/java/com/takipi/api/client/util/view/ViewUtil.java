@@ -9,6 +9,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.data.metrics.Graph;
@@ -35,24 +36,71 @@ import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.Pair;
 
 public class ViewUtil {
+
 	private static final DateTimeFormatter fmt = ISODateTimeFormat.dateTime().withZoneUTC();
+
+	public static void createFilteredView(ApiClient apiClient, String serviceId, ViewInfo viewInfo, String categoryId) {
+		createFilteredViews(apiClient, serviceId, Collections.singleton(viewInfo), categoryId);
+	}
+
+	public static void createFilteredViews(ApiClient apiClient, String serviceId, Collection<ViewInfo> viewInfos,
+			String categoryId) {
+
+		Map<String, SummarizedView> views = getServiceViewsByName(apiClient, serviceId);
+		createFilteredViews(apiClient, serviceId, viewInfos, views, categoryId);
+	}
+
+	public static void createFilteredViews(ApiClient apiClient, String serviceId, Collection<ViewInfo> viewInfos,
+			Map<String, SummarizedView> views, String categoryId) {
+
+		for (ViewInfo viewInfo : viewInfos) {
+			createFilteredView(apiClient, serviceId, viewInfo, categoryId, views);
+		}
+	}
+
+	private static void createFilteredView(ApiClient apiClient, String serviceId, ViewInfo viewInfo, String categoryId,
+			Map<String, SummarizedView> views) {
+
+		SummarizedView view = views.get(viewInfo.name);
+
+		if (view != null) {
+			System.out.println("view " + viewInfo.name + " found with ID " + view.id);
+			return;
+		}
+
+		CreateViewRequest createViewRequest = CreateViewRequest.newBuilder().setServiceId(serviceId)
+				.setViewInfo(viewInfo).build();
+
+		Response<CreateViewResult> viewResponse = apiClient.post(createViewRequest);
+
+		if ((viewResponse.isBadResponse()) || (viewResponse.data == null)) {
+			System.err.println("Cannot create view " + viewInfo.name);
+			return;
+		}
+
+		System.out.println("Created view " + viewResponse.data.view_id + " for view " + viewInfo.name);
+
+		if (categoryId != null) {
+			CategoryAddViewRequest categoryAddViewRequest = CategoryAddViewRequest.newBuilder().setServiceId(serviceId)
+					.setViewId(viewResponse.data.view_id).setCategoryId(categoryId).build();
+
+			Response<EmptyResult> categoryAddViewResponse = apiClient.post(categoryAddViewRequest);
+
+			if (categoryAddViewResponse.isBadResponse()) {
+				System.out.println("Error adding view " + viewInfo.name + " to category " + categoryId);
+			}
+		}
+	}
 
 	public static void createLabelViewsIfNotExists(ApiClient apiClient, String serviceId,
 			Collection<Pair<String, String>> viewsAndLabels, String categoryId) {
 
-		Map<String, SummarizedView> views = getServiceViewsByName(apiClient, serviceId);
+		List<ViewInfo> viewInfos = Lists.newArrayList();
 
 		for (Pair<String, String> pair : viewsAndLabels) {
+
 			String viewName = pair.getFirst();
 			String labelName = pair.getSecond();
-
-			SummarizedView view = views.get(viewName);
-
-			if (view != null) {
-				System.out.println("view " + viewName + " found with ID " + view.id);
-
-				continue;
-			}
 
 			ViewInfo viewInfo = new ViewInfo();
 
@@ -61,28 +109,10 @@ public class ViewUtil {
 			viewInfo.filters.labels = Collections.singletonList(labelName);
 			viewInfo.shared = true;
 
-			CreateViewRequest createViewRequest = CreateViewRequest.newBuilder().setServiceId(serviceId)
-					.setViewInfo(viewInfo).build();
-
-			Response<CreateViewResult> viewResponse = apiClient.post(createViewRequest);
-
-			if ((viewResponse.isBadResponse()) || (viewResponse.data == null)) {
-				System.err.println("Cannot create view " + viewName);
-
-				continue;
-			}
-
-			System.out.println("Created view " + viewResponse.data.view_id + " for label " + labelName);
-
-			CategoryAddViewRequest categoryAddViewRequest = CategoryAddViewRequest.newBuilder().setServiceId(serviceId)
-					.setViewId(viewResponse.data.view_id).setCategoryId(categoryId).build();
-
-			Response<EmptyResult> categoryAddViewResponse = apiClient.post(categoryAddViewRequest);
-
-			if (categoryAddViewResponse.isBadResponse()) {
-				System.out.println("Error adding view " + viewName + " to category " + categoryId);
-			}
+			viewInfos.add(viewInfo);
 		}
+
+		createFilteredViews(apiClient, serviceId, viewInfos, categoryId);
 	}
 
 	public static Map<String, SummarizedView> getServiceViewsByName(ApiClient apiClient, String serviceId) {

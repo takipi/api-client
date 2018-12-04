@@ -31,7 +31,7 @@ public class RegressionInput {
 		builder.append(name);
 		builder.append(" = ");
 
-		if (value != null) {
+		if ((value != null) && (value.size() > 0)) {
 			builder.append(Arrays.toString(value.toArray()));
 		} else {
 			builder.append("");
@@ -63,13 +63,13 @@ public class RegressionInput {
 		appendCollection(result, "Critical Exception Types", criticalExceptionTypes);
 		appendCollection(result, "Deployments", deployments);
 		appendCollection(result, "Applications", applictations);
-		appendCollection(result, "Severs", servers);
+		appendCollection(result, "Servers", servers);
 
 		return result.toString();
 	}
 
 	public void validate() {
-		
+
 		if ((serviceId == null) || (serviceId.isEmpty())) {
 			throw new IllegalStateException("Missing Environment Id");
 		}
@@ -81,7 +81,7 @@ public class RegressionInput {
 		if (activeTimespan < 0) {
 			throw new IllegalStateException("Negative Active timespan");
 		}
-		
+
 		if ((CollectionUtil.safeIsEmpty(deployments)) && (activeTimespan == 0)) {
 			throw new IllegalStateException("Either active timespan or deployment name must be provided");
 		}

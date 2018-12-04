@@ -156,7 +156,7 @@ public class RateRegression {
 			allNewEvents.put(id, event);
 		}
 
-		public void addExceddedNewEvent(String id, EventResult event) {
+		public void addExceededNewEvent(String id, EventResult event) {
 			exceededNewEvents.put(id, event);
 		}
 
