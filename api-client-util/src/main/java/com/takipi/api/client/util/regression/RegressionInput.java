@@ -69,7 +69,7 @@ public class RegressionInput {
 	}
 
 	public void validate() {
-		
+
 		if ((serviceId == null) || (serviceId.isEmpty())) {
 			throw new IllegalStateException("Missing Environment Id");
 		}
@@ -81,7 +81,7 @@ public class RegressionInput {
 		if (activeTimespan < 0) {
 			throw new IllegalStateException("Negative Active timespan");
 		}
-		
+
 		if ((CollectionUtil.safeIsEmpty(deployments)) && (activeTimespan == 0)) {
 			throw new IllegalStateException("Either active timespan or deployment name must be provided");
 		}

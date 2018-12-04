@@ -26,9 +26,9 @@ public class RegressionStringUtil {
 	private static final DecimalFormat decimalFormat = new DecimalFormat("#.00");
 
 	public static String getEventSummary(EventResult event) {
-		
+
 		String message;
-		
+
 		if ((event.message != null) && (event.message.trim().length() > 0) && (!event.message.equals(event.name))) {
 			message = ": " + event.message;
 		} else {
@@ -41,12 +41,12 @@ public class RegressionStringUtil {
 			} else {
 				simpleClassName = event.error_location.class_name;
 			}
-			
+
 			message = " in " + simpleClassName + "." + event.error_location.method_name;
 		}
-	
+
 		String result = event.name + message;
-		
+
 		return result;
 	}
 
