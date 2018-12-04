@@ -223,7 +223,7 @@ public class RegressionUtil {
 		double activeEventRatio = ((double) activeEvent.stats.hits / (double) activeEvent.stats.invocations);
 
 		boolean volumeExceeeded = (input.minVolumeThreshold > 0) && (activeEvent.stats.hits > input.minVolumeThreshold);
-		boolean rateExceeded = (input.minErrorRateThreshold > 0) && (activeEventRatio < input.minErrorRateThreshold);
+		boolean rateExceeded = (input.minErrorRateThreshold > 0) && (activeEventRatio > input.minErrorRateThreshold);
 
 		if ((!volumeExceeeded) || (!rateExceeded)) {
 
@@ -235,7 +235,7 @@ public class RegressionUtil {
 
 			rateRegression.addNonRegressions(activeEvent);
 
-			return RegressionState.NO_DATA;
+			return RegressionState.NO;
 		}
 
 		if (isNew) {
