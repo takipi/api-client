@@ -39,12 +39,8 @@ public class ViewUtil {
 
 	private static final DateTimeFormatter fmt = ISODateTimeFormat.dateTime().withZoneUTC();
 
-	public static void createFilteredViews(ApiClient apiClient, String serviceId, Collection<ViewInfo> viewInfos,
-			Map<String, SummarizedView> views, String categoryId) {
-
-		for (ViewInfo viewInfo : viewInfos) {
-			createFilteredView(apiClient, serviceId, viewInfo, categoryId, views);
-		}
+	public static void createFilteredView(ApiClient apiClient, String serviceId, ViewInfo viewInfo, String categoryId) {
+		createFilteredViews(apiClient, serviceId, Collections.singleton(viewInfo), categoryId);
 	}
 
 	public static void createFilteredViews(ApiClient apiClient, String serviceId, Collection<ViewInfo> viewInfos,
@@ -54,8 +50,12 @@ public class ViewUtil {
 		createFilteredViews(apiClient, serviceId, viewInfos, views, categoryId);
 	}
 
-	public static void createFilteredView(ApiClient apiClient, String serviceId, ViewInfo viewInfo, String categoryId) {
-		createFilteredViews(apiClient, serviceId, Collections.singleton(viewInfo), categoryId);
+	public static void createFilteredViews(ApiClient apiClient, String serviceId, Collection<ViewInfo> viewInfos,
+			Map<String, SummarizedView> views, String categoryId) {
+
+		for (ViewInfo viewInfo : viewInfos) {
+			createFilteredView(apiClient, serviceId, viewInfo, categoryId, views);
+		}
 	}
 
 	private static void createFilteredView(ApiClient apiClient, String serviceId, ViewInfo viewInfo, String categoryId,
@@ -70,6 +70,7 @@ public class ViewUtil {
 
 		CreateViewRequest createViewRequest = CreateViewRequest.newBuilder().setServiceId(serviceId)
 				.setViewInfo(viewInfo).build();
+
 		Response<CreateViewResult> viewResponse = apiClient.post(createViewRequest);
 
 		if ((viewResponse.isBadResponse()) || (viewResponse.data == null)) {
