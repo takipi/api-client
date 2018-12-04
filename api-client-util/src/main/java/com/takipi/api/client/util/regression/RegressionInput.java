@@ -31,7 +31,7 @@ public class RegressionInput {
 		builder.append(name);
 		builder.append(" = ");
 
-		if (value != null) {
+		if ((value != null) && (value.size() > 0)) {
 			builder.append(Arrays.toString(value.toArray()));
 		} else {
 			builder.append("");
@@ -63,7 +63,7 @@ public class RegressionInput {
 		appendCollection(result, "Critical Exception Types", criticalExceptionTypes);
 		appendCollection(result, "Deployments", deployments);
 		appendCollection(result, "Applications", applictations);
-		appendCollection(result, "Severs", servers);
+		appendCollection(result, "Servers", servers);
 
 		return result.toString();
 	}

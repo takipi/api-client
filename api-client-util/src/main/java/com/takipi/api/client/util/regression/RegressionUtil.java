@@ -221,8 +221,11 @@ public class RegressionUtil {
 		}
 
 		double activeEventRatio = ((double) activeEvent.stats.hits / (double) activeEvent.stats.invocations);
-
-		if ((activeEventRatio < input.minErrorRateThreshold) || (activeEvent.stats.hits < input.minVolumeThreshold)) {
+		
+		boolean volumeExceeeded = (input.minVolumeThreshold > 0) && (activeEvent.stats.hits > input.minVolumeThreshold);
+		boolean rateExceeded = (input.minErrorRateThreshold > 0) && (activeEventRatio < input.minErrorRateThreshold);
+		
+		if ((!volumeExceeeded) || (!rateExceeded)) {
 
 			if ((verbose) && (printStream != null)) {
 
@@ -236,7 +239,7 @@ public class RegressionUtil {
 		}
 
 		if (isNew) {
-			rateRegression.addExceddedNewEvent(activeEvent.id, activeEvent);
+			rateRegression.addExceededNewEvent(activeEvent.id, activeEvent);
 
 			if (printStream != null) {
 				printStream.println(printEvent(activeEvent) + " is new with ER: " + activeEventRatio + " hits: "
