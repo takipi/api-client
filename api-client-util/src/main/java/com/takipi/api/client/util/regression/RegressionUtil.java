@@ -309,10 +309,10 @@ public class RegressionUtil {
 		double invRateDelta = ((normalizedActiveInv) / (normalizedBaselineInv)) - 1;
 
 		boolean isCriticalRegression;
-		boolean 	isRegression = volRateDelta - Math.max(invRateDelta * 2, 0) > input.regressionDelta;
+		boolean isRegression = (volRateDelta - Math.max(invRateDelta * 2, 0)) > input.regressionDelta;
 
 		if (input.criticalRegressionDelta > 0) {
-			isCriticalRegression = volRateDelta - Math.max(invRateDelta * 2, 0) > input.criticalRegressionDelta;
+			isCriticalRegression = (volRateDelta - Math.max(invRateDelta * 2, 0)) > input.criticalRegressionDelta;
 		} else {
 			isCriticalRegression = false;
 		}

@@ -31,15 +31,15 @@ public class RegressionStringUtil {
 		String message;
 
 		if ((event.message != null) && (event.message.trim().length() > 0) && (!event.message.equals(event.name))) {
-			
+
 			String messageBody;
-			
+
 			if (event.message.length() > MAX_MESSAGE_LENGTH) {
 				messageBody = event.message.substring(0, MAX_MESSAGE_LENGTH) + "...";
 			} else {
 				messageBody = event.message;
 			}
-			
+
 			message = ": " + messageBody;
 		} else {
 			String[] parts = event.error_location.class_name.split(Pattern.quote("."));
@@ -73,19 +73,19 @@ public class RegressionStringUtil {
 		result.append("/");
 		result.append(event.stats.invocations);
 		result.append(" (");
-		
-		if (rate != (int)rate) {
+
+		if (rate != (int) rate) {
 			String fmt = decimalFormat.format(rate);
-	
+
 			if (fmt.startsWith(".")) {
 				result.append("0");
 			}
-	
+
 			result.append(fmt);
 		} else {
-			result.append((int)rate);
+			result.append((int) rate);
 		}
-		
+
 		result.append("%)");
 
 		return result.toString();

@@ -27,8 +27,8 @@ public class RegressionInput {
 	public Collection<EventResult> events;
 	public Graph baselineGraph;
 
-	private static void appendCollection(StringBuilder builder, String name, 
-		Collection<String> value, boolean newline) {
+	private static void appendCollection(StringBuilder builder, String name, Collection<String> value,
+			boolean newline) {
 		builder.append(name);
 		builder.append(" = ");
 
@@ -37,7 +37,7 @@ public class RegressionInput {
 		} else {
 			builder.append("");
 		}
-		
+
 		if (newline) {
 			builder.append("\n");
 		}
