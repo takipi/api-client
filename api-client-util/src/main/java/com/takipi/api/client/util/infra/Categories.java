@@ -18,13 +18,14 @@ public class Categories {
 	private static final String DEFAULT_CATEGORIES = "infra/categories.json";
 	private static final Categories EMPTY_CATEGORIES = new Categories();
 
-	private static boolean initialized;
 	private static volatile Categories instance = null;
 
 	public static Categories defaultCategories() {
-		if ((instance == null) && (!initialized)) {
+		if (instance == null) {
 			synchronized (Categories.class) {
-				if ((instance == null) && (!initialized)) {
+				if (instance == null) {
+					Categories result;
+
 					InputStream stream = null;
 
 					try {
@@ -36,15 +37,15 @@ public class Categories {
 							return null;
 						}
 
-						instance = (new Gson()).fromJson(IOUtils.toString(stream, Charset.defaultCharset()),
+						result = (new Gson()).fromJson(IOUtils.toString(stream, Charset.defaultCharset()),
 								Categories.class);
 					} catch (Exception e) {
-						instance = EMPTY_CATEGORIES;
+						result = EMPTY_CATEGORIES;
 					} finally {
 						IOUtils.closeQuietly(stream);
 					}
 
-					initialized = true;
+					instance = ((result != null) ? result : EMPTY_CATEGORIES);
 				}
 			}
 		}
