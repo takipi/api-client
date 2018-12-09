@@ -21,6 +21,7 @@ import com.takipi.api.client.request.event.EventsRequest;
 import com.takipi.api.client.request.event.EventsVolumeRequest;
 import com.takipi.api.client.request.metrics.GraphRequest;
 import com.takipi.api.client.request.view.CreateViewRequest;
+import com.takipi.api.client.request.view.DeleteViewRequest;
 import com.takipi.api.client.request.view.ViewsRequest;
 import com.takipi.api.client.result.EmptyResult;
 import com.takipi.api.client.result.event.EventResult;
@@ -36,7 +37,6 @@ import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.Pair;
 
 public class ViewUtil {
-
 	private static final DateTimeFormatter fmt = ISODateTimeFormat.dateTime().withZoneUTC();
 
 	public static void createFilteredView(ApiClient apiClient, String serviceId, ViewInfo viewInfo, String categoryId) {
@@ -56,6 +56,22 @@ public class ViewUtil {
 		for (ViewInfo viewInfo : viewInfos) {
 			createFilteredView(apiClient, serviceId, viewInfo, categoryId, views);
 		}
+	}
+	
+	public static void removeView(ApiClient apiClient, String serviceId, String viewId) {
+		DeleteViewRequest viewRequest = DeleteViewRequest.newBuilder()
+				.setServiceId(serviceId)
+				.setViewId(viewId)
+				.build();
+		
+		Response<EmptyResult> viewResponse = apiClient.delete(viewRequest);
+		
+		if (viewResponse.isBadResponse()) {
+			System.err.println("Problem removing view " + viewId);
+			return;
+		}
+		
+		System.out.println("Removed view " + viewId);
 	}
 
 	private static void createFilteredView(ApiClient apiClient, String serviceId, ViewInfo viewInfo, String categoryId,
