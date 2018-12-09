@@ -25,8 +25,6 @@ public class Categories {
 		if ((instance == null) && (!initialized)) {
 			synchronized (Categories.class) {
 				if ((instance == null) && (!initialized)) {
-					initialized = true;
-
 					InputStream stream = null;
 
 					try {
@@ -45,6 +43,8 @@ public class Categories {
 					} finally {
 						IOUtils.closeQuietly(stream);
 					}
+
+					initialized = true;
 				}
 			}
 		}
