@@ -118,7 +118,7 @@ public class MathUtil {
 			result += Math.pow(arr[i] - avg, 2) * weights[i];
 		}
 
-		double denominator = ((nonZeroWeights - 1) / (nonZeroWeights)) * sum(weights);
+		double denominator = ((nonZeroWeights - 1) / ((double)nonZeroWeights)) * sum(weights);
 
 		return Math.sqrt(result / denominator);
 	}
