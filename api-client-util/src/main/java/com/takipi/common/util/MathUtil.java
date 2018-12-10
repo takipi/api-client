@@ -2,7 +2,7 @@ package com.takipi.common.util;
 
 public class MathUtil {
 	public static long sum(long[] arr) {
-		if ((arr == null) || (arr.length == 0)) {
+		if (!validArr(arr)) {
 			return 0L;
 		}
 
@@ -16,7 +16,7 @@ public class MathUtil {
 	}
 
 	public static double sum(double[] arr) {
-		if ((arr == null) || (arr.length == 0)) {
+		if (!validArr(arr)) {
 			return 0.0;
 		}
 
@@ -30,7 +30,7 @@ public class MathUtil {
 	}
 
 	public static double avg(long[] arr) {
-		if ((arr == null) || (arr.length == 0)) {
+		if (!validArr(arr)) {
 			return 0.0;
 		}
 
@@ -44,7 +44,7 @@ public class MathUtil {
 	}
 
 	public static double avg(double[] arr) {
-		if ((arr == null) || (arr.length == 0)) {
+		if (!validArr(arr)) {
 			return 0.0;
 		}
 
@@ -58,8 +58,7 @@ public class MathUtil {
 	}
 
 	public static double weightedAvg(double[] arr, double[] weights) {
-		if ((arr == null) || (arr.length == 0) || (weights == null) || (weights.length == 0)
-				|| (arr.length != weights.length)) {
+		if (!validWeights(arr, weights)) {
 			return 0.0;
 		}
 
@@ -73,7 +72,7 @@ public class MathUtil {
 	}
 
 	public static double stdDev(long arr[]) {
-		if ((arr == null) || (arr.length == 0)) {
+		if (!validArr(arr)) {
 			return 0.0;
 		}
 
@@ -88,7 +87,7 @@ public class MathUtil {
 	}
 
 	public static double stdDev(double arr[]) {
-		if ((arr == null) || (arr.length == 0)) {
+		if (!validArr(arr)) {
 			return 0.0;
 		}
 
@@ -100,5 +99,39 @@ public class MathUtil {
 		}
 
 		return Math.sqrt(result / arr.length);
+	}
+
+	public static double wightedStdDev(double[] arr, double[] weights) {
+		if (!validWeights(arr, weights)) {
+			return 0.0;
+		}
+
+		int nonZeroWeights = 0;
+		double result = 0.0;
+		double avg = weightedAvg(arr, weights);
+
+		for (int i = 0; i < arr.length; i++) {
+			if (weights[i] != 0) {
+				nonZeroWeights++;
+			}
+
+			result += Math.pow(arr[i] - avg, 2) * weights[i];
+		}
+
+		double denominator = ((nonZeroWeights - 1) / (nonZeroWeights)) * sum(weights);
+
+		return Math.sqrt(result / denominator);
+	}
+
+	private static boolean validArr(long[] arr) {
+		return ((arr != null) && (arr.length > 0));
+	}
+
+	private static boolean validArr(double[] arr) {
+		return ((arr != null) && (arr.length > 0));
+	}
+
+	public static boolean validWeights(double[] arr, double[] weights) {
+		return ((validArr(arr)) && (validArr(weights)) && (arr.length == weights.length) && (sum(weights) != 0));
 	}
 }
