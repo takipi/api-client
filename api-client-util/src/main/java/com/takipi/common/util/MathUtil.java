@@ -57,6 +57,21 @@ public class MathUtil {
 		return result / arr.length;
 	}
 
+	public static double weightedAvg(double[] arr, double[] weights) {
+		if ((arr == null) || (arr.length == 0) || (weights == null) || (weights.length == 0)
+				|| (arr.length != weights.length)) {
+			return 0.0;
+		}
+
+		double result = 0.0;
+
+		for (int i = 0; i < arr.length; i++) {
+			result += arr[i] * weights[i];
+		}
+
+		return result / sum(weights);
+	}
+
 	public static double stdDev(long arr[]) {
 		if ((arr == null) || (arr.length == 0)) {
 			return 0.0;
