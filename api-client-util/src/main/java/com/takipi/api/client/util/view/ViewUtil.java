@@ -57,22 +57,6 @@ public class ViewUtil {
 			createFilteredView(apiClient, serviceId, viewInfo, categoryId, views);
 		}
 	}
-	
-	public static void removeView(ApiClient apiClient, String serviceId, String viewId) {
-		DeleteViewRequest viewRequest = DeleteViewRequest.newBuilder()
-				.setServiceId(serviceId)
-				.setViewId(viewId)
-				.build();
-		
-		Response<EmptyResult> viewResponse = apiClient.delete(viewRequest);
-		
-		if (viewResponse.isBadResponse()) {
-			System.err.println("Problem removing view " + viewId);
-			return;
-		}
-		
-		System.out.println("Removed view " + viewId);
-	}
 
 	private static void createFilteredView(ApiClient apiClient, String serviceId, ViewInfo viewInfo, String categoryId,
 			Map<String, SummarizedView> views) {
@@ -256,5 +240,19 @@ public class ViewUtil {
 		}
 
 		return graphResult;
+	}
+
+	public static void removeView(ApiClient apiClient, String serviceId, String viewId) {
+		DeleteViewRequest viewRequest = DeleteViewRequest.newBuilder().setServiceId(serviceId).setViewId(viewId)
+				.build();
+
+		Response<EmptyResult> viewResponse = apiClient.delete(viewRequest);
+
+		if (viewResponse.isBadResponse()) {
+			System.err.println("Problem removing view " + viewId);
+			return;
+		}
+
+		System.out.println("Removed view " + viewId);
 	}
 }

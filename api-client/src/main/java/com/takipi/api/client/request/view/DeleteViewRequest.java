@@ -1,6 +1,5 @@
 package com.takipi.api.client.request.view;
 
-import com.google.common.base.Strings;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.EmptyResult;
 import com.takipi.api.client.util.validation.ValidationUtil;
