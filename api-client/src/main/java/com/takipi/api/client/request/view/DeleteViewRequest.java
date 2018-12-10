@@ -3,6 +3,7 @@ package com.takipi.api.client.request.view;
 import com.google.common.base.Strings;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.EmptyResult;
+import com.takipi.api.client.util.validation.ValidationUtil;
 import com.takipi.api.core.request.intf.ApiDeleteRequest;
 
 public class DeleteViewRequest extends ServiceRequest implements ApiDeleteRequest<EmptyResult> {
@@ -47,12 +48,8 @@ public class DeleteViewRequest extends ServiceRequest implements ApiDeleteReques
 		protected void validate() {
 			super.validate();
 
-			if (viewId == null) {
-				throw new IllegalArgumentException("Missing view");
-			}
-
-			if (Strings.isNullOrEmpty(viewId)) {
-				throw new IllegalArgumentException("View must contain value");
+			if (!ValidationUtil.isLegalViewId(viewId)) {
+				throw new IllegalArgumentException("Illegal view id - " + viewId);
 			}
 		}
 
