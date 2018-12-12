@@ -39,6 +39,8 @@ import com.takipi.common.util.Pair;
 
 public class RegressionUtil {
 
+	public static final int POINT_FACTOR = 60;
+	
 	public static class RegressionWindow {
 		public DateTime activeWindowStart;
 		public int activeTimespan;
@@ -142,17 +144,17 @@ public class RegressionUtil {
 
 		for (GraphPoint graphPoint : baselineGraph.points) {
 			DateTime firstSeen = ISODateTimeFormat.dateTimeParser().parseDateTime(graphPoint.time);
-
+			
 			if (firstSeen.isBefore(baselineStart)) {
 				continue;
 			}
-
+			
 			Minutes timeDelta = Minutes.minutesBetween(baselineStart, firstSeen);
 
 			if (graphPoint.contributors == null) {
 				continue;
 			}
-
+			
 			for (GraphPointContributor gpc : graphPoint.contributors) {
 				long[] timeWindowVolumes = result.get(gpc.id);
 
@@ -178,7 +180,7 @@ public class RegressionUtil {
 
 		return "(" + stats.hits + "/" + stats.invocations + ")";
 	}
-
+	
 	private static RegressionState processNewsIssueRegression(EventResult activeEvent, DateTime activeFrom,
 			RegressionInput input, RateRegression.Builder rateRegression, PrintStream printStream, boolean verbose) {
 
@@ -229,7 +231,7 @@ public class RegressionUtil {
 
 		double minVolumeThreshold = input.getEventMinThreshold(activeEvent);
 		double minErrorRateThreshold = input.getEventMinErrorRateThreshold(activeEvent);
-
+		
 		boolean volumeExceeeded = (minVolumeThreshold > 0) && (activeEvent.stats.hits > minVolumeThreshold);
 		boolean rateExceeded = (minErrorRateThreshold > 0) && (activeEventRatio > minErrorRateThreshold);
 
@@ -318,9 +320,9 @@ public class RegressionUtil {
 
 		double eventRegressionDelta = input.getEventRegressionDelta(activeEvent);
 		double eventCriticalRegressionDelta = input.getEventCriticalRegressionDelta(activeEvent);
-
+		
 		boolean isCriticalRegression;
-		boolean isRegression = volRateDelta - Math.max(invRateDelta * 2, 0) > eventRegressionDelta;
+		boolean 	isRegression = volRateDelta - Math.max(invRateDelta * 2, 0) > eventRegressionDelta;
 
 		if (eventCriticalRegressionDelta > 0) {
 			isCriticalRegression = volRateDelta - Math.max(invRateDelta * 2, 0) > eventCriticalRegressionDelta;
@@ -518,7 +520,10 @@ public class RegressionUtil {
 			return null;
 		}
 
-		for (GraphPoint gp : graph.points) {
+		for (int i = 0; i < graph.points.size(); i++) {
+			
+			GraphPoint gp = graph.points.get(i);
+			
 			if ((gp.stats.hits != 0) || (gp.stats.invocations != 0)) {
 				return ISODateTimeFormat.dateTime().withZoneUTC().parseDateTime(gp.time);
 			}
@@ -528,7 +533,7 @@ public class RegressionUtil {
 	}
 
 	public static RegressionWindow getActiveWindow(ApiClient apiClient, RegressionInput input,
-			PrintStream printStream) {
+			int pointsFactor, PrintStream printStream) {
 
 		RegressionWindow result = new RegressionWindow();
 
@@ -542,7 +547,7 @@ public class RegressionUtil {
 			if (!CollectionUtil.safeIsEmpty(input.deployments)) {
 
 				DateTime from = now.minusMinutes(input.baselineTimespan + input.activeTimespan);
-				int pointsWanted = Days.daysBetween(from, now).getDays() * 3;
+				int pointsWanted = Days.daysBetween(from, now).getDays() * pointsFactor;
 
 				result.activeWindowStart = getDeploymentStartTime(apiClient, input.serviceId, input.viewId, from, now,
 						pointsWanted, input.deployments);
@@ -559,12 +564,14 @@ public class RegressionUtil {
 
 			if (result.activeWindowStart != null) {
 
-				result.activeTimespan = (int) TimeUnit.MILLISECONDS
+				int activeTimespan = (int) TimeUnit.MILLISECONDS
 						.toMinutes(now.minus(result.activeWindowStart.getMillis()).getMillis());
 
-				if (result.activeTimespan <= 0) {
+				if (activeTimespan <= 0) {
 					result.activeTimespan = (int) (TimeUnit.DAYS.toMinutes(1));
 					result.activeWindowStart = DateTime.now().minusDays(1);
+				} else {
+					result.activeTimespan = activeTimespan;
 				}
 			} else {
 				result.activeWindowStart = now.minusMinutes(input.activeTimespan);
@@ -607,7 +614,8 @@ public class RegressionUtil {
 			result = input.events;
 		} else {
 
-			EventsVolumeResult activeEventVolume = getEventsVolume(apiClient, input, activeWindowStart, DateTime.now());
+			EventsVolumeResult activeEventVolume = getEventsVolume(apiClient, input, 
+				activeWindowStart.minusMinutes(1), DateTime.now());
 
 			if (!validateVolume(apiClient, activeEventVolume, input, printStream)) {
 				return null;
@@ -628,18 +636,17 @@ public class RegressionUtil {
 
 		RateRegression.Builder builder = new RateRegression.Builder();
 
-		RegressionWindow regressionWindow = getActiveWindow(apiClient, input, printStream);
+		RegressionWindow regressionWindow = getActiveWindow(apiClient, input, POINT_FACTOR, printStream);
 
 		if ((regressionWindow.activeTimespan == 0) && (!regressionWindow.deploymentFound)) {
-
+			
 			if (printStream != null) {
-				printStream.println(
-						"No active timespan set and no deployment volume found in baseline - skipping analysis");
+				printStream.println("No active timespan set and no deployment volume found in baseline - skipping analysis");
 			}
-
+			
 			return builder.build();
 		}
-
+		
 		builder.setActiveWndowStart(regressionWindow.activeWindowStart);
 		DateTime baselineStart = regressionWindow.activeWindowStart.minusMinutes(input.baselineTimespan);
 
@@ -658,7 +665,7 @@ public class RegressionUtil {
 		Graph baselineGraph;
 		Map<String, long[]> periodVolumes;
 		Map<String, RegressionStats> regressionsStats;
-
+		
 		boolean hasRegressionDeltas = (input.regressionDelta > 0) || (input.criticalRegressionDelta > 0);
 
 		if ((!hasRegressionDeltas) && (printStream != null)) {
