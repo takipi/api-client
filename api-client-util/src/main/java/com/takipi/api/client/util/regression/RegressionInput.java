@@ -11,40 +11,40 @@ import com.takipi.api.client.result.event.EventResult;
 import com.takipi.common.util.CollectionUtil;
 
 public class RegressionInput {
-	
+
 	public static class TypeThresholds {
 		public int minVolumeThreshold;
 		public double minErrorRateThreshold;
 		public double regressionDelta;
-		public double criticalRegressionDelta; 
+		public double criticalRegressionDelta;
 	}
-	
+
 	public String serviceId;
 	public String viewId;
-	
+
 	public DateTime activeWindowStart;
 	public int activeTimespan;
 	public int baselineTimespan;
-	
+
 	public int minVolumeThreshold;
 	public double minErrorRateThreshold;
 	public double regressionDelta;
 	public double criticalRegressionDelta;
-	
+
 	public boolean applySeasonality;
 	public Collection<String> criticalExceptionTypes;
-	
+
 	public Map<String, TypeThresholds> typeThresholdsMap;
-	
+
 	public Collection<String> applictations;
 	public Collection<String> deployments;
 	public Collection<String> servers;
-	
+
 	public Collection<EventResult> events;
 	public Graph baselineGraph;
 
-	private static void appendCollection(StringBuilder builder, String name, 
-		Collection<String> value, boolean newline) {
+	private static void appendCollection(StringBuilder builder, String name, Collection<String> value,
+			boolean newline) {
 		builder.append(name);
 		builder.append(" = ");
 
@@ -53,7 +53,7 @@ public class RegressionInput {
 		} else {
 			builder.append("");
 		}
-		
+
 		if (newline) {
 			builder.append("\n");
 		}
@@ -117,60 +117,60 @@ public class RegressionInput {
 			throw new IllegalStateException("Negative Critical Regression Delta");
 		}
 	}
-	
+
 	public double getEventMinThreshold(EventResult event) {
-		
+
 		if (typeThresholdsMap == null) {
 			return minVolumeThreshold;
 		}
-		
+
 		TypeThresholds typeThresholds = typeThresholdsMap.get(event.type);
-		
+
 		if (typeThresholds != null) {
 			return typeThresholds.minVolumeThreshold;
 		} else {
 			return minVolumeThreshold;
 		}
 	}
-	
+
 	public double getEventMinErrorRateThreshold(EventResult event) {
-		
+
 		if (typeThresholdsMap == null) {
 			return minErrorRateThreshold;
 		}
-		
+
 		TypeThresholds typeThresholds = typeThresholdsMap.get(event.type);
-		
+
 		if (typeThresholds != null) {
 			return typeThresholds.minErrorRateThreshold;
 		} else {
 			return minErrorRateThreshold;
 		}
 	}
-	
+
 	public double getEventRegressionDelta(EventResult event) {
-		
+
 		if (typeThresholdsMap == null) {
 			return regressionDelta;
 		}
-		
+
 		TypeThresholds typeThresholds = typeThresholdsMap.get(event.type);
-		
+
 		if (typeThresholds != null) {
 			return typeThresholds.regressionDelta;
 		} else {
 			return regressionDelta;
 		}
 	}
-	
+
 	public double getEventCriticalRegressionDelta(EventResult event) {
-		
+
 		if (typeThresholdsMap == null) {
 			return criticalRegressionDelta;
 		}
-		
+
 		TypeThresholds typeThresholds = typeThresholdsMap.get(event.type);
-		
+
 		if (typeThresholds != null) {
 			return typeThresholds.criticalRegressionDelta;
 		} else {
