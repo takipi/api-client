@@ -188,7 +188,8 @@ public class RegressionStringUtil {
 
 	private static String getRegressionDeploymentName(ApiClient apiClient, RegressionInput regressionInput) {
 
-		RegressionWindow regressionWindow = RegressionUtil.getActiveWindow(apiClient, regressionInput, System.out);
+		RegressionWindow regressionWindow = RegressionUtil.getActiveWindow(apiClient, regressionInput,
+				RegressionUtil.POINT_FACTOR, System.out);
 		return getRegressionDeploymentName(regressionInput, regressionWindow.activeWindowStart);
 	}
 }
