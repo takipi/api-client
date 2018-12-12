@@ -142,6 +142,11 @@ public class RegressionUtil {
 
 		for (GraphPoint graphPoint : baselineGraph.points) {
 			DateTime firstSeen = ISODateTimeFormat.dateTimeParser().parseDateTime(graphPoint.time);
+
+			if (firstSeen.isBefore(baselineStart)) {
+				continue;
+			}
+
 			Minutes timeDelta = Minutes.minutesBetween(baselineStart, firstSeen);
 
 			if (graphPoint.contributors == null) {
@@ -222,8 +227,11 @@ public class RegressionUtil {
 
 		double activeEventRatio = ((double) activeEvent.stats.hits / (double) activeEvent.stats.invocations);
 
-		boolean volumeExceeeded = (input.minVolumeThreshold > 0) && (activeEvent.stats.hits > input.minVolumeThreshold);
-		boolean rateExceeded = (input.minErrorRateThreshold > 0) && (activeEventRatio > input.minErrorRateThreshold);
+		double minVolumeThreshold = input.getEventMinThreshold(activeEvent);
+		double minErrorRateThreshold = input.getEventMinErrorRateThreshold(activeEvent);
+
+		boolean volumeExceeeded = (minVolumeThreshold > 0) && (activeEvent.stats.hits > minVolumeThreshold);
+		boolean rateExceeded = (minErrorRateThreshold > 0) && (activeEventRatio > minErrorRateThreshold);
 
 		if ((!volumeExceeeded) || (!rateExceeded)) {
 
@@ -308,11 +316,14 @@ public class RegressionUtil {
 		double volRateDelta = ((normalizedActiveVolume) / (normalizedBaselineVolume)) - 1;
 		double invRateDelta = ((normalizedActiveInv) / (normalizedBaselineInv)) - 1;
 
-		boolean isCriticalRegression;
-		boolean isRegression = (volRateDelta - Math.max(invRateDelta * 2, 0)) > input.regressionDelta;
+		double eventRegressionDelta = input.getEventRegressionDelta(activeEvent);
+		double eventCriticalRegressionDelta = input.getEventCriticalRegressionDelta(activeEvent);
 
-		if (input.criticalRegressionDelta > 0) {
-			isCriticalRegression = (volRateDelta - Math.max(invRateDelta * 2, 0)) > input.criticalRegressionDelta;
+		boolean isCriticalRegression;
+		boolean isRegression = volRateDelta - Math.max(invRateDelta * 2, 0) > eventRegressionDelta;
+
+		if (eventCriticalRegressionDelta > 0) {
+			isCriticalRegression = volRateDelta - Math.max(invRateDelta * 2, 0) > eventCriticalRegressionDelta;
 		} else {
 			isCriticalRegression = false;
 		}
@@ -618,6 +629,16 @@ public class RegressionUtil {
 		RateRegression.Builder builder = new RateRegression.Builder();
 
 		RegressionWindow regressionWindow = getActiveWindow(apiClient, input, printStream);
+
+		if ((regressionWindow.activeTimespan == 0) && (!regressionWindow.deploymentFound)) {
+
+			if (printStream != null) {
+				printStream.println(
+						"No active timespan set and no deployment volume found in baseline - skipping analysis");
+			}
+
+			return builder.build();
+		}
 
 		builder.setActiveWndowStart(regressionWindow.activeWindowStart);
 		DateTime baselineStart = regressionWindow.activeWindowStart.minusMinutes(input.baselineTimespan);
