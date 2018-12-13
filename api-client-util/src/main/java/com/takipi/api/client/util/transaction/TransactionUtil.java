@@ -13,7 +13,9 @@ import com.google.common.collect.Maps;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.data.transaction.Transaction;
 import com.takipi.api.client.data.transaction.TransactionGraph;
+import com.takipi.api.client.request.transaction.TransactionsGraphRequest;
 import com.takipi.api.client.request.transaction.TransactionsVolumeRequest;
+import com.takipi.api.client.result.transaction.TransactionsGraphResult;
 import com.takipi.api.client.result.transaction.TransactionsVolumeResult;
 import com.takipi.api.core.url.UrlClient.Response;
 import com.takipi.common.util.CollectionUtil;
@@ -61,6 +63,34 @@ public class TransactionUtil {
 		}
 
 		return result;
+	}
+
+	public static Map<String, TransactionGraph> getTransactionGraphs(ApiClient apiClient, String serviceId,
+			String viewId, DateTime to, int timespanMinutes, int pointsWanted) {
+
+		DateTime from = to.minusHours(timespanMinutes);
+
+		return getTransactionGraphs(apiClient, serviceId, viewId, to, from, pointsWanted);
+	}
+
+	public static Map<String, TransactionGraph> getTransactionGraphs(ApiClient apiClient, String serviceId,
+			String viewId, DateTime from, DateTime to, int pointsWanted) {
+
+		DateTimeFormatter fmt = ISODateTimeFormat.dateTime().withZoneUTC();
+
+		TransactionsGraphRequest transactionsGraphRequest = TransactionsGraphRequest.newBuilder()
+				.setServiceId(serviceId).setViewId(viewId).setFrom(from.toString(fmt)).setTo(to.toString(fmt))
+				.setWantedPointCount(pointsWanted).build();
+
+		Response<TransactionsGraphResult> transactionsGraphResponse = apiClient.get(transactionsGraphRequest);
+
+		if (transactionsGraphResponse.isBadResponse()) {
+			throw new IllegalStateException("Failed getting view transaction graphs.");
+		}
+
+		TransactionsGraphResult transactionsGraphResult = transactionsGraphResponse.data;
+
+		return getTransactionGraphsMap(transactionsGraphResult.graphs);
 	}
 
 	public static Map<String, TransactionGraph> getTransactionGraphsMap(
