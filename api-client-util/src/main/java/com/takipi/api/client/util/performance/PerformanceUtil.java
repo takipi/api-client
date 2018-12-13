@@ -9,7 +9,6 @@ import org.joda.time.DateTime;
 
 import com.google.common.collect.Maps;
 import com.takipi.api.client.ApiClient;
-import com.takipi.api.client.data.transaction.Stats;
 import com.takipi.api.client.data.transaction.Transaction;
 import com.takipi.api.client.util.performance.compare.PerformanceCalculator;
 import com.takipi.api.client.util.transaction.TransactionUtil;
@@ -18,14 +17,14 @@ import com.takipi.common.util.CollectionUtil;
 public class PerformanceUtil {
 
 	public static Map<Transaction, PerformanceState> getTransactionStates(Collection<Transaction> activeTransactions,
-			Collection<Transaction> baselineTransactions, PerformanceCalculator<Stats> calculator) {
+			Collection<Transaction> baselineTransactions, PerformanceCalculator<Transaction> calculator) {
 
 		return getTransactionStates(TransactionUtil.getTransactionsMap(activeTransactions),
 				TransactionUtil.getTransactionsMap(baselineTransactions), calculator);
 	}
 
 	public static Map<Transaction, PerformanceState> getTransactionStates(ApiClient apiClient, String serviceId,
-			String viewId, PerformanceCalculator<Stats> calculator, int baselineTimespanMinutes,
+			String viewId, PerformanceCalculator<Transaction> calculator, int baselineTimespanMinutes,
 			int activeTimespanMinutes) {
 
 		DateTime now = DateTime.now();
@@ -44,33 +43,38 @@ public class PerformanceUtil {
 	}
 
 	public static Map<Transaction, PerformanceState> getTransactionStates(Map<String, Transaction> activeTransactions,
-			Map<String, Transaction> baselineTransactions, PerformanceCalculator<Stats> calculator) {
+			Map<String, Transaction> baselineTransactions, PerformanceCalculator<Transaction> calculator) {
+		return getPerformanceStates(activeTransactions, baselineTransactions, calculator);
+	}
+	
+	public static <T> Map<T, PerformanceState> getPerformanceStates(Map<String, T> activeTransactions,
+			Map<String, T> baselineTransactions, PerformanceCalculator<T> calculator) {
 
 		if (CollectionUtil.safeIsEmpty(activeTransactions)) {
 			return Collections.emptyMap();
 		}
 
-		Map<Transaction, PerformanceState> result = Maps.newHashMapWithExpectedSize(activeTransactions.size());
+		Map<T, PerformanceState> result = Maps.newHashMapWithExpectedSize(activeTransactions.size());
 
 		if (CollectionUtil.safeIsEmpty(baselineTransactions)) {
-			for (Entry<String, Transaction> entry : activeTransactions.entrySet()) {
+			for (Entry<String, T> entry : activeTransactions.entrySet()) {
 				result.put(entry.getValue(), PerformanceState.NO_DATA);
 			}
 
 			return result;
 		}
 
-		for (Entry<String, Transaction> entry : activeTransactions.entrySet()) {
+		for (Entry<String, T> entry : activeTransactions.entrySet()) {
 			String transactionName = entry.getKey();
-			Transaction activeTransaction = entry.getValue();
-			Transaction baselineTransaction = baselineTransactions.get(transactionName);
+			T activeTransaction = entry.getValue();
+			T baselineTransaction = baselineTransactions.get(transactionName);
 
 			if (baselineTransaction == null) {
 				result.put(activeTransaction, PerformanceState.NO_DATA);
 				continue;
 			}
 
-			PerformanceState performanceState = calculator.calc(activeTransaction.stats, baselineTransaction.stats);
+			PerformanceState performanceState = calculator.calc(activeTransaction, baselineTransaction);
 
 			result.put(activeTransaction, performanceState);
 		}

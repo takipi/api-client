@@ -12,6 +12,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.data.transaction.Transaction;
+import com.takipi.api.client.data.transaction.TransactionGraph;
 import com.takipi.api.client.request.transaction.TransactionsVolumeRequest;
 import com.takipi.api.client.result.transaction.TransactionsVolumeResult;
 import com.takipi.api.core.url.UrlClient.Response;
@@ -46,6 +47,22 @@ public class TransactionUtil {
 		return getTransactionsMap(transactionsResult.transactions);
 	}
 
+	public static Map<String, TransactionGraph> getTransactionGraphsMap(Collection<TransactionGraph> transactionGraphs) {
+		if (CollectionUtil.safeIsEmpty(transactionGraphs)) {
+			return Collections.emptyMap();
+		}
+
+		Map<String, TransactionGraph> result = Maps.newHashMapWithExpectedSize(transactionGraphs.size());
+
+		for (TransactionGraph transactionGraph : transactionGraphs) {
+			if (!Strings.isNullOrEmpty(transactionGraph.name)) {
+				result.put(transactionGraph.name, transactionGraph);
+			}
+		}
+
+		return result;
+	}
+	
 	public static Map<String, Transaction> getTransactionsMap(Collection<Transaction> transactions) {
 		if (CollectionUtil.safeIsEmpty(transactions)) {
 			return Collections.emptyMap();

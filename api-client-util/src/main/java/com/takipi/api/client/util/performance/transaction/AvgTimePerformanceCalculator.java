@@ -1,10 +1,11 @@
 package com.takipi.api.client.util.performance.transaction;
 
 import com.takipi.api.client.data.transaction.Stats;
+import com.takipi.api.client.data.transaction.Transaction;
 import com.takipi.api.client.util.performance.PerformanceState;
 import com.takipi.api.client.util.performance.compare.PerformanceCalculator;
 
-public class AvgTimePerformanceCalculator implements PerformanceCalculator<Stats> {
+public class AvgTimePerformanceCalculator implements PerformanceCalculator<Transaction> {
 	private final long minActiveInvocations;
 	private final long minBaselineInvocations;
 	private final double slowThresholdPercentage;
@@ -20,20 +21,23 @@ public class AvgTimePerformanceCalculator implements PerformanceCalculator<Stats
 	}
 
 	@Override
-	public PerformanceState calc(Stats active, Stats baseline) {
-		if ((active == null) || (baseline == null)) {
+	public PerformanceState calc(Transaction active, Transaction baseline) {
+		if ((active == null) || (active.stats == null) || (baseline == null) || (baseline.stats == null)) {
 			return PerformanceState.NO_DATA;
 		}
 
-		if ((active.invocations < minActiveInvocations) || (baseline.invocations < minBaselineInvocations)) {
+		Stats activeStats = active.stats;
+		Stats baselineStats = baseline.stats;
+		
+		if ((activeStats.invocations < minActiveInvocations) || (baselineStats.invocations < minBaselineInvocations)) {
 			return PerformanceState.NO_DATA;
 		}
 
-		if (active.avg_time >= (baseline.avg_time * criticalThresholdPercentage)) {
+		if (activeStats.avg_time >= (baselineStats.avg_time * criticalThresholdPercentage)) {
 			return PerformanceState.CRITICAL;
 		}
 
-		if (active.avg_time >= (baseline.avg_time * slowThresholdPercentage)) {
+		if (activeStats.avg_time >= (baselineStats.avg_time * slowThresholdPercentage)) {
 			return PerformanceState.SLOWING;
 		}
 
