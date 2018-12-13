@@ -1,12 +1,13 @@
 package com.takipi.api.client.util.performance.transaction;
 
+import com.takipi.api.client.data.transaction.Stats;
 import com.takipi.api.client.data.transaction.TransactionGraph;
 import com.takipi.api.client.data.transaction.TransactionGraph.GraphPoint;
 import com.takipi.api.client.util.performance.calc.PerformanceCalculator;
 import com.takipi.api.client.util.performance.calc.PerformanceScore;
 import com.takipi.api.client.util.performance.calc.PerformanceState;
+import com.takipi.api.client.util.transaction.TransactionUtil;
 import com.takipi.common.util.CollectionUtil;
-import com.takipi.common.util.MathUtil;
 
 public class GraphPerformanceCalculator implements PerformanceCalculator<TransactionGraph> {
 	private final long activeInvocationsThreshold;
@@ -32,51 +33,16 @@ public class GraphPerformanceCalculator implements PerformanceCalculator<Transac
 			return PerformanceScore.NO_DATA;
 		}
 
-		double totalActiveInvocations = 0.0;
+		Stats activeStats = TransactionUtil.aggregateGraph(active);
+		Stats baselineStats = TransactionUtil.aggregateGraph(baseline);
 
-		for (GraphPoint p : active.points) {
-			if (p.stats == null) {
-				continue;
-			}
-
-			totalActiveInvocations += p.stats.invocations;
-		}
-
-		if (totalActiveInvocations < this.activeInvocationsThreshold) {
+		if ((activeStats.invocations < this.activeInvocationsThreshold)
+				|| (baselineStats.invocations < this.baselineInvocationsThreshold) || (baselineStats.avg_time <= 0.0)) {
 			return PerformanceScore.NO_DATA;
 		}
-
-		double[] baselineInvocations = new double[baseline.points.size()];
-
-		double[] baselineAvg = new double[baseline.points.size()];
-
-		for (int i = 0; i < baseline.points.size(); i++) {
-			GraphPoint p = baseline.points.get(i);
-
-			if (p.stats == null) {
-				continue;
-			}
-
-			baselineInvocations[i] = p.stats.invocations;
-			baselineAvg[i] = p.stats.avg_time;
-		}
-
-		double totalBaselineInvocations = MathUtil.sum(baselineInvocations);
-
-		if (totalBaselineInvocations < this.baselineInvocationsThreshold) {
-			return PerformanceScore.NO_DATA;
-		}
-
-		double weightedAvg = MathUtil.weightedAvg(baselineAvg, baselineInvocations);
-
-		if (weightedAvg <= 0) {
-			return PerformanceScore.NO_DATA;
-		}
-
-		double weightedStdDev = MathUtil.wightedStdDev(baselineAvg, baselineInvocations);
 
 		double badPointsScore = 0.0;
-		double threshold = weightedAvg + (weightedStdDev * this.stdDevFactor);
+		double threshold = baselineStats.avg_time + (baselineStats.avg_time_std_deviation * this.stdDevFactor);
 
 		for (GraphPoint p : active.points) {
 			if (p.stats == null) {
@@ -87,7 +53,7 @@ public class GraphPerformanceCalculator implements PerformanceCalculator<Transac
 				continue;
 			}
 
-			double pointScore = p.stats.invocations / totalActiveInvocations;
+			double pointScore = p.stats.invocations / (double) activeStats.invocations;
 
 			badPointsScore += pointScore;
 		}
