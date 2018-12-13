@@ -47,22 +47,6 @@ public class TransactionUtil {
 		return getTransactionsMap(transactionsResult.transactions);
 	}
 
-	public static Map<String, TransactionGraph> getTransactionGraphsMap(Collection<TransactionGraph> transactionGraphs) {
-		if (CollectionUtil.safeIsEmpty(transactionGraphs)) {
-			return Collections.emptyMap();
-		}
-
-		Map<String, TransactionGraph> result = Maps.newHashMapWithExpectedSize(transactionGraphs.size());
-
-		for (TransactionGraph transactionGraph : transactionGraphs) {
-			if (!Strings.isNullOrEmpty(transactionGraph.name)) {
-				result.put(transactionGraph.name, transactionGraph);
-			}
-		}
-
-		return result;
-	}
-	
 	public static Map<String, Transaction> getTransactionsMap(Collection<Transaction> transactions) {
 		if (CollectionUtil.safeIsEmpty(transactions)) {
 			return Collections.emptyMap();
@@ -73,6 +57,23 @@ public class TransactionUtil {
 		for (Transaction transaction : transactions) {
 			if (!Strings.isNullOrEmpty(transaction.name)) {
 				result.put(transaction.name, transaction);
+			}
+		}
+
+		return result;
+	}
+
+	public static Map<String, TransactionGraph> getTransactionGraphsMap(
+			Collection<TransactionGraph> transactionGraphs) {
+		if (CollectionUtil.safeIsEmpty(transactionGraphs)) {
+			return Collections.emptyMap();
+		}
+
+		Map<String, TransactionGraph> result = Maps.newHashMapWithExpectedSize(transactionGraphs.size());
+
+		for (TransactionGraph transactionGraph : transactionGraphs) {
+			if (!Strings.isNullOrEmpty(transactionGraph.name)) {
+				result.put(transactionGraph.name, transactionGraph);
 			}
 		}
 
