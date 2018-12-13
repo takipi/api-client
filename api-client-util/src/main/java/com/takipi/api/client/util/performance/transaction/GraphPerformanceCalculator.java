@@ -10,14 +10,16 @@ import com.takipi.common.util.MathUtil;
 
 public class GraphPerformanceCalculator implements PerformanceCalculator<TransactionGraph> {
 	private final long activeInvocationsThreshold;
+	private final long baselineInvocationsThreshold;
 	private final double overAvgSlowingPercentage;
 	private final double overAvgCriticalPercentage;
 	private final double stdDevFactor;
 
-	private GraphPerformanceCalculator(long activeInvocationsThreshold, double overAvgSlowingPercentage,
-			double overAvgCriticalPercentage, double stdDevFactor) {
+	private GraphPerformanceCalculator(long activeInvocationsThreshold, long baselineInvocationsThreshold,
+			double overAvgSlowingPercentage, double overAvgCriticalPercentage, double stdDevFactor) {
 
 		this.activeInvocationsThreshold = activeInvocationsThreshold;
+		this.baselineInvocationsThreshold = baselineInvocationsThreshold;
 		this.overAvgSlowingPercentage = overAvgSlowingPercentage;
 		this.overAvgCriticalPercentage = overAvgCriticalPercentage;
 		this.stdDevFactor = stdDevFactor;
@@ -45,6 +47,7 @@ public class GraphPerformanceCalculator implements PerformanceCalculator<Transac
 		}
 
 		double[] baselineInvocations = new double[baseline.points.size()];
+
 		double[] baselineAvg = new double[baseline.points.size()];
 
 		for (int i = 0; i < baseline.points.size(); i++) {
@@ -56,6 +59,12 @@ public class GraphPerformanceCalculator implements PerformanceCalculator<Transac
 
 			baselineInvocations[i] = p.stats.invocations;
 			baselineAvg[i] = p.stats.avg_time;
+		}
+
+		double totalBaselineInvocations = MathUtil.sum(baselineInvocations);
+
+		if (totalBaselineInvocations < this.baselineInvocationsThreshold) {
+			return PerformanceScore.NO_DATA;
 		}
 
 		double weightedAvg = MathUtil.weightedAvg(baselineAvg, baselineInvocations);
@@ -96,10 +105,10 @@ public class GraphPerformanceCalculator implements PerformanceCalculator<Transac
 		return PerformanceScore.of(PerformanceState.OK, slowingPercentage);
 	}
 
-	public static GraphPerformanceCalculator of(long activeInvocationsThreshold, double overAvgSlowingPercentage,
-			double overAvgCriticalPercentage, double stdDevFactor) {
+	public static GraphPerformanceCalculator of(long activeInvocationsThreshold, long baselineInvocationsThreshold,
+			double overAvgSlowingPercentage, double overAvgCriticalPercentage, double stdDevFactor) {
 
-		return new GraphPerformanceCalculator(activeInvocationsThreshold, overAvgSlowingPercentage,
-				overAvgCriticalPercentage, stdDevFactor);
+		return new GraphPerformanceCalculator(activeInvocationsThreshold, baselineInvocationsThreshold,
+				overAvgSlowingPercentage, overAvgCriticalPercentage, stdDevFactor);
 	}
 }
