@@ -10,20 +10,21 @@ import org.joda.time.DateTime;
 import com.google.common.collect.Maps;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.data.transaction.Transaction;
-import com.takipi.api.client.util.performance.compare.PerformanceCalculator;
+import com.takipi.api.client.util.performance.calc.PerformanceCalculator;
+import com.takipi.api.client.util.performance.calc.PerformanceScore;
 import com.takipi.api.client.util.transaction.TransactionUtil;
 import com.takipi.common.util.CollectionUtil;
 
 public class PerformanceUtil {
 
-	public static Map<Transaction, PerformanceState> getTransactionStates(Collection<Transaction> activeTransactions,
+	public static Map<Transaction, PerformanceScore> getTransactionStates(Collection<Transaction> activeTransactions,
 			Collection<Transaction> baselineTransactions, PerformanceCalculator<Transaction> calculator) {
 
 		return getTransactionStates(TransactionUtil.getTransactionsMap(activeTransactions),
 				TransactionUtil.getTransactionsMap(baselineTransactions), calculator);
 	}
 
-	public static Map<Transaction, PerformanceState> getTransactionStates(ApiClient apiClient, String serviceId,
+	public static Map<Transaction, PerformanceScore> getTransactionStates(ApiClient apiClient, String serviceId,
 			String viewId, PerformanceCalculator<Transaction> calculator, int baselineTimespanMinutes,
 			int activeTimespanMinutes) {
 
@@ -42,41 +43,41 @@ public class PerformanceUtil {
 		return getTransactionStates(activeTransactions, baselineTransactions, calculator);
 	}
 
-	public static Map<Transaction, PerformanceState> getTransactionStates(Map<String, Transaction> activeTransactions,
+	public static Map<Transaction, PerformanceScore> getTransactionStates(Map<String, Transaction> activeTransactions,
 			Map<String, Transaction> baselineTransactions, PerformanceCalculator<Transaction> calculator) {
 		return getPerformanceStates(activeTransactions, baselineTransactions, calculator);
 	}
-	
-	public static <T> Map<T, PerformanceState> getPerformanceStates(Map<String, T> activeTransactions,
-			Map<String, T> baselineTransactions, PerformanceCalculator<T> calculator) {
 
-		if (CollectionUtil.safeIsEmpty(activeTransactions)) {
+	public static <T> Map<T, PerformanceScore> getPerformanceStates(Map<String, T> activeTargets,
+			Map<String, T> baselineTargets, PerformanceCalculator<T> calculator) {
+
+		if (CollectionUtil.safeIsEmpty(activeTargets)) {
 			return Collections.emptyMap();
 		}
 
-		Map<T, PerformanceState> result = Maps.newHashMapWithExpectedSize(activeTransactions.size());
+		Map<T, PerformanceScore> result = Maps.newHashMapWithExpectedSize(activeTargets.size());
 
-		if (CollectionUtil.safeIsEmpty(baselineTransactions)) {
-			for (Entry<String, T> entry : activeTransactions.entrySet()) {
-				result.put(entry.getValue(), PerformanceState.NO_DATA);
+		if (CollectionUtil.safeIsEmpty(baselineTargets)) {
+			for (Entry<String, T> entry : activeTargets.entrySet()) {
+				result.put(entry.getValue(), PerformanceScore.NO_DATA);
 			}
 
 			return result;
 		}
 
-		for (Entry<String, T> entry : activeTransactions.entrySet()) {
-			String transactionName = entry.getKey();
-			T activeTransaction = entry.getValue();
-			T baselineTransaction = baselineTransactions.get(transactionName);
+		for (Entry<String, T> entry : activeTargets.entrySet()) {
+			String name = entry.getKey();
+			T active = entry.getValue();
+			T baseline = baselineTargets.get(name);
 
-			if (baselineTransaction == null) {
-				result.put(activeTransaction, PerformanceState.NO_DATA);
+			if (baseline == null) {
+				result.put(active, PerformanceScore.NO_DATA);
 				continue;
 			}
 
-			PerformanceState performanceState = calculator.calc(activeTransaction, baselineTransaction);
+			PerformanceScore score = calculator.calc(active, baseline);
 
-			result.put(activeTransaction, performanceState);
+			result.put(active, score);
 		}
 
 		return result;

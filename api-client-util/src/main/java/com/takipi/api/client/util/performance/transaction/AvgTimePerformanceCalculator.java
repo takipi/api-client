@@ -2,8 +2,9 @@ package com.takipi.api.client.util.performance.transaction;
 
 import com.takipi.api.client.data.transaction.Stats;
 import com.takipi.api.client.data.transaction.Transaction;
-import com.takipi.api.client.util.performance.PerformanceState;
-import com.takipi.api.client.util.performance.compare.PerformanceCalculator;
+import com.takipi.api.client.util.performance.calc.PerformanceCalculator;
+import com.takipi.api.client.util.performance.calc.PerformanceScore;
+import com.takipi.api.client.util.performance.calc.PerformanceState;
 
 public class AvgTimePerformanceCalculator implements PerformanceCalculator<Transaction> {
 	private final long minActiveInvocations;
@@ -21,27 +22,34 @@ public class AvgTimePerformanceCalculator implements PerformanceCalculator<Trans
 	}
 
 	@Override
-	public PerformanceState calc(Transaction active, Transaction baseline) {
-		if ((active == null) || (active.stats == null) || (baseline == null) || (baseline.stats == null)) {
-			return PerformanceState.NO_DATA;
+	public PerformanceScore calc(Transaction active, Transaction baseline) {
+		if ((active == null) || (active.stats == null) || (active.stats.avg_time <= 0) || (baseline == null)
+				|| (baseline.stats == null) || (baseline.stats.avg_time <= 0)) {
+			return PerformanceScore.NO_DATA;
 		}
 
 		Stats activeStats = active.stats;
 		Stats baselineStats = baseline.stats;
-		
+
 		if ((activeStats.invocations < minActiveInvocations) || (baselineStats.invocations < minBaselineInvocations)) {
-			return PerformanceState.NO_DATA;
+			return PerformanceScore.NO_DATA;
 		}
 
+		double rateIncrease = prettyPercentage(activeStats.avg_time, baselineStats.avg_time);
+
 		if (activeStats.avg_time >= (baselineStats.avg_time * criticalThresholdPercentage)) {
-			return PerformanceState.CRITICAL;
+			return PerformanceScore.of(PerformanceState.CRITICAL, rateIncrease);
 		}
 
 		if (activeStats.avg_time >= (baselineStats.avg_time * slowThresholdPercentage)) {
-			return PerformanceState.SLOWING;
+			return PerformanceScore.of(PerformanceState.SLOWING, rateIncrease);
 		}
 
-		return PerformanceState.OK;
+		return PerformanceScore.of(PerformanceState.OK, rateIncrease);
+	}
+
+	private static double prettyPercentage(double numerator, double denominator) {
+		return ((numerator / denominator) - 1) * 100.0;
 	}
 
 	public static AvgTimePerformanceCalculator of(long minActiveInvocations, long minBaselineInvocations,
