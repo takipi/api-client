@@ -14,4 +14,24 @@ public class TransactionGraph {
 		public String time;
 		public Stats stats;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+
+		if ((obj == null) || (!(obj instanceof TransactionGraph))) {
+			return false;
+		}
+
+		TransactionGraph other = (TransactionGraph) obj;
+
+		return ((this.name != null) && (other.name != null) && (name.equals(other.name)));
+	}
+
+	@Override
+	public int hashCode() {
+		return (name != null ? name.hashCode() : super.hashCode());
+	}
 }
