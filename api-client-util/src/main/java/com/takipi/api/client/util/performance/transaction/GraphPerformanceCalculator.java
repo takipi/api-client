@@ -18,7 +18,8 @@ public class GraphPerformanceCalculator implements PerformanceCalculator<Transac
 	private final double stdDevFactor;
 
 	private GraphPerformanceCalculator(long activeInvocationsThreshold, long baselineInvocationsThreshold,
-			int minDeltaThreshold, double overAvgSlowingPercentage, double overAvgCriticalPercentage, double stdDevFactor) {
+			int minDeltaThreshold, double overAvgSlowingPercentage, double overAvgCriticalPercentage,
+			double stdDevFactor) {
 
 		this.activeInvocationsThreshold = activeInvocationsThreshold;
 		this.baselineInvocationsThreshold = baselineInvocationsThreshold;
@@ -42,7 +43,7 @@ public class GraphPerformanceCalculator implements PerformanceCalculator<Transac
 				|| (baselineStats.invocations < this.baselineInvocationsThreshold) || (baselineStats.avg_time <= 0.0)) {
 			return PerformanceScore.NO_DATA;
 		}
-		
+
 		double badPointsScore = 0.0;
 		double threshold = baselineStats.avg_time + (baselineStats.avg_time_std_deviation * this.stdDevFactor);
 
@@ -63,11 +64,11 @@ public class GraphPerformanceCalculator implements PerformanceCalculator<Transac
 		double slowingPercentage = badPointsScore * 100;
 
 		if (activeStats.avg_time - baselineStats.avg_time > minDeltaThreshold) {
-		
+
 			if (badPointsScore >= this.overAvgCriticalPercentage) {
 				return PerformanceScore.of(PerformanceState.CRITICAL, slowingPercentage);
 			}
-	
+
 			if (badPointsScore >= this.overAvgSlowingPercentage) {
 				return PerformanceScore.of(PerformanceState.SLOWING, slowingPercentage);
 			}
@@ -77,7 +78,8 @@ public class GraphPerformanceCalculator implements PerformanceCalculator<Transac
 	}
 
 	public static GraphPerformanceCalculator of(long activeInvocationsThreshold, long baselineInvocationsThreshold,
-			int minDeltaThreshold, double overAvgSlowingPercentage, double overAvgCriticalPercentage, double stdDevFactor) {
+			int minDeltaThreshold, double overAvgSlowingPercentage, double overAvgCriticalPercentage,
+			double stdDevFactor) {
 
 		return new GraphPerformanceCalculator(activeInvocationsThreshold, baselineInvocationsThreshold,
 				minDeltaThreshold, overAvgSlowingPercentage, overAvgCriticalPercentage, stdDevFactor);
