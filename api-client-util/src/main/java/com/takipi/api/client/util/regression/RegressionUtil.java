@@ -484,9 +484,9 @@ public class RegressionUtil {
 		return true;
 	}
 
-	private static DateTime getDeploymentStartTime(ApiClient apiClient, 
-		String serviceId, Collection<String> deployments, boolean active) {
-		
+	private static DateTime getDeploymentStartTime(ApiClient apiClient, String serviceId,
+			Collection<String> deployments, boolean active) {
+
 		DeploymentsRequest request = DeploymentsRequest.newBuilder().setServiceId(serviceId).setActive(active).build();
 
 		Response<DeploymentsResult> response = apiClient.get(request);
@@ -495,7 +495,7 @@ public class RegressionUtil {
 			throw new IllegalStateException(
 					"Could not acquire deployments for service " + serviceId + " . Error " + response.responseCode);
 		}
-		
+
 		if (response.data.deployments == null) {
 			return null;
 		}
@@ -504,19 +504,19 @@ public class RegressionUtil {
 				return ISODateTimeFormat.dateTime().withZoneUTC().parseDateTime(dep.first_seen);
 			}
 		}
-		
+
 		return null;
 	}
 
-	
-	private static DateTime getDeploymentStartTime(ApiClient apiClient, String serviceId, Collection<String> deployments) {
+	private static DateTime getDeploymentStartTime(ApiClient apiClient, String serviceId,
+			Collection<String> deployments) {
 
 		DateTime result = getDeploymentStartTime(apiClient, serviceId, deployments, true);
-		
+
 		if (result == null) {
 			result = getDeploymentStartTime(apiClient, serviceId, deployments, false);
 		}
-		
+
 		return result;
 	}
 
@@ -534,8 +534,7 @@ public class RegressionUtil {
 
 			if (!CollectionUtil.safeIsEmpty(input.deployments)) {
 
-				result.activeWindowStart = getDeploymentStartTime(apiClient, input.serviceId,
-						input.deployments);
+				result.activeWindowStart = getDeploymentStartTime(apiClient, input.serviceId, input.deployments);
 
 				if (result.activeWindowStart != null) {
 					result.deploymentFound = true;
