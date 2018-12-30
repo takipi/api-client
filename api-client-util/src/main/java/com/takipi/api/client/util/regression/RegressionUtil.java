@@ -12,24 +12,23 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import org.joda.time.DateTime;
-import org.joda.time.Days;
 import org.joda.time.Minutes;
-import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 import com.google.common.collect.Maps;
 import com.takipi.api.client.ApiClient;
+import com.takipi.api.client.data.deployment.SummarizedDeployment;
 import com.takipi.api.client.data.event.Stats;
 import com.takipi.api.client.data.metrics.Graph;
 import com.takipi.api.client.data.metrics.Graph.GraphPoint;
 import com.takipi.api.client.data.metrics.Graph.GraphPointContributor;
 import com.takipi.api.client.request.ViewTimeframeRequest;
+import com.takipi.api.client.request.deployment.DeploymentsRequest;
 import com.takipi.api.client.request.event.EventsVolumeRequest;
-import com.takipi.api.client.request.metrics.GraphRequest;
+import com.takipi.api.client.result.deployment.DeploymentsResult;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.result.event.EventsVolumeResult;
 import com.takipi.api.client.result.metrics.GraphResult;
-import com.takipi.api.client.util.validation.ValidationUtil.GraphType;
 import com.takipi.api.client.util.validation.ValidationUtil.VolumeType;
 import com.takipi.api.client.util.view.ViewUtil;
 import com.takipi.api.core.url.UrlClient.Response;
@@ -46,8 +45,6 @@ public class RegressionUtil {
 		public int activeTimespan;
 		public boolean deploymentFound;
 	}
-
-	private static final DateTimeFormatter fmt = ISODateTimeFormat.dateTime().withZoneUTC();
 
 	enum RegressionState {
 		YES, NO, NO_DATA;
@@ -487,52 +484,43 @@ public class RegressionUtil {
 		return true;
 	}
 
-	private static DateTime getDeploymentStartTime(ApiClient apiClient, String serviceId, String viewId, DateTime from,
-			DateTime to, int pointsCount, Collection<String> deployments) {
+	private static DateTime getDeploymentStartTime(ApiClient apiClient, String serviceId,
+			Collection<String> deployments, boolean active) {
 
-		GraphRequest.Builder builder = GraphRequest.newBuilder().setServiceId(serviceId).setViewId(viewId)
-				.setGraphType(GraphType.view).setFrom(from.toString(fmt)).setTo(to.toString(fmt))
-				.setVolumeType(VolumeType.all).setWantedPointCount(pointsCount);
+		DeploymentsRequest request = DeploymentsRequest.newBuilder().setServiceId(serviceId).setActive(active).build();
 
-		for (String dep : deployments) {
-			builder.addDeployment(dep);
+		Response<DeploymentsResult> response = apiClient.get(request);
+
+		if ((response.isBadResponse()) || (response.data == null)) {
+			throw new IllegalStateException(
+					"Could not acquire deployments for service " + serviceId + " . Error " + response.responseCode);
 		}
 
-		Response<GraphResult> graphResponse = apiClient.get(builder.build());
-
-		if (graphResponse.isBadResponse()) {
+		if (response.data.deployments == null) {
 			return null;
 		}
-
-		GraphResult graphResult = graphResponse.data;
-
-		if (graphResult == null) {
-			return null;
-		}
-
-		if (CollectionUtil.safeIsEmpty(graphResult.graphs)) {
-			return null;
-		}
-
-		Graph graph = graphResult.graphs.get(0);
-
-		if (CollectionUtil.safeIsEmpty(graph.points)) {
-			return null;
-		}
-
-		for (int i = 0; i < graph.points.size(); i++) {
-
-			GraphPoint gp = graph.points.get(i);
-
-			if ((gp.stats.hits != 0) || (gp.stats.invocations != 0)) {
-				return ISODateTimeFormat.dateTime().withZoneUTC().parseDateTime(gp.time);
+		for (SummarizedDeployment dep : response.data.deployments) {
+			if ((deployments.contains(dep.name) && (dep.first_seen != null))) {
+				return ISODateTimeFormat.dateTime().withZoneUTC().parseDateTime(dep.first_seen);
 			}
 		}
 
 		return null;
 	}
 
-	public static RegressionWindow getActiveWindow(ApiClient apiClient, RegressionInput input, int pointsFactor,
+	private static DateTime getDeploymentStartTime(ApiClient apiClient, String serviceId,
+			Collection<String> deployments) {
+
+		DateTime result = getDeploymentStartTime(apiClient, serviceId, deployments, true);
+
+		if (result == null) {
+			result = getDeploymentStartTime(apiClient, serviceId, deployments, false);
+		}
+
+		return result;
+	}
+
+	public static RegressionWindow getActiveWindow(ApiClient apiClient, RegressionInput input,
 			PrintStream printStream) {
 
 		RegressionWindow result = new RegressionWindow();
@@ -546,11 +534,7 @@ public class RegressionUtil {
 
 			if (!CollectionUtil.safeIsEmpty(input.deployments)) {
 
-				DateTime from = now.minusMinutes(input.baselineTimespan + input.activeTimespan);
-				int pointsWanted = Days.daysBetween(from, now).getDays() * pointsFactor;
-
-				result.activeWindowStart = getDeploymentStartTime(apiClient, input.serviceId, input.viewId, from, now,
-						pointsWanted, input.deployments);
+				result.activeWindowStart = getDeploymentStartTime(apiClient, input.serviceId, input.deployments);
 
 				if (result.activeWindowStart != null) {
 					result.deploymentFound = true;
@@ -636,7 +620,7 @@ public class RegressionUtil {
 
 		RateRegression.Builder builder = new RateRegression.Builder();
 
-		RegressionWindow regressionWindow = getActiveWindow(apiClient, input, POINT_FACTOR, printStream);
+		RegressionWindow regressionWindow = getActiveWindow(apiClient, input, printStream);
 
 		if ((regressionWindow.activeTimespan == 0) && (!regressionWindow.deploymentFound)) {
 
