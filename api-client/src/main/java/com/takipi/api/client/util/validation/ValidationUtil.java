@@ -16,6 +16,10 @@ public class ValidationUtil {
 		return ((isLegalId(eventId, ApiConstants.PACK_PREFIX)) || (isInteger(eventId)));
 	}
 
+	public static boolean isLegalLibraryId(String serviceId) {
+		return isLegalId(serviceId, ApiConstants.LIBRARIES_PREFIX);
+	}
+
 	public static boolean isLegalId(String id, String prefix) {
 		if (Strings.isNullOrEmpty(id)) {
 			return false;

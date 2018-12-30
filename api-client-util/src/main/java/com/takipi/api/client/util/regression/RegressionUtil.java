@@ -499,6 +499,7 @@ public class RegressionUtil {
 		if (response.data.deployments == null) {
 			return null;
 		}
+
 		for (SummarizedDeployment dep : response.data.deployments) {
 			if ((deployments.contains(dep.name) && (dep.first_seen != null))) {
 				return ISODateTimeFormat.dateTime().withZoneUTC().parseDateTime(dep.first_seen);
