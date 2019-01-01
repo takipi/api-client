@@ -26,6 +26,8 @@ public class EventResult implements ApiResult, Cloneable {
 
 	public List<String> similar_event_ids;
 	public boolean is_rethrow;
+	
+	public String jira_issue_url;
 
 	public Stats stats;
 

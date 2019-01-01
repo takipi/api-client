@@ -225,7 +225,7 @@ public class ViewUtil {
 
 		GraphRequest graphRequest = GraphRequest.newBuilder().setServiceId(serviceId).setViewId(viewId)
 				.setGraphType(GraphType.view).setFrom(from.toString(fmt)).setTo(to.toString(fmt))
-				.setVolumeType(volumeType).setWantedPointCount(pointsCount).build();
+				.setVolumeType(volumeType).setWantedPointCount(pointsCount).setRaw(true).build();
 
 		Response<GraphResult> graphResponse = apiClient.get(graphRequest);
 

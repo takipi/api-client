@@ -39,7 +39,8 @@ import com.takipi.common.util.Pair;
 public class RegressionUtil {
 
 	public static final int POINT_FACTOR = 60;
-
+	private static final int MAX_BASELINE_POINTS = 100;
+	
 	public static class RegressionWindow {
 		public DateTime activeWindowStart;
 		public int activeTimespan;
@@ -575,13 +576,18 @@ public class RegressionUtil {
 		if (input.baselineGraph != null) {
 			result = input.baselineGraph;
 		} else {
-			int pointsWanted = input.baselineTimespan / activeTimespan * 2;
+			int pointsWanted = Math.min(input.baselineTimespan / activeTimespan * 2,
+				MAX_BASELINE_POINTS);
 
 			if (pointsWanted > 0) {
 				GraphResult graphResult = ViewUtil.getEventsGraphResult(apiClient, input.serviceId, input.viewId,
 						pointsWanted, VolumeType.all, baselineStart, activeWindowStart);
 
-				result = validateGraph(apiClient, graphResult, input, printStream);
+				if (graphResult != null) {
+					result = validateGraph(apiClient, graphResult, input, printStream);
+				} else {
+					result = null;
+				}
 			} else {
 				result = null;
 			}
