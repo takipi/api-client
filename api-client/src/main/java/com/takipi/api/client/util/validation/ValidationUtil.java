@@ -53,4 +53,8 @@ public class ValidationUtil {
 	public enum VolumeType {
 		hits, invocations, all,
 	}
+
+	public enum GraphResolution {
+		M1, M5, H1, H8
+	}
 }

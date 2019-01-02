@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import com.takipi.api.client.request.ViewTimeframeRequest;
 import com.takipi.api.client.result.metrics.GraphResult;
+import com.takipi.api.client.util.validation.ValidationUtil.GraphResolution;
 import com.takipi.api.client.util.validation.ValidationUtil.GraphType;
 import com.takipi.api.client.util.validation.ValidationUtil.VolumeType;
 import com.takipi.api.core.request.intf.ApiGetRequest;
@@ -13,15 +14,17 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 	public final GraphType graphType;
 	public final VolumeType volumeType;
 	public final int wantedPointCount;
+	public final GraphResolution resolution;
 
 	GraphRequest(String serviceId, String viewId, GraphType graphType, VolumeType volumeType, String from, String to,
-			boolean raw, int wantedPointCount, Collection<String> servers, Collection<String> apps,
-			Collection<String> deployments) {
+			boolean raw, int wantedPointCount, GraphResolution resolution, Collection<String> servers,
+			Collection<String> apps, Collection<String> deployments) {
 		super(serviceId, viewId, from, to, raw, servers, apps, deployments);
 
 		this.graphType = graphType;
 		this.volumeType = volumeType;
 		this.wantedPointCount = wantedPointCount;
+		this.resolution = resolution;
 	}
 
 	@Override
@@ -36,7 +39,7 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 
 	@Override
 	protected int paramsCount() {
-		// One slot for the points count.
+		// One slot for the points count / resolution.
 		//
 		return super.paramsCount() + 1 + (volumeType != null ? 1 : 0);
 	}
@@ -45,7 +48,11 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 	protected int fillParams(String[] params, int startIndex) throws UnsupportedEncodingException {
 		int index = super.fillParams(params, startIndex);
 
-		params[index++] = "points=" + String.valueOf(wantedPointCount);
+		if (resolution != null) {
+			params[index++] = "resolution=" + resolution.name();
+		} else {
+			params[index++] = "points=" + String.valueOf(wantedPointCount);
+		}
 
 		if (volumeType != null) {
 			params[index++] = "stats=" + volumeType.name();
@@ -67,6 +74,7 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 		private GraphType graphType;
 		private VolumeType volumeType;
 		private int wantedPointCount;
+		private GraphResolution resolution;
 
 		@Override
 		public Builder setServiceId(String serviceId) {
@@ -121,6 +129,12 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 			return this;
 		}
 
+		public Builder setResolution(GraphResolution resolution) {
+			this.resolution = resolution;
+
+			return this;
+		}
+
 		@Override
 		public Builder addServer(String server) {
 			super.addServer(server);
@@ -146,8 +160,9 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 		protected void validate() {
 			super.validate();
 
-			if (wantedPointCount <= 0) {
-				throw new IllegalArgumentException("Illegal wanted point count - " + wantedPointCount);
+			if ((resolution == null) && (wantedPointCount <= 0)) {
+				throw new IllegalArgumentException(
+						"Missing graph resolution with illegal wanted point count - " + wantedPointCount);
 			}
 
 			if (graphType == null) {
@@ -158,8 +173,8 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 		public GraphRequest build() {
 			validate();
 
-			return new GraphRequest(serviceId, viewId, graphType, volumeType, from, to, raw, wantedPointCount, servers,
-					apps, deployments);
+			return new GraphRequest(serviceId, viewId, graphType, volumeType, from, to, raw, wantedPointCount,
+					resolution, servers, apps, deployments);
 		}
 	}
 }
