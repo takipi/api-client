@@ -571,7 +571,7 @@ public class RegressionUtil {
 	private static Graph getBaselineGraph(ApiClient apiClient, RegressionInput input, DateTime baselineStart,
 			DateTime activeWindowStart, int activeTimespan, PrintStream printStream) {
 
-		Graph result;
+		Graph result = null;
 
 		if (input.baselineGraph != null) {
 			result = input.baselineGraph;
@@ -581,16 +581,12 @@ public class RegressionUtil {
 
 			if (pointsWanted > 0) {
 				GraphResult graphResult = ViewUtil.getEventsGraphResult(apiClient, input.serviceId, input.viewId,
-						pointsWanted, VolumeType.all, baselineStart, activeWindowStart);
+						pointsWanted, VolumeType.all, baselineStart, activeWindowStart, true);
 
 				if (graphResult != null) {
 					result = validateGraph(apiClient, graphResult, input, printStream);
-				} else {
-					result = null;
-				}
-			} else {
-				result = null;
-			}
+				} 
+			} 
 		}
 
 		return result;
