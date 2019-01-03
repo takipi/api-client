@@ -46,7 +46,7 @@ public class RateRegression {
 
 			@Override
 			public int compare(RegressionResult o1, RegressionResult o2) {
-				return (int) (o1.getEvent().stats.hits - o1.getEvent().stats.hits);
+				return (int) (o2.getEvent().stats.hits - o1.getEvent().stats.hits);
 			}
 		});
 
