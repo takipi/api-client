@@ -219,7 +219,7 @@ public class ViewUtil {
 
 		return graph;
 	}
-	
+
 	public static GraphResult getEventsGraphResult(ApiClient apiClient, String serviceId, String viewId,
 			int pointsCount, VolumeType volumeType, DateTime from, DateTime to) {
 		return getEventsGraphResult(apiClient, serviceId, viewId, pointsCount, volumeType, from, to, false);
