@@ -28,7 +28,7 @@ public class EventResult implements ApiResult, Cloneable {
 	public boolean is_rethrow;
 	
 	public String jira_issue_url;
-
+	
 	public Stats stats;
 
 	@Override
