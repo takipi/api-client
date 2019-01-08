@@ -5,13 +5,13 @@ import java.util.Map;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
+import com.takipi.api.client.data.timer.Timer;
 import com.takipi.api.client.request.ServiceRequest;
-import com.takipi.api.client.result.EmptyResult;
 import com.takipi.api.core.consts.ApiConstants;
 import com.takipi.api.core.request.intf.ApiPostRequest;
 import com.takipi.common.util.JsonUtil;
 
-public class CreateTimerRequest extends ServiceRequest implements ApiPostRequest<EmptyResult> {
+public class CreateTimerRequest extends ServiceRequest implements ApiPostRequest<Timer> {
 	private final String className;
 	private final String methodName;
 	private final long threshold;
@@ -38,8 +38,8 @@ public class CreateTimerRequest extends ServiceRequest implements ApiPostRequest
 	}
 
 	@Override
-	public Class<EmptyResult> resultClass() {
-		return EmptyResult.class;
+	public Class<Timer> resultClass() {
+		return Timer.class;
 	}
 
 	public static Builder newBuilder() {

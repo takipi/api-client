@@ -24,4 +24,5 @@ public class ApiConstants {
 	public static final String SERVICES_PREFIX				= "S";
 	public static final String VIEWS_PREFIX					= "P";
 	public static final String PACK_PREFIX					= "K";
+	public static final String LIBRARIES_PREFIX				= "L";
 }

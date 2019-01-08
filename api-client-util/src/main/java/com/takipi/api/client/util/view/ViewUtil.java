@@ -222,10 +222,15 @@ public class ViewUtil {
 
 	public static GraphResult getEventsGraphResult(ApiClient apiClient, String serviceId, String viewId,
 			int pointsCount, VolumeType volumeType, DateTime from, DateTime to) {
+		return getEventsGraphResult(apiClient, serviceId, viewId, pointsCount, volumeType, from, to, false);
+	}
+
+	public static GraphResult getEventsGraphResult(ApiClient apiClient, String serviceId, String viewId,
+			int pointsCount, VolumeType volumeType, DateTime from, DateTime to, boolean raw) {
 
 		GraphRequest graphRequest = GraphRequest.newBuilder().setServiceId(serviceId).setViewId(viewId)
 				.setGraphType(GraphType.view).setFrom(from.toString(fmt)).setTo(to.toString(fmt))
-				.setVolumeType(volumeType).setWantedPointCount(pointsCount).build();
+				.setVolumeType(volumeType).setWantedPointCount(pointsCount).setRaw(raw).build();
 
 		Response<GraphResult> graphResponse = apiClient.get(graphRequest);
 

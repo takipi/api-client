@@ -14,13 +14,16 @@ public class GraphPerformanceCalculator implements PerformanceCalculator<Transac
 	private final long baselineInvocationsThreshold;
 	private final double overAvgSlowingPercentage;
 	private final double overAvgCriticalPercentage;
+	private final int minDeltaThreshold;
 	private final double stdDevFactor;
 
 	private GraphPerformanceCalculator(long activeInvocationsThreshold, long baselineInvocationsThreshold,
-			double overAvgSlowingPercentage, double overAvgCriticalPercentage, double stdDevFactor) {
+			int minDeltaThreshold, double overAvgSlowingPercentage, double overAvgCriticalPercentage,
+			double stdDevFactor) {
 
 		this.activeInvocationsThreshold = activeInvocationsThreshold;
 		this.baselineInvocationsThreshold = baselineInvocationsThreshold;
+		this.minDeltaThreshold = minDeltaThreshold;
 		this.overAvgSlowingPercentage = overAvgSlowingPercentage;
 		this.overAvgCriticalPercentage = overAvgCriticalPercentage;
 		this.stdDevFactor = stdDevFactor;
@@ -60,21 +63,25 @@ public class GraphPerformanceCalculator implements PerformanceCalculator<Transac
 
 		double slowingPercentage = badPointsScore * 100;
 
-		if (badPointsScore >= this.overAvgCriticalPercentage) {
-			return PerformanceScore.of(PerformanceState.CRITICAL, slowingPercentage);
-		}
+		if (activeStats.avg_time - baselineStats.avg_time > minDeltaThreshold) {
 
-		if (badPointsScore >= this.overAvgSlowingPercentage) {
-			return PerformanceScore.of(PerformanceState.SLOWING, slowingPercentage);
+			if (badPointsScore >= this.overAvgCriticalPercentage) {
+				return PerformanceScore.of(PerformanceState.CRITICAL, slowingPercentage);
+			}
+
+			if (badPointsScore >= this.overAvgSlowingPercentage) {
+				return PerformanceScore.of(PerformanceState.SLOWING, slowingPercentage);
+			}
 		}
 
 		return PerformanceScore.of(PerformanceState.OK, slowingPercentage);
 	}
 
 	public static GraphPerformanceCalculator of(long activeInvocationsThreshold, long baselineInvocationsThreshold,
-			double overAvgSlowingPercentage, double overAvgCriticalPercentage, double stdDevFactor) {
+			int minDeltaThreshold, double overAvgSlowingPercentage, double overAvgCriticalPercentage,
+			double stdDevFactor) {
 
 		return new GraphPerformanceCalculator(activeInvocationsThreshold, baselineInvocationsThreshold,
-				overAvgSlowingPercentage, overAvgCriticalPercentage, stdDevFactor);
+				minDeltaThreshold, overAvgSlowingPercentage, overAvgCriticalPercentage, stdDevFactor);
 	}
 }
