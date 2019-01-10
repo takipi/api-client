@@ -23,7 +23,7 @@ The API Client is a simple tool for interacting with the [OverOps public API](ht
 
 ## Background
 
-The API Client is divided into two projects: the [API Client itself](/tree/master/api-client), and a set of [utility functions](/tree/master/api-client-util).
+The API Client is divided into two projects: the [API Client itself](/api-client), and a [set of utility functions](/api-client-util).
 
 The API Client provides methods for `GET`, `PUT`, `POST`, and `DELETE` REST operations, as well as plain old Java objects (POJOs) that represent request and result objects for each operation available through the [OverOps public API](https://doc.overops.com/reference).
 
