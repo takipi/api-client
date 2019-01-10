@@ -29,13 +29,13 @@ The API Client provides methods for `GET`, `PUT`, `POST`, and `DELETE` REST oper
 
 Utility functions wrap commonly used API operation sets into a single function. For example, the [`LabelUtil.createLabelsIfNotExists`](api-client-util/src/main/java/com/takipi/api/client/util/label/LabelUtil.java#L35) method first makes an API call to list all labels for a given environment, then compares that list with a list of new labels, calling the create label API for each label that does not already exist. Several individual API calls are wrapped into a single convenience method.
 
-The OverOps API Client and Utility functions make it easy to access data, extend the functionality of OverOps, and integrate OverOps data with other platforms without having to manually make and parse HTTP requests.
+The OverOps API Client and utility functions make it easy to access data, extend the functionality of OverOps, and integrate OverOps data with other platforms without having to manually make and parse HTTP requests.
 
 ## Getting Started
 
 ### Installing
 
-The [API Client](https://mvnrepository.com/artifact/com.takipi/api-client) and [Utility functions](https://mvnrepository.com/artifact/com.takipi/api-client-util) are both published to the Maven central repository. Simply add one or both to your dependencies to use them in your code.
+The [API Client](https://mvnrepository.com/artifact/com.takipi/api-client) and [utility functions](https://mvnrepository.com/artifact/com.takipi/api-client-util) are both published to the Maven central repository. Simply add one or both to your dependencies to use them in your code.
 
 Maven:
 
@@ -493,7 +493,7 @@ Swallowed Exceptions(P6139)
 
 ## UDFs
 
-User Defined Functions make extensive use of the API Client and Utility functions.
+User Defined Functions make extensive use of the API Client and utility functions.
 
 Within a UDF, the API Client is available from [ContextArgs](https://github.com/takipi/overops-functions/blob/master/overops-functions/src/main/java/com/takipi/udf/ContextArgs.java), which sets hostname and API key from the context.
 
