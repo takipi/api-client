@@ -18,7 +18,7 @@ The API Client is a simple tool for interacting with the [OverOps public API](ht
 &nbsp;&nbsp;&nbsp;&nbsp; [Transaction Graphs](#transaction-graphs)  
 &nbsp;&nbsp;&nbsp;&nbsp; [List Views](#list-views)  
 [UDFs](#udfs)  
-&nbsp;&nbsp;&nbsp;&nbsp; [OverOps Functions UDF library](#overops-functions-udf-library)  
+&nbsp;&nbsp;&nbsp;&nbsp; [OverOps Functions UDF library](#overops-functions)  
 &nbsp;&nbsp;&nbsp;&nbsp; [Custom UDFs](#custom-udfs)  
 
 ## Background
