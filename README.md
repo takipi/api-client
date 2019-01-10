@@ -29,7 +29,7 @@ The API Client provides methods for `GET`, `PUT`, `POST`, and `DELETE` REST oper
 
 Utility functions wrap commonly used API operation sets into a single function. For example, the [`LabelUtil.createLabelsIfNotExists`](api-client-util/src/main/java/com/takipi/api/client/util/label/LabelUtil.java#L35) method first makes an API call to list all labels for a given environment, then compares that list with a list of new labels, calling the create label API for each label that does not already exist. Several individual API calls are wrapped into a single convenience method.
 
-The OverOps API Client and utility functions make it easy to access data, extend the functionality of OverOps, and integrate OverOps data with other platforms without having to manually make and parse HTTP requests.
+The OverOps API Client and utility functions make it easy to access data, extend the functionality of OverOps, and integrate OverOps with other platforms without having to manually make and parse HTTP requests.
 
 ## Getting Started
 
@@ -73,7 +73,7 @@ import com.takipi.api.client.util.*;
 In order to ensure backwards and forwards compatibility with the API, API Client constructors are purposefully not public. Instead, we use Builders. This enables the underlying implementation to be changed as needed, and additional functionality to be added in the future, without breaking code that depends on the API Client.
 
 ```java
-// create a new Builder
+// create a new API Client
 ApiClient client = ApiClient.newBuilder()
     .setHostname("http://localhost:8080") // for SaaS, use https://api.overops.com/
     .setApiKey("xxxxx") // find API token in Account Settings
@@ -144,7 +144,7 @@ Response<EmptyResult> createResult = apiClient.post(createRequest);
 
 *API documentation: [Fetch event data](https://doc.overops.com/reference#get_services-env-id-events-event-id)*
 
-Here we will retrieve details about an event given an event ID. For this request, two parameters are required: environment ID and event ID. The result will contain all event metadata (see [EventResult.java](/blob/master/api-client/src/main/java/com/takipi/api/client/result/event/EventResult.java)).
+Here we will retrieve details about an event given an event ID. For this request, two parameters are required: environment ID and event ID. The result will contain all event metadata (see [EventResult.java](/api-client/src/main/java/com/takipi/api/client/result/event/EventResult.java)).
 
 For this example, we'll use both CURL and the API Client to illustrate how to translate between the two.
 
@@ -259,7 +259,7 @@ Message: XML document structures must start and end within the same entity.
 
 Here we will retrieve a list of events and event details for a given time frame and view.
 
-For this request, four parameters are required: environment ID, view ID, from, and to. The result will contain a list of events (see [EventsVolumeResult.java](/blob/master/api-client/src/main/java/com/takipi/api/client/result/event/EventsVolumeResult.java)).
+For this request, four parameters are required: environment ID, view ID, from, and to. The result will contain a list of events (see [EventsVolumeResult.java](/api-client/src/main/java/com/takipi/api/client/result/event/EventsVolumeResult.java)).
 
 ```java
 import org.joda.time.DateTime;
@@ -329,7 +329,7 @@ Here we will retrieve detailed statistics for events in a given view and time fr
 
 For this request, five parameters are required: environment ID, view ID, from, to, and number of points.
 
-Rather than using [`TransactionsGraphRequest`](/blob/master/api-client/src/main/java/com/takipi/api/client/request/transaction/TransactionsGraphRequest.java) directly, we'll use [`TransactionUtil.getTransactionGraphs`](/blob/master/api-client-util/src/main/java/com/takipi/api/client/util/transaction/TransactionUtil.java), which returns `Map<String, TransactionGraph>`. [`TransactionGraph`](/blob/master/api-client/src/main/java/com/takipi/api/client/data/transaction/TransactionGraph.java) contains a list of `GraphPoint`, each of which contains a timestamp and [`Stats`](/blob/master/api-client/src/main/java/com/takipi/api/client/data/transaction/Stats.java).
+Rather than using [`TransactionsGraphRequest`](/api-client/src/main/java/com/takipi/api/client/request/transaction/TransactionsGraphRequest.java) directly, we'll use [`TransactionUtil.getTransactionGraphs`](/api-client-util/src/main/java/com/takipi/api/client/util/transaction/TransactionUtil.java), which returns `Map<String, TransactionGraph>`. [`TransactionGraph`](/api-client/src/main/java/com/takipi/api/client/data/transaction/TransactionGraph.java) contains a list of `GraphPoint`, each of which contains a timestamp and [`Stats`](/api-client/src/main/java/com/takipi/api/client/data/transaction/Stats.java).
 
 ```java
 import java.util.Map;
@@ -415,7 +415,7 @@ point 0 invocations: 469
 
 Here we will retrieve a list of all views for a given environment.
 
-For this request, one parameter is required: environment ID. The [result](/blob/master/api-client/src/main/java/com/takipi/api/client/result/view/ViewsResult.java) will contain a list of [`SummarizedView`](/blob/master/api-client/src/main/java/com/takipi/api/client/data/view/SummarizedView.java).
+For this request, one parameter is required: environment ID. The [result](/api-client/src/main/java/com/takipi/api/client/result/view/ViewsResult.java) will contain a list of [`SummarizedView`](/api-client/src/main/java/com/takipi/api/client/data/view/SummarizedView.java).
 
 ```java
 import com.takipi.api.client.ApiClient;
