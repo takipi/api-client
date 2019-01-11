@@ -12,14 +12,15 @@ The API Client is a simple tool for interacting with the [OverOps public API](ht
 &nbsp;&nbsp;&nbsp;&nbsp; [Generics](#generics)  
 [Examples](#examples)  
 &nbsp;&nbsp;&nbsp;&nbsp; [Get Event Metadata](#get-event-metadata)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [with CURL](#with-curl)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [with API Client](#with-api-client)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [With cURL](#with-curl)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [With API Client](#with-api-client)  
 &nbsp;&nbsp;&nbsp;&nbsp; [Get Event Volume](#get-event-volume)  
 &nbsp;&nbsp;&nbsp;&nbsp; [Transaction Graphs](#transaction-graphs)  
 &nbsp;&nbsp;&nbsp;&nbsp; [List Views](#list-views)  
 [UDFs](#udfs)  
 &nbsp;&nbsp;&nbsp;&nbsp; [OverOps Functions UDF library](#overops-functions)  
 &nbsp;&nbsp;&nbsp;&nbsp; [Custom UDFs](#custom-udfs)  
+[License](#license)
 
 ## Background
 
@@ -148,7 +149,7 @@ Here we will retrieve details about an event given an event ID. For this request
 
 For this example, we'll use both CURL and the API Client to illustrate how to translate between the two.
 
-#### with CURL
+#### With cURL
 
 API request:
 
@@ -202,7 +203,7 @@ API response:
 }
 ```
 
-#### with API Client
+#### With API Client
 
 ```java
 import com.takipi.api.client.ApiClient;
@@ -509,3 +510,9 @@ Explore the [OverOps UDF library](https://github.com/takipi/overops-functions/) 
 ### Custom UDFs
 
 To write your own UDFs leveraging the API Client, fork the [User Defined Functions](https://github.com/takipi-field/udf) repository.
+
+## License
+
+Copyright (c) OverOps Inc. All rights reserved.
+
+Licensed under the [MIT](LICENSE) License.
