@@ -63,7 +63,7 @@ public class RegressionStringUtil {
 	public static String getEventRate(EventResult event) {
 		return getEventRate(event, false);
 	}
-	
+
 	public static String getEventRate(EventResult event, boolean fullText) {
 		if ((event.stats.invocations == 0) || (event.stats.hits == 0)) {
 			return "1";
@@ -74,19 +74,19 @@ public class RegressionStringUtil {
 		double rate = (double) event.stats.hits / (double) event.stats.invocations * 100;
 
 		result.append(event.stats.hits);
-		
+
 		if (fullText) {
 			result.append(" errors in ");
 		} else {
 			result.append("/");
 		}
-		
+
 		result.append(event.stats.invocations);
-		
+
 		if (fullText) {
 			result.append(" calls");
 		}
-		
+
 		result.append(" (");
 
 		if (rate != (int) rate) {
@@ -106,24 +106,22 @@ public class RegressionStringUtil {
 		return result.toString();
 	}
 
+	public static String getRegressedEventRate(RegressionResult regressionResult) {
+		return getRegressedEventRate(regressionResult, false);
+	}
+
 	public static String getRegressedEventRate(RegressionResult regressionResult, boolean fullText) {
 		return getRegressedEventRate(regressionResult.getEvent(), regressionResult.getBaselineHits(),
 				regressionResult.getBaselineInvocations(), fullText);
 	}
-	
-	public static String getRegressedEventRate(RegressionResult regressionResult) {
-		return getRegressedEventRate(regressionResult.getEvent(), regressionResult.getBaselineHits(),
-				regressionResult.getBaselineInvocations());
-	}
 
-	public static String getRegressedEventRate(EventResult event, long baselineHits,
-			long baselineInvocations) {
+	public static String getRegressedEventRate(EventResult event, long baselineHits, long baselineInvocations) {
 		return getRegressedEventRate(event, baselineHits, baselineInvocations, false);
 	}
-	
-	public static String getRegressedEventRate(EventResult event, long baselineHits,
-		long baselineInvocations, boolean fullText) {
-		
+
+	public static String getRegressedEventRate(EventResult event, long baselineHits, long baselineInvocations,
+			boolean fullText) {
+
 		double rate = (double) baselineHits / (double) baselineInvocations * 100;
 
 		StringBuilder result = new StringBuilder();
