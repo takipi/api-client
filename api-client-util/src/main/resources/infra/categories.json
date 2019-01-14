@@ -846,6 +846,15 @@
 		},
 		{
 			"names": [
+				"com.zaxxer.hikari",
+				"com.jolbox.bonecp",
+				"org.apache.commons.dbcp2",
+				"com.mchange.v2.c3p0"
+			],
+			"labels": ["JDBC"]
+		},
+		{
+			"names": [
 				"java.security",
 				"javax.security",
 				"sun.security"
