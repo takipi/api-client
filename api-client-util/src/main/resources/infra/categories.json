@@ -846,10 +846,10 @@
 		},
 		{
 			"names": [
-				"com.zaxxer.hikari",
-				"com.jolbox.bonecp",
 				"org.apache.commons.dbcp2",
-				"com.mchange.v2.c3p0"
+				"com.jolbox.bonecp",
+				"com.mchange.v2.c3p0",
+				"com.zaxxer.hikari"
 			],
 			"labels": ["JDBC"]
 		},
