@@ -1,7 +1,7 @@
 package com.takipi.api.client.request.reliability;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
+import com.google.common.collect.ImmutableMap;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.EmptyResult;
 import com.takipi.api.core.consts.ApiConstants;
@@ -9,7 +9,6 @@ import com.takipi.api.core.request.intf.ApiPostRequest;
 import com.takipi.common.util.JsonUtil;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Map;
 
 public class UpdateReliabilitySettingsRequest extends ServiceRequest implements ApiPostRequest<EmptyResult> {
 	private final String reliabilitySettingsJson;
@@ -22,11 +21,9 @@ public class UpdateReliabilitySettingsRequest extends ServiceRequest implements 
 	
 	@Override
 	public byte[] postData() throws UnsupportedEncodingException {
-		Map<String, String> map = Maps.newHashMapWithExpectedSize(1);
+		String json = JsonUtil.createSimpleJson(ImmutableMap.of("reliability_settings_json", reliabilitySettingsJson), true);
 		
-		map.put("reliability_settings_json", JsonUtil.stringify(reliabilitySettingsJson));
-		
-		return JsonUtil.createSimpleJson(map, false).getBytes(ApiConstants.UTF8_ENCODING);
+		return json.getBytes(ApiConstants.UTF8_ENCODING);
 	}
 	
 	@Override
