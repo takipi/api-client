@@ -67,6 +67,10 @@ public class UpdateReliabilitySettingsRequest extends ServiceRequest implements 
 			if (Strings.isNullOrEmpty(reliabilitySettingsJson)) {
 				throw new IllegalArgumentException("Missing reliability settings json");
 			}
+			
+			if (!JsonUtil.isLegalJson(reliabilitySettingsJson)) {
+				throw new IllegalArgumentException("Reliability settings is in illegal json format");
+			}
 		}
 		
 		public UpdateReliabilitySettingsRequest build() {
