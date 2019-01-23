@@ -2,7 +2,13 @@ package com.takipi.common.util;
 
 import java.util.Map;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+
 public class JsonUtil {
+	private final static String JSON_PREFIX = "{";
+	private final static String JSON_SUFFIX = "}";
+
 	public static String stringify(String s) {
 		return "\"" + s + "\"";
 	}
@@ -72,5 +78,21 @@ public class JsonUtil {
 		sb.append("\n}\n");
 
 		return sb.toString();
+	}
+
+	public static boolean isLegalJson(String jsonStr) {
+		if ((!jsonStr.startsWith(JSON_PREFIX)) || (!jsonStr.endsWith(JSON_SUFFIX))) {
+			return false;
+		}
+
+		try {
+			Gson gson = new Gson();
+
+			gson.fromJson(jsonStr, Object.class);
+
+			return true;
+		} catch (JsonSyntaxException e) {
+			return false;
+		}
 	}
 }
