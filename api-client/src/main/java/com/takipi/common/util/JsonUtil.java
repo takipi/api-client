@@ -1,9 +1,9 @@
 package com.takipi.common.util;
 
+import java.util.Map;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-
-import java.util.Map;
 
 public class JsonUtil {
 	private final static String JSON_PREFIX = "{";
@@ -85,9 +85,9 @@ public class JsonUtil {
 			return false;
 		}
 
-		Gson gson = new Gson();
-
 		try {
+			Gson gson = new Gson();
+
 			gson.fromJson(jsonStr, Object.class);
 
 			return true;
