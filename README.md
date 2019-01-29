@@ -157,7 +157,7 @@ API request:
 curl -H "x-api-key: xxxxx" --request GET --url https://api.overops.com/api/v1/services/Sxxxxx/events/119
 ```
 
-*Remember to replace x-api-key: xxxxx with your API key, Sxxxxx with your environment ID, and 119 with your event ID.*
+*Remember to replace xxxxx with your API key, Sxxxxx with your environment ID, and 119 with your event ID.*
 
 API response:
 
