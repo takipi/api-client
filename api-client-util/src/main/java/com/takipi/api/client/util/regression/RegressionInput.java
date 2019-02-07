@@ -23,8 +23,10 @@ public class RegressionInput {
 	public String viewId;
 
 	public DateTime activeWindowStart;
+	public DateTime nonRegressionActiveWindowStart;
 	public int activeTimespan;
 	public int baselineTimespan;
+	public String baselineTime;
 
 	public int minVolumeThreshold;
 	public double minErrorRateThreshold;

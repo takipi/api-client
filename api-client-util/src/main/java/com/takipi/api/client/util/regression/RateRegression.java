@@ -54,7 +54,7 @@ public class RateRegression {
 
 	}
 
-	private static List<EventResult> getSortedNewEvents(Collection<EventResult> events) {
+	public static List<EventResult> getSortedNewEvents(Collection<EventResult> events) {
 
 		List<EventResult> result = Lists.newArrayList(events);
 
@@ -62,7 +62,7 @@ public class RateRegression {
 
 			@Override
 			public int compare(EventResult o1, EventResult o2) {
-				return (int) (o1.stats.hits - o2.stats.hits);
+				return (int) (o2.stats.hits - o1.stats.hits);
 			}
 		});
 
