@@ -417,7 +417,7 @@ public class RegressionUtil {
 
 	public static EventsVolumeResult getEventsVolume(ApiClient apiClient, RegressionInput input, DateTime from,
 			DateTime to) {
-		
+
 		String fromStr = from.toString(ISODateTimeFormat.dateTime().withZoneUTC());
 		String toStr = to.toString(ISODateTimeFormat.dateTime().withZoneUTC());
 
@@ -600,9 +600,9 @@ public class RegressionUtil {
 			result = input.events;
 		} else {
 
-			//add one minute in case the date range is not a full minute which causes the query to fail
-			EventsVolumeResult activeEventVolume = getEventsVolume(apiClient, input, activeWindowStart,
-					DateTime.now());
+			// add one minute in case the date range is not a full minute which causes the
+			// query to fail
+			EventsVolumeResult activeEventVolume = getEventsVolume(apiClient, input, activeWindowStart, DateTime.now());
 
 			if (!validateVolume(apiClient, activeEventVolume, input, printStream)) {
 				return null;
