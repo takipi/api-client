@@ -37,32 +37,32 @@ public class ProcessQualityGates {
 		Collection<EventResult> events = RegressionUtil.getActiveEventVolume(apiClient, input, deploymentStart,
 				printStream);
 		
-		if (events == null) {
-			events = new ArrayList<EventResult>();
-		}
+		//if we find events, process the quality gates
+		if (events != null && events.size()> 0) {
 		
-		//filter out unneeded events set in plugin (regexFilter)
-		events = filterEvents(events, regexFilter);
-		
-		//check count gates
-		if (countGate) {
-			events = RateRegression.getSortedNewEvents(events);
-			qualityReport.setTopErrors(getTopXEvents(apiClient, input, events, topIssuesVolume, deploymentStart));
-		}
-		
-		//find new Errors
-		if (newEvents) {
-			qualityReport.setNewErrors(getNewErrors(apiClient, input, events, deploymentStart));
-		}
-		
-		//find resurfaced Errors
-		if (resurfacedEvents) {
-			qualityReport.setResurfacedErrors(getResurfacedErrors(apiClient, input, events, deploymentStart));
-		}
-		
-		//find critical errors
-		if (input.criticalExceptionTypes != null) {
-			qualityReport.setCriticalErrors(getCriticalErrors(apiClient, input, events, deploymentStart));
+			//filter out unneeded events set in plugin (regexFilter)
+			events = filterEvents(events, regexFilter);
+			
+			//check count gates
+			if (countGate) {
+				events = RateRegression.getSortedNewEvents(events);
+				qualityReport.setTopErrors(getTopXEvents(apiClient, input, events, topIssuesVolume, deploymentStart));
+			}
+			
+			//find new Errors
+			if (newEvents) {
+				qualityReport.setNewErrors(getNewErrors(apiClient, input, events, deploymentStart));
+			}
+			
+			//find resurfaced Errors
+			if (resurfacedEvents) {
+				qualityReport.setResurfacedErrors(getResurfacedErrors(apiClient, input, events, deploymentStart));
+			}
+			
+			//find critical errors
+			if (input.criticalExceptionTypes != null) {
+				qualityReport.setCriticalErrors(getCriticalErrors(apiClient, input, events, deploymentStart));
+			}
 		}
 		
 		return qualityReport;
@@ -72,16 +72,14 @@ public class ProcessQualityGates {
 			Collection<EventResult> events, int topIssuesVolume, DateTime deploymentStart) {
 		List<OOReportEvent> result = new ArrayList<OOReportEvent>();
 		
-		int counter = 1;
 		for (EventResult event : events) {
 			String arcLink = getArcLink(apiClient, event.id, input, deploymentStart);
 			OOReportEvent newEvent = new OOReportEvent(event, null, arcLink);
 			result.add(newEvent);
 			
-			if (counter == topIssuesVolume) {
+			if (result.size() == topIssuesVolume) {
 				break;
 			}
-			counter++;
 		}
 		return result;
 	}
@@ -134,8 +132,7 @@ public class ProcessQualityGates {
 	public static String getArcLink(ApiClient apiClient, String eventId,
 			RegressionInput input, DateTime activeWindowStart) {
 
-		DateTime activeWndowStart = activeWindowStart;
-		DateTime from = activeWndowStart.minusMinutes(input.baselineTimespan); 
+		DateTime from = activeWindowStart.minusMinutes(input.baselineTimespan); 
 		
 		String result = EventUtil.getEventRecentLinkDefault(apiClient, input.serviceId, eventId, 
 				from, DateTime.now(), input.applictations, input.servers, input.deployments, 
@@ -144,15 +141,14 @@ public class ProcessQualityGates {
 		return result;
 	}
 	
-	//filter in or out events based on the pattern 
+	//filter out events based on the pattern 
 	private static Collection<EventResult> filterEvents(Collection<EventResult> events, String regexFilter) {
 		if (regexFilter == null) {
 			return events;
 		}
 		
 		List<EventResult> returnEvents = new ArrayList<EventResult>();	
-		for (Iterator iterator = events.iterator(); iterator.hasNext();) {
-			EventResult event = (EventResult) iterator.next();
+		for (EventResult event : events) {
 			if (evaluateEvent(event, getPattern(regexFilter))) {
 				returnEvents.add(event);
 				//now increment counters
