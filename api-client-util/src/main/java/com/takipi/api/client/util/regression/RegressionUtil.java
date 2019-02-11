@@ -510,7 +510,7 @@ public class RegressionUtil {
 		return null;
 	}
 
-	private static DateTime getDeploymentStartTime(ApiClient apiClient, String serviceId,
+	public static DateTime getDeploymentStartTime(ApiClient apiClient, String serviceId,
 			Collection<String> deployments) {
 
 		DateTime result = getDeploymentStartTime(apiClient, serviceId, deployments, true);
@@ -591,7 +591,7 @@ public class RegressionUtil {
 		return result;
 	}
 
-	private static Collection<EventResult> getActiveEventVolume(ApiClient apiClient, RegressionInput input,
+	public static Collection<EventResult> getActiveEventVolume(ApiClient apiClient, RegressionInput input,
 			DateTime activeWindowStart, PrintStream printStream) {
 
 		Collection<EventResult> result;
@@ -600,8 +600,9 @@ public class RegressionUtil {
 			result = input.events;
 		} else {
 
-			EventsVolumeResult activeEventVolume = getEventsVolume(apiClient, input, activeWindowStart.minusMinutes(1),
-					DateTime.now());
+			// add one minute in case the date range is not a full minute which causes the
+			// query to fail
+			EventsVolumeResult activeEventVolume = getEventsVolume(apiClient, input, activeWindowStart, DateTime.now());
 
 			if (!validateVolume(apiClient, activeEventVolume, input, printStream)) {
 				return null;

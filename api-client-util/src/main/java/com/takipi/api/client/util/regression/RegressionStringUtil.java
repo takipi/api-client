@@ -19,6 +19,7 @@ public class RegressionStringUtil {
 	private static final String NOW_WINDOW_FORMAT = " time range vs. baseline of %s";
 
 	public static final String NEW_ISSUE = "New";
+	public static final String RESURFACED_ISSUE = "Resurfaced";
 	public static final String SEVERE_NEW = "Severe New";
 	public static final String REGRESSION = "Regression";
 	public static final String SEVERE_REGRESSION = "Severe Regression";

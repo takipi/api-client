@@ -25,6 +25,7 @@ public class RegressionInput {
 	public DateTime activeWindowStart;
 	public int activeTimespan;
 	public int baselineTimespan;
+	public String baselineTime;
 
 	public int minVolumeThreshold;
 	public double minErrorRateThreshold;
