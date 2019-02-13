@@ -1,5 +1,10 @@
 archivesBaseName = 'api-client'
 
+compileJava {
+	sourceCompatibility = 1.8
+	targetCompatibility = 1.8
+}
+
 dependencies {
 	compile(
 		"joda-time:joda-time:2.8.2",
