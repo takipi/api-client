@@ -7,6 +7,7 @@ import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -25,6 +26,10 @@ public abstract class UrlClient {
 		GET, DELETE, POST, PUT
 	}
 
+	public enum LogLevel {
+		NONE, DEBUG, INFO, WARN, ERROR
+	}
+
 	public interface UrlClientObserver {
 		public void observe(Operation operation, String url, String response, long time);
 	}
@@ -34,13 +39,18 @@ public abstract class UrlClient {
 	private final String hostname;
 	private final int connectTimeout;
 	private final int readTimeout;
+	private final Map<Integer, LogLevel> responseLogLevels;
+
 	private final Object observerLock;
 	private volatile List<UrlClientObserver> observers;
 
-	protected UrlClient(String hostname, int connectTimeout, int readTimeout) {
+	protected UrlClient(String hostname, int connectTimeout, int readTimeout,
+			Map<Integer, LogLevel> responseLogLevels) {
 		this.hostname = hostname;
 		this.connectTimeout = connectTimeout;
 		this.readTimeout = readTimeout;
+		this.responseLogLevels = responseLogLevels;
+
 		this.observerLock = new Object();
 	}
 
@@ -240,16 +250,7 @@ public abstract class UrlClient {
 			} else {
 				responseData = parseInputStream(connection.getErrorStream());
 
-				String errorMessage = responseData;
-
-				if (Strings.isNullOrEmpty(errorMessage)) {
-					errorMessage = "No error message received";
-				}
-
-				String prettyErrorMessage = prettifyErrorMessage(errorMessage, responseCode, 2000);
-
-				logger.error("url client returns with bad response. url={}, code={}, error={}.", targetUrl,
-						responseCode, prettyErrorMessage);
+				logBadResponse(responseData, responseCode, targetUrl);
 			}
 
 			return Response.of(responseCode, responseData);
@@ -257,6 +258,54 @@ public abstract class UrlClient {
 			logger.error("Error parsing response from {}.", targetUrl, ex);
 
 			return BAD_RESPONSE;
+		}
+	}
+
+	private void logBadResponse(String responseData, int responseCode, String targetUrl) {
+		LogLevel logLevel = responseLogLevels.get(responseCode);
+
+		if (logLevel == null) {
+			logLevel = LogLevel.ERROR;
+		}
+
+		if (logLevel == LogLevel.NONE) {
+			return;
+		}
+
+		String errorMessage = responseData;
+
+		if (Strings.isNullOrEmpty(errorMessage)) {
+			errorMessage = "No error message received";
+		}
+
+		String prettyErrorMessage = prettifyErrorMessage(errorMessage, responseCode, 2000);
+
+		switch (logLevel) {
+		case DEBUG:
+			logger.debug("url client returns with bad response. url={}, code={}, error={}.", targetUrl, responseCode,
+					prettyErrorMessage);
+			break;
+
+		case INFO:
+			logger.info("url client returns with bad response. url={}, code={}, error={}.", targetUrl, responseCode,
+					prettyErrorMessage);
+			break;
+
+		case WARN:
+			logger.warn("url client returns with bad response. url={}, code={}, error={}.", targetUrl, responseCode,
+					prettyErrorMessage);
+			break;
+
+		case ERROR:
+			logger.error("url client returns with bad response. url={}, code={}, error={}.", targetUrl, responseCode,
+					prettyErrorMessage);
+			break;
+
+		default:
+			logger.error("url client returns with bad response. url={}, code={}, error={}.", targetUrl, responseCode,
+					prettyErrorMessage);
+
+			break;
 		}
 	}
 
