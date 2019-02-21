@@ -1,11 +1,14 @@
 package com.takipi.api.client;
 
 import java.net.HttpURLConnection;
+import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -26,8 +29,9 @@ public class ApiClient extends UrlClient {
 	private final Pair<String, String> auth;
 	private final int apiVersion;
 
-	ApiClient(String hostname, Pair<String, String> auth, int apiVersion, int connectTimeout, int readTimeout) {
-		super(hostname, connectTimeout, readTimeout);
+	ApiClient(String hostname, Pair<String, String> auth, int apiVersion, int connectTimeout, int readTimeout,
+			LogLevel defaultLogLevel, Map<Integer, LogLevel> responseLogLevels) {
+		super(hostname, connectTimeout, readTimeout, defaultLogLevel, responseLogLevels);
 
 		this.auth = auth;
 		this.apiVersion = apiVersion;
@@ -158,11 +162,16 @@ public class ApiClient extends UrlClient {
 		private int apiVersion;
 		private int connectTimeout;
 		private int readTimeout;
+		private LogLevel defaultLogLevel;
+		private Map<Integer, LogLevel> responseLogLevels;
 
 		Builder() {
 			this.apiVersion = API_VERSION;
 			this.connectTimeout = CONNECT_TIMEOUT;
 			this.readTimeout = READ_TIMEOUT;
+
+			this.defaultLogLevel = LogLevel.ERROR;
+			this.responseLogLevels = Maps.newHashMap();
 		}
 
 		public Builder setHostname(String hostname) {
@@ -207,6 +216,18 @@ public class ApiClient extends UrlClient {
 			return this;
 		}
 
+		public Builder setDefaultLogLevel(LogLevel defaultLogLevel) {
+			this.defaultLogLevel = defaultLogLevel;
+
+			return this;
+		}
+
+		public Builder setResponseLogLevel(int responseCode, LogLevel logLevel) {
+			this.responseLogLevels.put(responseCode, logLevel);
+
+			return this;
+		}
+
 		private Pair<String, String> getAuth() {
 			if (!Strings.isNullOrEmpty(apiKey)) {
 				return Pair.of("X-API-Key", apiKey);
@@ -236,7 +257,8 @@ public class ApiClient extends UrlClient {
 				throw new IllegalArgumentException("Missing hostname");
 			}
 
-			return new ApiClient(hostname, getAuth(), apiVersion, connectTimeout, readTimeout);
+			return new ApiClient(hostname, getAuth(), apiVersion, connectTimeout, readTimeout, defaultLogLevel,
+					ImmutableMap.copyOf(responseLogLevels));
 		}
 	}
 }
