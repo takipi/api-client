@@ -30,8 +30,8 @@ public class ApiClient extends UrlClient {
 	private final int apiVersion;
 
 	ApiClient(String hostname, Pair<String, String> auth, int apiVersion, int connectTimeout, int readTimeout,
-			Map<Integer, LogLevel> responseLogLevels) {
-		super(hostname, connectTimeout, readTimeout, responseLogLevels);
+			LogLevel defaultLogLevel, Map<Integer, LogLevel> responseLogLevels) {
+		super(hostname, connectTimeout, readTimeout, defaultLogLevel, responseLogLevels);
 
 		this.auth = auth;
 		this.apiVersion = apiVersion;
@@ -162,12 +162,15 @@ public class ApiClient extends UrlClient {
 		private int apiVersion;
 		private int connectTimeout;
 		private int readTimeout;
+		private LogLevel defaultLogLevel;
 		private Map<Integer, LogLevel> responseLogLevels;
 
 		Builder() {
 			this.apiVersion = API_VERSION;
 			this.connectTimeout = CONNECT_TIMEOUT;
 			this.readTimeout = READ_TIMEOUT;
+
+			this.defaultLogLevel = LogLevel.ERROR;
 			this.responseLogLevels = Maps.newHashMap();
 		}
 
@@ -213,6 +216,12 @@ public class ApiClient extends UrlClient {
 			return this;
 		}
 
+		public Builder setDefaultLogLevel(LogLevel defaultLogLevel) {
+			this.defaultLogLevel = defaultLogLevel;
+
+			return this;
+		}
+
 		public Builder setResponseLogLevel(int responseCode, LogLevel logLevel) {
 			this.responseLogLevels.put(responseCode, logLevel);
 
@@ -248,7 +257,7 @@ public class ApiClient extends UrlClient {
 				throw new IllegalArgumentException("Missing hostname");
 			}
 
-			return new ApiClient(hostname, getAuth(), apiVersion, connectTimeout, readTimeout,
+			return new ApiClient(hostname, getAuth(), apiVersion, connectTimeout, readTimeout, defaultLogLevel,
 					ImmutableMap.copyOf(responseLogLevels));
 		}
 	}

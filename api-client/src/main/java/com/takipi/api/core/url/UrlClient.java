@@ -39,16 +39,20 @@ public abstract class UrlClient {
 	private final String hostname;
 	private final int connectTimeout;
 	private final int readTimeout;
+	
+	private final LogLevel defaultLogLevel;
 	private final Map<Integer, LogLevel> responseLogLevels;
 
 	private final Object observerLock;
 	private volatile List<UrlClientObserver> observers;
 
-	protected UrlClient(String hostname, int connectTimeout, int readTimeout,
+	protected UrlClient(String hostname, int connectTimeout, int readTimeout, LogLevel defaultLogLevel,
 			Map<Integer, LogLevel> responseLogLevels) {
 		this.hostname = hostname;
 		this.connectTimeout = connectTimeout;
 		this.readTimeout = readTimeout;
+
+		this.defaultLogLevel = defaultLogLevel;
 		this.responseLogLevels = responseLogLevels;
 
 		this.observerLock = new Object();
@@ -265,7 +269,7 @@ public abstract class UrlClient {
 		LogLevel logLevel = responseLogLevels.get(responseCode);
 
 		if (logLevel == null) {
-			logLevel = LogLevel.ERROR;
+			logLevel = defaultLogLevel;
 		}
 
 		if (logLevel == LogLevel.NONE) {
