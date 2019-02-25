@@ -101,11 +101,6 @@ public class UpdateAdvancedSettingsRequest extends ServiceRequest implements Api
 			return this;
 		}
 		
-		@Override
-		protected void validate() {
-			super.validate();
-		}
-		
 		public UpdateAdvancedSettingsRequest build() {
 			validate();
 			
