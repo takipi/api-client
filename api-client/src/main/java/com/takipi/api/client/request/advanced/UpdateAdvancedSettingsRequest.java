@@ -76,26 +76,26 @@ public class UpdateAdvancedSettingsRequest extends ServiceRequest implements Api
 			return this;
 		}
 		
-		public Builder SetAllowedIps(String allowedIps) {
+		public Builder setAllowedIps(String allowedIps) {
 			this.allowedIps = allowedIps;
 			
 			return this;
 		}
 		
-		public Builder SetShowRethrows(boolean showRethrows) {
+		public Builder setShowRethrows(boolean showRethrows) {
 			this.showRethrows = showRethrows;
 			
 			return this;
 		}
 		
-		public Builder SetShowLogLinks(boolean showLogLinks) {
+		public Builder setShowLogLinks(boolean showLogLinks) {
 			this.showLogLinks = showLogLinks;
 			this.isShowLogLinksInitialized = true;
 			
 			return this;
 		}
 		
-		public Builder SetClearEnvFilters(boolean clearEnvFilters) {
+		public Builder setClearEnvFilters(boolean clearEnvFilters) {
 			this.clearEnvFilters = clearEnvFilters;
 			
 			return this;
