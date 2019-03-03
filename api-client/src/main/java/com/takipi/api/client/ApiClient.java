@@ -1,6 +1,8 @@
 package com.takipi.api.client;
 
 import java.net.HttpURLConnection;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
@@ -8,10 +10,14 @@ import org.apache.commons.codec.binary.Base64;
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.takipi.api.client.observe.Observer;
+import com.takipi.api.client.observe.Observer.Operation;
 import com.takipi.api.core.consts.ApiConstants;
 import com.takipi.api.core.request.intf.ApiDeleteRequest;
 import com.takipi.api.core.request.intf.ApiGetRequest;
@@ -21,6 +27,7 @@ import com.takipi.api.core.request.intf.ApiPutRequest;
 import com.takipi.api.core.request.intf.ApiRequest;
 import com.takipi.api.core.result.intf.ApiResult;
 import com.takipi.api.core.url.UrlClient;
+import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.Pair;
 
 public class ApiClient extends UrlClient {
@@ -30,12 +37,21 @@ public class ApiClient extends UrlClient {
 	private final Pair<String, String> auth;
 	private final int apiVersion;
 
+	private final Object observerLock;
+	private volatile List<Observer> observers;
+
 	ApiClient(String hostname, Pair<String, String> auth, int apiVersion, int connectTimeout, int readTimeout,
-			LogLevel defaultLogLevel, Map<Integer, LogLevel> responseLogLevels) {
+			LogLevel defaultLogLevel, Map<Integer, LogLevel> responseLogLevels, Collection<Observer> observers) {
 		super(hostname, connectTimeout, readTimeout, defaultLogLevel, responseLogLevels);
 
 		this.auth = auth;
 		this.apiVersion = apiVersion;
+
+		this.observerLock = new Object();
+
+		if (!CollectionUtil.safeIsEmpty(observers)) {
+			this.observers = Lists.newArrayList(observers);
+		}
 	}
 
 	@Override
@@ -91,8 +107,12 @@ public class ApiClient extends UrlClient {
 
 	public <T extends ApiResult> Response<T> get(ApiGetRequest<T> request) {
 		try {
+			long t1 = System.currentTimeMillis();
 			Response<String> response = get(buildTargetUrl(request), auth, request.contentType(),
 					request.queryParams());
+			long t2 = System.currentTimeMillis();
+
+			observe(Operation.GET, request.urlPath(), null, response.data, response.responseCode, t2 - t1);
 
 			return getApiResponse(response, request.resultClass());
 		} catch (Exception e) {
@@ -103,8 +123,13 @@ public class ApiClient extends UrlClient {
 
 	public <T extends ApiResult> Response<T> put(ApiPutRequest<T> request) {
 		try {
+			long t1 = System.currentTimeMillis();
 			Response<String> response = put(buildTargetUrl(request), auth, request.putData(), request.contentType(),
 					request.queryParams());
+			long t2 = System.currentTimeMillis();
+
+			observe(Operation.PUT, request.urlPath(), prettyBytes(request.putData()), response.data,
+					response.responseCode, t2 - t1);
 
 			return getApiResponse(response, request.resultClass());
 		} catch (Exception e) {
@@ -118,8 +143,12 @@ public class ApiClient extends UrlClient {
 			String postData = request.postData();
 			byte[] data = (Strings.isNullOrEmpty(postData) ? null : postData.getBytes(ApiConstants.UTF8_ENCODING));
 
+			long t1 = System.currentTimeMillis();
 			Response<String> response = post(buildTargetUrl(request), auth, data, request.contentType(),
 					request.queryParams());
+			long t2 = System.currentTimeMillis();
+
+			observe(Operation.POST, request.urlPath(), postData, response.data, response.responseCode, t2 - t1);
 
 			return getApiResponse(response, request.resultClass());
 		} catch (Exception e) {
@@ -130,8 +159,13 @@ public class ApiClient extends UrlClient {
 
 	public <T extends ApiResult> Response<T> post(ApiPostBytesRequest<T> request) {
 		try {
+			long t1 = System.currentTimeMillis();
 			Response<String> response = post(buildTargetUrl(request), auth, request.postData(), request.contentType(),
 					request.queryParams());
+			long t2 = System.currentTimeMillis();
+
+			observe(Operation.POST, request.urlPath(), prettyBytes(request.postData()), response.data,
+					response.responseCode, t2 - t1);
 
 			return getApiResponse(response, request.resultClass());
 		} catch (Exception e) {
@@ -142,8 +176,12 @@ public class ApiClient extends UrlClient {
 
 	public <T extends ApiResult> Response<T> delete(ApiDeleteRequest<T> request) {
 		try {
+			long t1 = System.currentTimeMillis();
 			Response<String> response = delete(buildTargetUrl(request), auth, request.contentType(),
 					request.queryParams());
+			long t2 = System.currentTimeMillis();
+
+			observe(Operation.DELETE, request.urlPath(), null, response.data, response.responseCode, t2 - t1);
 
 			return getApiResponse(response, request.resultClass());
 		} catch (Exception e) {
@@ -160,6 +198,65 @@ public class ApiClient extends UrlClient {
 		T apiResult = GSON.fromJson(response.data, clazz);
 
 		return Response.of(response.responseCode, apiResult);
+	}
+
+	public void addObserver(Observer observer) {
+
+		if (observer == null) {
+			throw new IllegalArgumentException("observer");
+		}
+
+		synchronized (observerLock) {
+			List<Observer> observers;
+
+			if (this.observers != null) {
+				observers = Lists.newArrayList(this.observers);
+			} else {
+				observers = Lists.newArrayList();
+			}
+
+			observers.add(observer);
+			this.observers = observers;
+		}
+	}
+
+	public void removeObserver(Observer observer) {
+
+		if (observer == null) {
+			throw new IllegalArgumentException("observer");
+		}
+
+		synchronized (observerLock) {
+			if ((observers != null) && (observers.contains(observer))) {
+				List<Observer> observers = Lists.newArrayList(this.observers);
+				observers.remove(observer);
+				this.observers = observers;
+			}
+		}
+	}
+
+	private void observe(Operation operation, String url, String request, String response, int responseCode,
+			long time) {
+
+		List<Observer> observers = this.observers;
+
+		if (observers == null) {
+			return;
+		}
+
+		for (Observer observer : observers) {
+			observer.observe(operation, url, request, response, responseCode, time);
+		}
+	}
+
+	private String prettyBytes(byte[] bytes) {
+		StringBuilder builder = new StringBuilder();
+
+		builder.append("Binary data (");
+		builder.append((bytes != null) ? bytes.length : 0);
+		builder.append(")");
+
+		return builder.toString();
 	}
 
 	public static Builder newBuilder() {
@@ -180,6 +277,7 @@ public class ApiClient extends UrlClient {
 		private int readTimeout;
 		private LogLevel defaultLogLevel;
 		private Map<Integer, LogLevel> responseLogLevels;
+		private Collection<Observer> observers;
 
 		Builder() {
 			this.apiVersion = API_VERSION;
@@ -188,6 +286,7 @@ public class ApiClient extends UrlClient {
 
 			this.defaultLogLevel = LogLevel.ERROR;
 			this.responseLogLevels = Maps.newHashMap();
+			this.observers = Sets.newHashSet();
 		}
 
 		public Builder setHostname(String hostname) {
@@ -244,6 +343,12 @@ public class ApiClient extends UrlClient {
 			return this;
 		}
 
+		public Builder addObserver(Observer observer) {
+			this.observers.add(observer);
+
+			return this;
+		}
+
 		private Pair<String, String> getAuth() {
 			if (!Strings.isNullOrEmpty(apiKey)) {
 				return Pair.of("X-API-Key", apiKey);
@@ -274,7 +379,7 @@ public class ApiClient extends UrlClient {
 			}
 
 			return new ApiClient(hostname, getAuth(), apiVersion, connectTimeout, readTimeout, defaultLogLevel,
-					ImmutableMap.copyOf(responseLogLevels));
+					ImmutableMap.copyOf(responseLogLevels), observers);
 		}
 	}
 }
