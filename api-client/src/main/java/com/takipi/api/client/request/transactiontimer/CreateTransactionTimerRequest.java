@@ -1,13 +1,11 @@
 package com.takipi.api.client.request.transactiontimer;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.takipi.api.client.data.timer.Timer;
 import com.takipi.api.client.request.ServiceRequest;
-import com.takipi.api.core.consts.ApiConstants;
 import com.takipi.api.core.request.intf.ApiPostRequest;
 import com.takipi.common.util.JsonUtil;
 
@@ -30,11 +28,11 @@ public class CreateTransactionTimerRequest extends ServiceRequest implements Api
 	}
 
 	@Override
-	public byte[] postData() throws UnsupportedEncodingException {
+	public String postData() {
 		Map<String, String> map = ImmutableMap.of("class_name", JsonUtil.stringify(className), "method_name",
 				JsonUtil.stringify(methodName), "threshold", Long.toString(threshold));
 
-		return JsonUtil.createSimpleJson(map, false).getBytes(ApiConstants.UTF8_ENCODING);
+		return JsonUtil.createSimpleJson(map, false);
 	}
 
 	@Override

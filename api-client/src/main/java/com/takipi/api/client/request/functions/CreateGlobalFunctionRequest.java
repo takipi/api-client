@@ -3,9 +3,10 @@ package com.takipi.api.client.request.functions;
 import com.takipi.api.client.request.GlobalSettingsRequest;
 import com.takipi.api.client.result.functions.CreateFunctionResult;
 import com.takipi.api.core.consts.ApiConstants;
-import com.takipi.api.core.request.intf.ApiPostRequest;
+import com.takipi.api.core.request.intf.ApiPostBytesRequest;
 
-public class CreateGlobalFunctionRequest extends GlobalSettingsRequest implements ApiPostRequest<CreateFunctionResult> {
+public class CreateGlobalFunctionRequest extends GlobalSettingsRequest
+		implements ApiPostBytesRequest<CreateFunctionResult> {
 	private final byte[] data;
 
 	CreateGlobalFunctionRequest(byte[] data) {

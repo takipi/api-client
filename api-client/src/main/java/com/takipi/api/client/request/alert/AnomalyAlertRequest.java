@@ -1,6 +1,5 @@
 package com.takipi.api.client.request.alert;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Map;
 
@@ -12,7 +11,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.takipi.api.client.request.alert.Anomaly.AnomalyContributor;
 import com.takipi.api.client.request.alert.Anomaly.AnomalyPeriod;
-import com.takipi.api.core.consts.ApiConstants;
 import com.takipi.common.util.JsonUtil;
 
 public class AnomalyAlertRequest extends AlertRequest {
@@ -43,16 +41,14 @@ public class AnomalyAlertRequest extends AlertRequest {
 	}
 
 	@Override
-	public byte[] postData() throws UnsupportedEncodingException {
+	public String postData() {
 		Map<String, String> map = Maps.newHashMap();
 
 		map.put("desc", JsonUtil.stringify(desc));
 		map.put("timeframe", timeframeJson());
 		map.put("anomaly", anomalyJson());
 
-		String json = JsonUtil.createSimpleJson(map, false);
-
-		return json.getBytes(ApiConstants.UTF8_ENCODING);
+		return JsonUtil.createSimpleJson(map, false);
 	}
 
 	private String timeframeJson() {

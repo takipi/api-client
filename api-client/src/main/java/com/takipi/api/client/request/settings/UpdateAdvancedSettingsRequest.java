@@ -1,13 +1,11 @@
 package com.takipi.api.client.request.settings;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
 import com.takipi.api.client.data.advanced.AdvancedSettings;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.EmptyResult;
-import com.takipi.api.core.consts.ApiConstants;
 import com.takipi.api.core.request.intf.ApiPostRequest;
 import com.takipi.common.util.JsonUtil;
 
@@ -24,7 +22,7 @@ public class UpdateAdvancedSettingsRequest extends ServiceRequest implements Api
 	}
 
 	@Override
-	public byte[] postData() throws UnsupportedEncodingException {
+	public String postData() {
 		Map<String, String> map = Maps.newHashMapWithExpectedSize(2);
 
 		if (advancedSettings.allowed_ips != null) {
@@ -39,7 +37,7 @@ public class UpdateAdvancedSettingsRequest extends ServiceRequest implements Api
 
 		map.put("clear_env_filters", Boolean.toString(advancedSettings.clear_env_filters));
 
-		return JsonUtil.createSimpleJson(map, false).getBytes(ApiConstants.UTF8_ENCODING);
+		return JsonUtil.createSimpleJson(map, false);
 	}
 
 	@Override

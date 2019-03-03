@@ -1,12 +1,10 @@
 package com.takipi.api.client.request.timer;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.EmptyResult;
-import com.takipi.api.core.consts.ApiConstants;
 import com.takipi.api.core.request.intf.ApiPostRequest;
 import com.takipi.common.util.JsonUtil;
 
@@ -27,10 +25,10 @@ public class EditTimerRequest extends ServiceRequest implements ApiPostRequest<E
 	}
 
 	@Override
-	public byte[] postData() throws UnsupportedEncodingException {
+	public String postData() {
 		Map<String, String> map = ImmutableMap.of("threshold", Long.toString(threshold));
 
-		return JsonUtil.createSimpleJson(map, false).getBytes(ApiConstants.UTF8_ENCODING);
+		return JsonUtil.createSimpleJson(map, false);
 	}
 
 	@Override
@@ -72,7 +70,7 @@ public class EditTimerRequest extends ServiceRequest implements ApiPostRequest<E
 		@Override
 		protected void validate() {
 			super.validate();
-			
+
 			if (timerId <= 0L) {
 				throw new IllegalArgumentException("Timer id must be positive");
 			}

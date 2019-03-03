@@ -1,12 +1,9 @@
 package com.takipi.api.client.request.reliability;
 
-import java.io.UnsupportedEncodingException;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.EmptyResult;
-import com.takipi.api.core.consts.ApiConstants;
 import com.takipi.api.core.request.intf.ApiPostRequest;
 import com.takipi.common.util.JsonUtil;
 
@@ -20,11 +17,8 @@ public class UpdateReliabilitySettingsRequest extends ServiceRequest implements 
 	}
 
 	@Override
-	public byte[] postData() throws UnsupportedEncodingException {
-		String json = JsonUtil.createSimpleJson(ImmutableMap.of("reliability_settings_json", reliabilitySettingsJson),
-				true);
-
-		return json.getBytes(ApiConstants.UTF8_ENCODING);
+	public String postData() {
+		return JsonUtil.createSimpleJson(ImmutableMap.of("reliability_settings_json", reliabilitySettingsJson), true);
 	}
 
 	@Override

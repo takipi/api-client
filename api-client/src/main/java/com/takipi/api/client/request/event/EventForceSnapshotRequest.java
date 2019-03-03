@@ -1,7 +1,5 @@
 package com.takipi.api.client.request.event;
 
-import java.io.UnsupportedEncodingException;
-
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.EmptyResult;
 import com.takipi.api.core.request.intf.ApiPostRequest;
@@ -21,7 +19,7 @@ public class EventForceSnapshotRequest extends ServiceRequest implements ApiPost
 	}
 
 	@Override
-	public byte[] postData() throws UnsupportedEncodingException {
+	public String postData() {
 		return null;
 	}
 

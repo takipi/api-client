@@ -17,6 +17,11 @@ public class EventInboxRequest extends ModifyLabelsRequest {
 		return baseUrlPath() + "/events/" + eventId + "/inbox";
 	}
 
+	@Override
+	public String postData() {
+		return null;
+	}
+
 	public static Builder newBuilder() {
 		return new Builder();
 	}

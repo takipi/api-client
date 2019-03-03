@@ -1,13 +1,11 @@
 package com.takipi.api.client.request.category;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.category.CreateCategoryResult;
-import com.takipi.api.core.consts.ApiConstants;
 import com.takipi.api.core.request.intf.ApiPostRequest;
 import com.takipi.common.util.JsonUtil;
 
@@ -28,13 +26,13 @@ public class CreateCategoryRequest extends ServiceRequest implements ApiPostRequ
 	}
 
 	@Override
-	public byte[] postData() throws UnsupportedEncodingException {
+	public String postData() {
 		Map<String, String> map = Maps.newHashMapWithExpectedSize(2);
 
 		map.put("name", JsonUtil.stringify(name));
 		map.put("shared", Boolean.toString(shared));
 
-		return JsonUtil.createSimpleJson(map, false).getBytes(ApiConstants.UTF8_ENCODING);
+		return JsonUtil.createSimpleJson(map, false);
 	}
 
 	@Override
