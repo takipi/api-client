@@ -112,7 +112,8 @@ public class ApiClient extends UrlClient {
 					request.queryParams());
 			long t2 = System.currentTimeMillis();
 
-			observe(Operation.GET, request.urlPath(), null, response.data, response.responseCode, t2 - t1);
+			observe(Operation.GET, appendQueryParams(request.urlPath(), request.queryParams()), null, response.data,
+					response.responseCode, t2 - t1);
 
 			return getApiResponse(response, request.resultClass());
 		} catch (Exception e) {
@@ -128,8 +129,8 @@ public class ApiClient extends UrlClient {
 					request.queryParams());
 			long t2 = System.currentTimeMillis();
 
-			observe(Operation.PUT, request.urlPath(), prettyBytes(request.putData()), response.data,
-					response.responseCode, t2 - t1);
+			observe(Operation.PUT, appendQueryParams(request.urlPath(), request.queryParams()),
+					prettyBytes(request.putData()), response.data, response.responseCode, t2 - t1);
 
 			return getApiResponse(response, request.resultClass());
 		} catch (Exception e) {
@@ -148,7 +149,8 @@ public class ApiClient extends UrlClient {
 					request.queryParams());
 			long t2 = System.currentTimeMillis();
 
-			observe(Operation.POST, request.urlPath(), postData, response.data, response.responseCode, t2 - t1);
+			observe(Operation.POST, appendQueryParams(request.urlPath(), request.queryParams()), postData,
+					response.data, response.responseCode, t2 - t1);
 
 			return getApiResponse(response, request.resultClass());
 		} catch (Exception e) {
@@ -164,8 +166,8 @@ public class ApiClient extends UrlClient {
 					request.queryParams());
 			long t2 = System.currentTimeMillis();
 
-			observe(Operation.POST, request.urlPath(), prettyBytes(request.postData()), response.data,
-					response.responseCode, t2 - t1);
+			observe(Operation.POST, appendQueryParams(request.urlPath(), request.queryParams()),
+					prettyBytes(request.postData()), response.data, response.responseCode, t2 - t1);
 
 			return getApiResponse(response, request.resultClass());
 		} catch (Exception e) {
@@ -181,7 +183,8 @@ public class ApiClient extends UrlClient {
 					request.queryParams());
 			long t2 = System.currentTimeMillis();
 
-			observe(Operation.DELETE, request.urlPath(), null, response.data, response.responseCode, t2 - t1);
+			observe(Operation.DELETE, appendQueryParams(request.urlPath(), request.queryParams()), null, response.data,
+					response.responseCode, t2 - t1);
 
 			return getApiResponse(response, request.resultClass());
 		} catch (Exception e) {

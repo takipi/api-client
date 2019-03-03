@@ -116,7 +116,7 @@ public abstract class UrlClient {
 		}
 	}
 
-	private String appendQueryParams(String url, String[] params) {
+	protected String appendQueryParams(String url, String[] params) {
 		if ((params == null) || (params.length == 0)) {
 			return url;
 		}
