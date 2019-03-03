@@ -1,13 +1,11 @@
 package com.takipi.api.client.request.event;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import com.takipi.api.client.request.label.ModifyLabelsRequest;
 import com.takipi.api.client.util.validation.ValidationUtil;
-import com.takipi.api.core.consts.ApiConstants;
 import com.takipi.common.util.JsonUtil;
 
 public class EventModifyLabelsRequest extends ModifyLabelsRequest {
@@ -30,9 +28,9 @@ public class EventModifyLabelsRequest extends ModifyLabelsRequest {
 	}
 
 	@Override
-	public byte[] postData() throws UnsupportedEncodingException {
+	public String postData() {
 		return JsonUtil.createSimpleJson(ImmutableMap.of("add", JsonUtil.createSimpleJson(addLabels, true), "remove",
-				JsonUtil.createSimpleJson(removeLabels, true))).getBytes(ApiConstants.UTF8_ENCODING);
+				JsonUtil.createSimpleJson(removeLabels, true)));
 	}
 
 	public static Builder newBuilder() {

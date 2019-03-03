@@ -1,13 +1,11 @@
 package com.takipi.api.client.request.label;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.EmptyResult;
-import com.takipi.api.core.consts.ApiConstants;
 import com.takipi.api.core.request.intf.ApiPostRequest;
 import com.takipi.common.util.JsonUtil;
 
@@ -28,7 +26,7 @@ public class CreateLabelRequest extends ServiceRequest implements ApiPostRequest
 	}
 
 	@Override
-	public byte[] postData() throws UnsupportedEncodingException {
+	public String postData() {
 		Map<String, String> map = Maps.newHashMapWithExpectedSize(2);
 
 		map.put("name", name);
@@ -37,7 +35,7 @@ public class CreateLabelRequest extends ServiceRequest implements ApiPostRequest
 			map.put("color", color);
 		}
 
-		return JsonUtil.createSimpleJson(map, true).getBytes(ApiConstants.UTF8_ENCODING);
+		return JsonUtil.createSimpleJson(map, true);
 	}
 
 	@Override

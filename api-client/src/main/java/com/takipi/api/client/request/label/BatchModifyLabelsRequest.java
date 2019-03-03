@@ -1,6 +1,5 @@
 package com.takipi.api.client.request.label;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Map;
 
@@ -8,7 +7,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.takipi.api.client.util.validation.ValidationUtil;
-import com.takipi.api.core.consts.ApiConstants;
 import com.takipi.common.util.JsonUtil;
 
 public class BatchModifyLabelsRequest extends ModifyLabelsRequest {
@@ -27,7 +25,7 @@ public class BatchModifyLabelsRequest extends ModifyLabelsRequest {
 	}
 
 	@Override
-	public byte[] postData() throws UnsupportedEncodingException {
+	public String postData() {
 		Collection<String> itemJsons = Lists.newArrayListWithCapacity(modifications.size());
 
 		for (Modification modification : modifications) {
@@ -39,8 +37,7 @@ public class BatchModifyLabelsRequest extends ModifyLabelsRequest {
 			itemJsons.add(itemJson);
 		}
 
-		return JsonUtil.createSimpleJson(ImmutableMap.of("items", JsonUtil.createSimpleJson(itemJsons, false)))
-				.getBytes(ApiConstants.UTF8_ENCODING);
+		return JsonUtil.createSimpleJson(ImmutableMap.of("items", JsonUtil.createSimpleJson(itemJsons, false)));
 	}
 
 	static class Modification {

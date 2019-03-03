@@ -18,11 +18,6 @@ public abstract class ModifyLabelsRequest extends ServiceRequest implements ApiP
 	}
 
 	@Override
-	public byte[] postData() throws UnsupportedEncodingException {
-		return null;
-	}
-
-	@Override
 	public String[] queryParams() throws UnsupportedEncodingException {
 		String[] params = new String[2];
 

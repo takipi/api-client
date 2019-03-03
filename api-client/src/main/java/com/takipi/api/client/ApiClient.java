@@ -15,6 +15,7 @@ import com.google.gson.GsonBuilder;
 import com.takipi.api.core.consts.ApiConstants;
 import com.takipi.api.core.request.intf.ApiDeleteRequest;
 import com.takipi.api.core.request.intf.ApiGetRequest;
+import com.takipi.api.core.request.intf.ApiPostBytesRequest;
 import com.takipi.api.core.request.intf.ApiPostRequest;
 import com.takipi.api.core.request.intf.ApiPutRequest;
 import com.takipi.api.core.request.intf.ApiRequest;
@@ -113,6 +114,21 @@ public class ApiClient extends UrlClient {
 	}
 
 	public <T extends ApiResult> Response<T> post(ApiPostRequest<T> request) {
+		try {
+			String postData = request.postData();
+			byte[] data = (Strings.isNullOrEmpty(postData) ? null : postData.getBytes(ApiConstants.UTF8_ENCODING));
+
+			Response<String> response = post(buildTargetUrl(request), auth, data, request.contentType(),
+					request.queryParams());
+
+			return getApiResponse(response, request.resultClass());
+		} catch (Exception e) {
+			logger.error("Api url client POST {} failed.", request.getClass().getName(), e);
+			return Response.of(HttpURLConnection.HTTP_INTERNAL_ERROR, null);
+		}
+	}
+
+	public <T extends ApiResult> Response<T> post(ApiPostBytesRequest<T> request) {
 		try {
 			Response<String> response = post(buildTargetUrl(request), auth, request.postData(), request.contentType(),
 					request.queryParams());

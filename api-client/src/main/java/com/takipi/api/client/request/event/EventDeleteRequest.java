@@ -17,6 +17,11 @@ public class EventDeleteRequest extends ModifyLabelsRequest {
 		return baseUrlPath() + "/events/" + eventId + "/delete";
 	}
 
+	@Override
+	public String postData() {
+		return null;
+	}
+
 	public static Builder newBuilder() {
 		return new Builder();
 	}

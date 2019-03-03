@@ -1,7 +1,5 @@
 package com.takipi.api.client.request.transactiontimer;
 
-import java.io.UnsupportedEncodingException;
-
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.EmptyResult;
 import com.takipi.api.core.request.intf.ApiPostRequest;
@@ -23,7 +21,7 @@ public class ToggleTransactionTimerRequest extends ServiceRequest implements Api
 	}
 
 	@Override
-	public byte[] postData() throws UnsupportedEncodingException {
+	public String postData() {
 		return null;
 	}
 

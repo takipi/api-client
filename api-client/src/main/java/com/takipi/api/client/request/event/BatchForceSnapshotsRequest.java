@@ -1,6 +1,5 @@
 package com.takipi.api.client.request.event;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Set;
 
@@ -10,7 +9,6 @@ import com.google.common.collect.Sets;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.EmptyResult;
 import com.takipi.api.client.util.validation.ValidationUtil;
-import com.takipi.api.core.consts.ApiConstants;
 import com.takipi.api.core.request.intf.ApiPostRequest;
 import com.takipi.common.util.JsonUtil;
 
@@ -29,7 +27,7 @@ public class BatchForceSnapshotsRequest extends ServiceRequest implements ApiPos
 	}
 
 	@Override
-	public byte[] postData() throws UnsupportedEncodingException {
+	public String postData() {
 		Collection<String> itemJsons = Lists.newArrayListWithCapacity(eventIds.size());
 
 		for (String eventId : eventIds) {
@@ -38,8 +36,7 @@ public class BatchForceSnapshotsRequest extends ServiceRequest implements ApiPos
 			itemJsons.add(itemJson);
 		}
 
-		return JsonUtil.createSimpleJson(ImmutableMap.of("items", JsonUtil.createSimpleJson(itemJsons, false)))
-				.getBytes(ApiConstants.UTF8_ENCODING);
+		return JsonUtil.createSimpleJson(ImmutableMap.of("items", JsonUtil.createSimpleJson(itemJsons, false)));
 	}
 
 	@Override

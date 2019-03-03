@@ -3,9 +3,9 @@ package com.takipi.api.client.request.functions;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.functions.CreateFunctionResult;
 import com.takipi.api.core.consts.ApiConstants;
-import com.takipi.api.core.request.intf.ApiPostRequest;
+import com.takipi.api.core.request.intf.ApiPostBytesRequest;
 
-public class CreateFunctionRequest extends ServiceRequest implements ApiPostRequest<CreateFunctionResult> {
+public class CreateFunctionRequest extends ServiceRequest implements ApiPostBytesRequest<CreateFunctionResult> {
 	private final byte[] data;
 
 	CreateFunctionRequest(String serviceId, byte[] data) {

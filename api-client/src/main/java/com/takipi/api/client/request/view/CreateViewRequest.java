@@ -1,13 +1,10 @@
 package com.takipi.api.client.request.view;
 
-import java.io.UnsupportedEncodingException;
-
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.takipi.api.client.data.view.ViewInfo;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.view.CreateViewResult;
-import com.takipi.api.core.consts.ApiConstants;
 import com.takipi.api.core.request.intf.ApiPostRequest;
 import com.takipi.common.util.CollectionUtil;
 
@@ -26,8 +23,8 @@ public class CreateViewRequest extends ServiceRequest implements ApiPostRequest<
 	}
 
 	@Override
-	public byte[] postData() throws UnsupportedEncodingException {
-		return (new Gson()).toJson(viewInfo).getBytes(ApiConstants.UTF8_ENCODING);
+	public String postData() {
+		return (new Gson()).toJson(viewInfo);
 	}
 
 	@Override
