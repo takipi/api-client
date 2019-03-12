@@ -1,5 +1,6 @@
 package com.takipi.api.client.request.team;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.takipi.api.client.data.team.ServiceUsers;
@@ -61,6 +62,33 @@ public class ChangeTeamMembersRolesRequest extends ServiceRequest implements Api
 			this.members.add(teamMember);
 			
 			return this;
+		}
+		
+		@Override
+		protected void validate()
+		{
+			super.validate();
+			
+			if (this.members.size() == 0)
+			{
+				throw new IllegalArgumentException("Request is empty");
+			}
+			
+			for (TeamMember teamMember : this.members)
+			{
+				if ((Strings.isNullOrEmpty(teamMember.email)) ||
+					(Strings.isNullOrEmpty(teamMember.role)))
+				{
+					throw new IllegalArgumentException("User email or role cannot be empty");
+				}
+				
+				if (!((teamMember.role.equalsIgnoreCase("Owner")) ||
+					  (teamMember.role.equalsIgnoreCase("Admin")) ||
+					  (teamMember.role.equalsIgnoreCase("Member"))))
+				{
+					throw new IllegalArgumentException("User role must be Owner/Admin/Member");
+				}
+			}
 		}
 		
 		public ChangeTeamMembersRolesRequest build() {

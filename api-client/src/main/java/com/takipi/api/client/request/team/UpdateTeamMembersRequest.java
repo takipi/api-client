@@ -1,5 +1,6 @@
 package com.takipi.api.client.request.team;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.takipi.api.client.data.team.ServiceUsers;
@@ -57,6 +58,25 @@ public class UpdateTeamMembersRequest extends ServiceRequest implements ApiPostR
 			this.emailsToAdd.add(email);
 			
 			return this;
+		}
+		
+		@Override
+		protected void validate()
+		{
+			super.validate();
+			
+			if (this.emailsToAdd.size() == 0)
+			{
+				throw new IllegalArgumentException("Request is empty");
+			}
+			
+			for (String email : emailsToAdd)
+			{
+				if (Strings.isNullOrEmpty(email))
+				{
+					throw new IllegalArgumentException("User email cannot be empty");
+				}
+			}
 		}
 		
 		public UpdateTeamMembersRequest build() {

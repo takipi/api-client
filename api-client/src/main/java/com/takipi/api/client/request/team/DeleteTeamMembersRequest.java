@@ -1,5 +1,6 @@
 package com.takipi.api.client.request.team;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.takipi.api.client.data.team.ServiceUsers;
@@ -56,6 +57,25 @@ public class DeleteTeamMembersRequest extends ServiceRequest implements ApiDelet
 			this.usersToRemove.add(email);
 			
 			return this;
+		}
+		
+		@Override
+		protected void validate()
+		{
+			super.validate();
+			
+			if (this.usersToRemove.size() == 0)
+			{
+				throw new IllegalArgumentException("Request is empty");
+			}
+			
+			for (String email : usersToRemove)
+			{
+				if (Strings.isNullOrEmpty(email))
+				{
+					throw new IllegalArgumentException("User email cannot be empty");
+				}
+			}
 		}
 		
 		public DeleteTeamMembersRequest build() {
