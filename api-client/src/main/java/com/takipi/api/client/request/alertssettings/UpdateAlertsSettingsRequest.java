@@ -1,5 +1,6 @@
 package com.takipi.api.client.request.alertssettings;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.takipi.api.client.data.alertssetings.DefaultAlertsSettings;
 import com.takipi.api.client.data.alertssetings.DefaultAlertsSettings.AlertsDefaultEmailSettings;
@@ -256,6 +257,52 @@ public class UpdateAlertsSettingsRequest extends ServiceRequest implements ApiPo
 			return this;
 		}
 		
+		@Override
+		protected void validate() {
+			super.validate();
+			
+			if ((this.defaultAlertsSettings.slack.inhook_url != null) &&
+				(Strings.isNullOrEmpty(this.defaultAlertsSettings.slack.inhook_url)))
+			{
+				throw new IllegalArgumentException("No inhook URL supplied for Slack inhook connection request");
+			}
+			
+			if ((this.defaultAlertsSettings.hip_chat.token != null) ||
+				(this.defaultAlertsSettings.hip_chat.room != null))
+			{
+				if ((Strings.isNullOrEmpty(this.defaultAlertsSettings.hip_chat.token)) ||
+				 	(Strings.isNullOrEmpty(this.defaultAlertsSettings.hip_chat.room)))
+				{
+					throw new IllegalArgumentException("No room or token supplied for HipChat connection request");
+				}
+			}
+			
+			if ((this.defaultAlertsSettings.pager_duty.service_integration_key != null) &&
+				(Strings.isNullOrEmpty(this.defaultAlertsSettings.pager_duty.service_integration_key)))
+			{
+				throw new IllegalArgumentException("No integration key supplied for PagerDuty connection request");
+			}
+			
+			if ((this.defaultAlertsSettings.webhook.webhook_url != null) &&
+				(Strings.isNullOrEmpty(this.defaultAlertsSettings.webhook.webhook_url)))
+			{
+				throw new IllegalArgumentException("No webhook URL supplied for webhook request");
+			}
+			
+			if ((this.defaultAlertsSettings.service_now.url != null) ||
+				(this.defaultAlertsSettings.service_now.user_id != null) ||
+				(this.defaultAlertsSettings.service_now.password != null) ||
+				(this.defaultAlertsSettings.service_now.table != null))
+			{
+				if ((Strings.isNullOrEmpty(this.defaultAlertsSettings.service_now.url)) ||
+					(Strings.isNullOrEmpty(this.defaultAlertsSettings.service_now.user_id)) ||
+					(Strings.isNullOrEmpty(this.defaultAlertsSettings.service_now.password)) ||
+					(Strings.isNullOrEmpty(this.defaultAlertsSettings.service_now.table)))
+				{
+					throw new IllegalArgumentException("Not all settings supplied for ServiceNow integration");
+				}
+			}
+		}
 		
 		public UpdateAlertsSettingsRequest build() {
 			validate();
