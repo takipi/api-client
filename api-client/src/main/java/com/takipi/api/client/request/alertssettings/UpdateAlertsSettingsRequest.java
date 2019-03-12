@@ -1,8 +1,14 @@
 package com.takipi.api.client.request.alertssettings;
 
 import com.google.common.collect.Maps;
-import com.google.gson.Gson;
 import com.takipi.api.client.data.alertssetings.DefaultAlertsSettings;
+import com.takipi.api.client.data.alertssetings.DefaultAlertsSettings.AlertsDefaultEmailSettings;
+import com.takipi.api.client.data.alertssetings.DefaultAlertsSettings.AlertsDefaultHipChatSettings;
+import com.takipi.api.client.data.alertssetings.DefaultAlertsSettings.AlertsDefaultPagerDutySettings;
+import com.takipi.api.client.data.alertssetings.DefaultAlertsSettings.AlertsDefaultSlackSettings;
+import com.takipi.api.client.data.alertssetings.DefaultAlertsSettings.AlertsDefaultServiceNowSettings;
+import com.takipi.api.client.data.alertssetings.DefaultAlertsSettings.AlertsDefaultWebhookSettings;
+import com.takipi.api.client.data.alertssetings.DefaultAlertsSettings.InitializedFields;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.EmptyResult;
 import com.takipi.api.core.request.intf.ApiPostRequest;
@@ -144,13 +150,13 @@ public class UpdateAlertsSettingsRequest extends ServiceRequest implements ApiPo
 		
 		Builder() {
 			this.defaultAlertsSettings = new DefaultAlertsSettings();
-			this.defaultAlertsSettings.email = new DefaultAlertsSettings.AlertsDefaultEmailSettings();
-			this.defaultAlertsSettings.slack = new DefaultAlertsSettings.AlertsDefaultSlackSettings();
-			this.defaultAlertsSettings.hip_chat = new DefaultAlertsSettings.AlertsDefaultHipChatSettings();
-			this.defaultAlertsSettings.pager_duty = new DefaultAlertsSettings.AlertsDefaultPagerDutySettings();
-			this.defaultAlertsSettings.webhook = new DefaultAlertsSettings.AlertsDefaultWebhookSettings();
-			this.defaultAlertsSettings.service_now = new DefaultAlertsSettings.AlertsDefaultServiceNowSettings();
-			this.defaultAlertsSettings.initializedFields = new DefaultAlertsSettings.InitializedFields();
+			this.defaultAlertsSettings.email = new AlertsDefaultEmailSettings();
+			this.defaultAlertsSettings.slack = new AlertsDefaultSlackSettings();
+			this.defaultAlertsSettings.hip_chat = new AlertsDefaultHipChatSettings();
+			this.defaultAlertsSettings.pager_duty = new AlertsDefaultPagerDutySettings();
+			this.defaultAlertsSettings.webhook = new AlertsDefaultWebhookSettings();
+			this.defaultAlertsSettings.service_now = new AlertsDefaultServiceNowSettings();
+			this.defaultAlertsSettings.initializedFields = new InitializedFields();
 		}
 		
 		@Override
