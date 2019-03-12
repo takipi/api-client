@@ -13,6 +13,11 @@ public class DeleteFunctionRequest extends ServiceRequest implements ApiDeleteRe
 
 		this.libraryId = libraryId;
 	}
+	
+	@Override
+	public String postData() {
+		return null;
+	}
 
 	@Override
 	public String urlPath() {

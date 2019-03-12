@@ -13,6 +13,11 @@ public class DeleteViewRequest extends ServiceRequest implements ApiDeleteReques
 
 		this.viewId = viewId;
 	}
+	
+	@Override
+	public String postData() {
+		return null;
+	}
 
 	@Override
 	public String urlPath() {

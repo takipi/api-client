@@ -183,7 +183,7 @@ public abstract class UrlClient {
 		}
 	}
 
-	public Response<String> delete(String targetUrl, Pair<String, String> auth, String contentType, String... params) {
+	public Response<String> delete(String targetUrl, Pair<String, String> auth, byte[] data, String contentType, String... params) {
 		HttpURLConnection connection = null;
 
 		try {
@@ -198,7 +198,15 @@ public abstract class UrlClient {
 			connection.setRequestProperty("Content-Type", contentType);
 			connection.setConnectTimeout(connectTimeout);
 			connection.setReadTimeout(readTimeout);
+			connection.setDoOutput(true);
 			connection.setRequestMethod("DELETE");
+
+			if ((data != null) && (data.length > 0)) {
+				OutputStream out = connection.getOutputStream();
+				out.write(data);
+				out.flush();
+				out.close();
+			}
 
 			Response<String> result = getResponse(targetUrl, connection);
 

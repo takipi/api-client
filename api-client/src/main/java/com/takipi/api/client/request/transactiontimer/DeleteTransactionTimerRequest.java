@@ -12,6 +12,11 @@ public class DeleteTransactionTimerRequest extends ServiceRequest implements Api
 
 		this.timerId = timerId;
 	}
+	
+	@Override
+	public String postData() {
+		return null;
+	}
 
 	@Override
 	public String urlPath() {

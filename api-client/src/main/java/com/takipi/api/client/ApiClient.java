@@ -178,8 +178,11 @@ public class ApiClient extends UrlClient {
 
 	public <T extends ApiResult> Response<T> delete(ApiDeleteRequest<T> request) {
 		try {
+			String postData = request.postData();
+			byte[] data = (Strings.isNullOrEmpty(postData) ? null : postData.getBytes(ApiConstants.UTF8_ENCODING));
+			
 			long t1 = System.currentTimeMillis();
-			Response<String> response = delete(buildTargetUrl(request), auth, request.contentType(),
+			Response<String> response = delete(buildTargetUrl(request), auth, data, request.contentType(),
 					request.queryParams());
 			long t2 = System.currentTimeMillis();
 

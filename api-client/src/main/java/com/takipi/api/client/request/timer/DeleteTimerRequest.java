@@ -14,6 +14,11 @@ public class DeleteTimerRequest extends ServiceRequest implements ApiDeleteReque
 	}
 
 	@Override
+	public String postData() {
+		return null;
+	}
+
+	@Override
 	public String urlPath() {
 		return baseUrlPath() + "/timers/" + Integer.toString(timerId);
 	}
