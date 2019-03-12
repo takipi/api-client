@@ -4,13 +4,14 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.takipi.api.client.data.team.ServiceUsers;
+import com.takipi.api.client.data.team.ServiceUsers.TeamMember;
+import com.takipi.api.client.data.team.ServiceUsersResponseMessage;
 import com.takipi.api.client.request.ServiceRequest;
-import com.takipi.api.client.result.EmptyResult;
 import com.takipi.api.core.request.intf.ApiDeleteRequest;
 
 import java.util.List;
 
-public class DeleteTeamMembersRequest extends ServiceRequest implements ApiDeleteRequest<EmptyResult>
+public class DeleteTeamMembersRequest extends ServiceRequest implements ApiDeleteRequest<ServiceUsersResponseMessage>
 {
 	private final ServiceUsers serviceUsers;
 	
@@ -31,8 +32,8 @@ public class DeleteTeamMembersRequest extends ServiceRequest implements ApiDelet
 	}
 	
 	@Override
-	public Class<EmptyResult> resultClass() {
-		return EmptyResult.class;
+	public Class<ServiceUsersResponseMessage> resultClass() {
+		return ServiceUsersResponseMessage.class;
 	}
 	
 	public static Builder newBuilder() {
@@ -86,7 +87,7 @@ public class DeleteTeamMembersRequest extends ServiceRequest implements ApiDelet
 			
 			for (String email: this.usersToRemove)
 			{
-				ServiceUsers.TeamMember teamMember = new ServiceUsers.TeamMember();
+				TeamMember teamMember = new TeamMember();
 				teamMember.email = email;
 				
 				serviceUsers.team_members.add(teamMember);

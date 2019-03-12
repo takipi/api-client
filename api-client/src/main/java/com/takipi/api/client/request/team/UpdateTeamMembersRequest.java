@@ -5,13 +5,13 @@ import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.takipi.api.client.data.team.ServiceUsers;
 import com.takipi.api.client.data.team.ServiceUsers.TeamMember;
+import com.takipi.api.client.data.team.ServiceUsersResponse;
 import com.takipi.api.client.request.ServiceRequest;
-import com.takipi.api.client.result.EmptyResult;
 import com.takipi.api.core.request.intf.ApiPostRequest;
 
 import java.util.List;
 
-public class UpdateTeamMembersRequest extends ServiceRequest implements ApiPostRequest<EmptyResult>
+public class UpdateTeamMembersRequest extends ServiceRequest implements ApiPostRequest<ServiceUsersResponse>
 {
 	private final ServiceUsers serviceUsers;
 	
@@ -27,8 +27,8 @@ public class UpdateTeamMembersRequest extends ServiceRequest implements ApiPostR
 	}
 	
 	@Override
-	public Class<EmptyResult> resultClass() {
-		return EmptyResult.class;
+	public Class<ServiceUsersResponse> resultClass() {
+		return ServiceUsersResponse.class;
 	}
 	
 	@Override
