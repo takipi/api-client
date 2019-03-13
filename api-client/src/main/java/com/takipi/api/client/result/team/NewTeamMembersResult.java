@@ -5,7 +5,7 @@ import com.takipi.api.core.result.intf.ApiResult;
 
 import java.util.List;
 
-public class ServiceUsers implements ApiResult
+public class NewTeamMembersResult implements ApiResult
 {
-	public List<TeamMember> team_members;
+	public List<TeamMember> new_members;
 }

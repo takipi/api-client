@@ -6,7 +6,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.takipi.api.client.data.team.TeamMember;
-import com.takipi.api.client.result.team.ServiceUsersResultMessage;
+import com.takipi.api.client.result.team.TeamMembersResultMessage;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.core.request.intf.ApiDeleteRequest;
 import com.takipi.common.util.JsonUtil;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class DeleteTeamMembersRequest extends ServiceRequest implements ApiDeleteRequest<ServiceUsersResultMessage>
+public class DeleteTeamMembersRequest extends ServiceRequest implements ApiDeleteRequest<TeamMembersResultMessage>
 {
 	private final List<TeamMember> teamMembers;
 	
@@ -40,8 +40,8 @@ public class DeleteTeamMembersRequest extends ServiceRequest implements ApiDelet
 	}
 	
 	@Override
-	public Class<ServiceUsersResultMessage> resultClass() {
-		return ServiceUsersResultMessage.class;
+	public Class<TeamMembersResultMessage> resultClass() {
+		return TeamMembersResultMessage.class;
 	}
 	
 	public static Builder newBuilder() {

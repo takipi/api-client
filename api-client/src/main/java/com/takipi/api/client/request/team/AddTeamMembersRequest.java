@@ -6,7 +6,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.takipi.api.client.data.team.TeamMember;
-import com.takipi.api.client.result.team.ServiceUsersResult;
+import com.takipi.api.client.result.team.NewTeamMembersResult;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.core.request.intf.ApiPostRequest;
 import com.takipi.common.util.JsonUtil;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class AddTeamMembersRequest extends ServiceRequest implements ApiPostRequest<ServiceUsersResult>
+public class AddTeamMembersRequest extends ServiceRequest implements ApiPostRequest<NewTeamMembersResult>
 {
 	private final List<TeamMember> teamMembers;
 	
@@ -35,8 +35,8 @@ public class AddTeamMembersRequest extends ServiceRequest implements ApiPostRequ
 	}
 	
 	@Override
-	public Class<ServiceUsersResult> resultClass() {
-		return ServiceUsersResult.class;
+	public Class<NewTeamMembersResult> resultClass() {
+		return NewTeamMembersResult.class;
 	}
 	
 	@Override

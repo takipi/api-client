@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.takipi.api.client.data.team.TeamMember;
-import com.takipi.api.client.result.team.ServiceUsersResultMessage;
+import com.takipi.api.client.result.team.TeamMembersResultMessage;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.util.validation.ValidationUtil;
 import com.takipi.api.core.request.intf.ApiPostRequest;
@@ -14,7 +14,7 @@ import com.takipi.common.util.JsonUtil;
 import java.util.List;
 import java.util.Map;
 
-public class ChangeTeamMembersRolesRequest extends ServiceRequest implements ApiPostRequest<ServiceUsersResultMessage>
+public class ChangeTeamMembersRolesRequest extends ServiceRequest implements ApiPostRequest<TeamMembersResultMessage>
 {
 	private final List<TeamMember> teamMembers;
 	
@@ -34,8 +34,8 @@ public class ChangeTeamMembersRolesRequest extends ServiceRequest implements Api
 	}
 	
 	@Override
-	public Class<ServiceUsersResultMessage> resultClass() {
-		return ServiceUsersResultMessage.class;
+	public Class<TeamMembersResultMessage> resultClass() {
+		return TeamMembersResultMessage.class;
 	}
 	
 	@Override
