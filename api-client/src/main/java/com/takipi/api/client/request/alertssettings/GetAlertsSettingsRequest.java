@@ -1,17 +1,17 @@
 package com.takipi.api.client.request.alertssettings;
 
-import com.takipi.api.client.data.alertssetings.DefaultAlertsSettings;
 import com.takipi.api.client.request.ServiceRequest;
+import com.takipi.api.client.result.alertssettings.DefaultAlertsSettingsResult;
 import com.takipi.api.core.request.intf.ApiGetRequest;
 
-public class GetAlertsSettingsRequest extends ServiceRequest implements ApiGetRequest<DefaultAlertsSettings> {
+public class GetAlertsSettingsRequest extends ServiceRequest implements ApiGetRequest<DefaultAlertsSettingsResult> {
 	protected GetAlertsSettingsRequest(String serviceId) {
 		super(serviceId);
 	}
 	
 	@Override
-	public Class<DefaultAlertsSettings> resultClass() {
-		return DefaultAlertsSettings.class;
+	public Class<DefaultAlertsSettingsResult> resultClass() {
+		return DefaultAlertsSettingsResult.class;
 	}
 	
 	@Override

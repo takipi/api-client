@@ -9,7 +9,6 @@ import com.takipi.api.client.data.alertssetings.DefaultAlertsSettings.AlertsDefa
 import com.takipi.api.client.data.alertssetings.DefaultAlertsSettings.AlertsDefaultSlackSettings;
 import com.takipi.api.client.data.alertssetings.DefaultAlertsSettings.AlertsDefaultServiceNowSettings;
 import com.takipi.api.client.data.alertssetings.DefaultAlertsSettings.AlertsDefaultWebhookSettings;
-import com.takipi.api.client.data.alertssetings.DefaultAlertsSettings.InitializedFields;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.EmptyResult;
 import com.takipi.api.core.request.intf.ApiPostRequest;
@@ -20,11 +19,13 @@ import java.util.Map;
 public class UpdateAlertsSettingsRequest extends ServiceRequest implements ApiPostRequest<EmptyResult>
 {
 	private final DefaultAlertsSettings defaultAlertsSettings;
+	private final InitializedFields initializedFields;
 	
-	protected UpdateAlertsSettingsRequest(String serviceId, DefaultAlertsSettings defaultAlertsSettings) {
+	protected UpdateAlertsSettingsRequest(String serviceId, DefaultAlertsSettings defaultAlertsSettings, InitializedFields initializedFields) {
 		super(serviceId);
 		
 		this.defaultAlertsSettings = defaultAlertsSettings;
+		this.initializedFields = initializedFields;
 	}
 	
 	@Override
@@ -33,15 +34,15 @@ public class UpdateAlertsSettingsRequest extends ServiceRequest implements ApiPo
 		
 		Map<String, String> emailsMap = Maps.newHashMap();
 		
-		if (defaultAlertsSettings.initializedFields.emailAlertMeInitialized) {
+		if (this.initializedFields.emailAlertMeInitialized) {
 			emailsMap.put("alert_me", Boolean.toString(defaultAlertsSettings.email.alert_me));
 		}
 		
-		if (defaultAlertsSettings.initializedFields.emailAlertAllTeamMembersInitialized) {
+		if (this.initializedFields.emailAlertAllTeamMembersInitialized) {
 			emailsMap.put("alert_all_team_members", Boolean.toString(defaultAlertsSettings.email.alert_all_team_members));
 		}
 		
-		if (defaultAlertsSettings.initializedFields.emailAlertAdditionalEmailsInitialized) {
+		if (this.initializedFields.emailAlertAdditionalEmailsInitialized) {
 			emailsMap.put("alert_additional_emails", Boolean.toString(defaultAlertsSettings.email.alert_additional_emails));
 		}
 		
@@ -148,6 +149,7 @@ public class UpdateAlertsSettingsRequest extends ServiceRequest implements ApiPo
 	
 	public static class Builder extends ServiceRequest.Builder {
 		private DefaultAlertsSettings defaultAlertsSettings;
+		private InitializedFields initializedFields;
 		
 		Builder() {
 			this.defaultAlertsSettings = new DefaultAlertsSettings();
@@ -157,7 +159,7 @@ public class UpdateAlertsSettingsRequest extends ServiceRequest implements ApiPo
 			this.defaultAlertsSettings.pager_duty = new AlertsDefaultPagerDutySettings();
 			this.defaultAlertsSettings.webhook = new AlertsDefaultWebhookSettings();
 			this.defaultAlertsSettings.service_now = new AlertsDefaultServiceNowSettings();
-			this.defaultAlertsSettings.initializedFields = new InitializedFields();
+			this.initializedFields = new InitializedFields();
 		}
 		
 		@Override
@@ -170,7 +172,7 @@ public class UpdateAlertsSettingsRequest extends ServiceRequest implements ApiPo
 		public Builder setEmailAlertMe(boolean emailAlertMe) {
 			this.defaultAlertsSettings.email.alert_me = emailAlertMe;
 			
-			this.defaultAlertsSettings.initializedFields.emailAlertMeInitialized = true;
+			this.initializedFields.emailAlertMeInitialized = true;
 			
 			return this;
 		}
@@ -178,7 +180,7 @@ public class UpdateAlertsSettingsRequest extends ServiceRequest implements ApiPo
 		public Builder setEmailAlertAllTeamMembers(boolean emailAlertAllTeamMembers) {
 			this.defaultAlertsSettings.email.alert_all_team_members = emailAlertAllTeamMembers;
 			
-			this.defaultAlertsSettings.initializedFields.emailAlertAllTeamMembersInitialized = true;
+			this.initializedFields.emailAlertAllTeamMembersInitialized = true;
 			
 			return this;
 		}
@@ -186,7 +188,7 @@ public class UpdateAlertsSettingsRequest extends ServiceRequest implements ApiPo
 		public Builder setEmailAlertAdditionalEmails(boolean emailAlertAdditionalEmails) {
 			this.defaultAlertsSettings.email.alert_additional_emails = emailAlertAdditionalEmails;
 			
-			this.defaultAlertsSettings.initializedFields.emailAlertAdditionalEmailsInitialized = true;
+			this.initializedFields.emailAlertAdditionalEmailsInitialized = true;
 			
 			return this;
 		}
@@ -307,7 +309,14 @@ public class UpdateAlertsSettingsRequest extends ServiceRequest implements ApiPo
 		public UpdateAlertsSettingsRequest build() {
 			validate();
 			
-			return new UpdateAlertsSettingsRequest(serviceId, defaultAlertsSettings);
+			return new UpdateAlertsSettingsRequest(serviceId, defaultAlertsSettings, initializedFields);
 		}
+	}
+	
+	public static class InitializedFields
+	{
+		public boolean emailAlertMeInitialized;
+		public boolean emailAlertAllTeamMembersInitialized;
+		public boolean emailAlertAdditionalEmailsInitialized;
 	}
 }

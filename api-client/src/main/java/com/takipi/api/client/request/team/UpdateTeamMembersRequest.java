@@ -2,33 +2,39 @@ package com.takipi.api.client.request.team;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.gson.Gson;
-import com.takipi.api.client.data.team.ServiceUsers;
-import com.takipi.api.client.data.team.ServiceUsers.TeamMember;
-import com.takipi.api.client.data.team.ServiceUsersResponse;
+import com.takipi.api.client.data.team.TeamMember;
+import com.takipi.api.client.result.team.ServiceUsersResult;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.core.request.intf.ApiPostRequest;
+import com.takipi.common.util.JsonUtil;
 
 import java.util.List;
+import java.util.Map;
 
-public class UpdateTeamMembersRequest extends ServiceRequest implements ApiPostRequest<ServiceUsersResponse>
+public class UpdateTeamMembersRequest extends ServiceRequest implements ApiPostRequest<ServiceUsersResult>
 {
-	private final ServiceUsers serviceUsers;
+	private final List<TeamMember> teamMembers;
 	
-	protected UpdateTeamMembersRequest(String serviceId, ServiceUsers serviceUsers) {
+	protected UpdateTeamMembersRequest(String serviceId, List<TeamMember> teamMembers) {
 		super(serviceId);
 		
-		this.serviceUsers = serviceUsers;
+		this.teamMembers = teamMembers;
 	}
 	
 	@Override
 	public String postData() {
-		return ((new Gson()).toJson(serviceUsers));
+		Map<String, String> map = Maps.newHashMapWithExpectedSize(1);
+		
+		map.put("team_members", (new Gson()).toJson(teamMembers));
+		
+		return JsonUtil.createSimpleJson(map, false);
 	}
 	
 	@Override
-	public Class<ServiceUsersResponse> resultClass() {
-		return ServiceUsersResponse.class;
+	public Class<ServiceUsersResult> resultClass() {
+		return ServiceUsersResult.class;
 	}
 	
 	@Override
@@ -82,18 +88,17 @@ public class UpdateTeamMembersRequest extends ServiceRequest implements ApiPostR
 		public UpdateTeamMembersRequest build() {
 			validate();
 			
-			ServiceUsers serviceUsers = new ServiceUsers();
-			serviceUsers.team_members = Lists.newArrayList();
+			List<TeamMember> teamMembers = Lists.newArrayList();
 			
 			for (String email: this.emailsToAdd)
 			{
 				TeamMember teamMember = new TeamMember();
 				teamMember.email = email;
 				
-				serviceUsers.team_members.add(teamMember);
+				teamMembers.add(teamMember);
 			}
 			
-			return new UpdateTeamMembersRequest(serviceId, serviceUsers);
+			return new UpdateTeamMembersRequest(serviceId, teamMembers);
 		}
 	}
 }

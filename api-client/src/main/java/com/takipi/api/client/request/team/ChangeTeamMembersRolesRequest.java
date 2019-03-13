@@ -2,33 +2,39 @@ package com.takipi.api.client.request.team;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.gson.Gson;
-import com.takipi.api.client.data.team.ServiceUsers;
-import com.takipi.api.client.data.team.ServiceUsers.TeamMember;
-import com.takipi.api.client.data.team.ServiceUsersResponseMessage;
+import com.takipi.api.client.data.team.TeamMember;
+import com.takipi.api.client.result.team.ServiceUsersResultMessage;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.core.request.intf.ApiPostRequest;
+import com.takipi.common.util.JsonUtil;
 
 import java.util.List;
+import java.util.Map;
 
-public class ChangeTeamMembersRolesRequest extends ServiceRequest implements ApiPostRequest<ServiceUsersResponseMessage>
+public class ChangeTeamMembersRolesRequest extends ServiceRequest implements ApiPostRequest<ServiceUsersResultMessage>
 {
-	private final ServiceUsers serviceUsers;
+	private final List<TeamMember> teamMembers;
 	
-	protected ChangeTeamMembersRolesRequest(String serviceId, ServiceUsers serviceUsers) {
+	protected ChangeTeamMembersRolesRequest(String serviceId, List<TeamMember> teamMembers) {
 		super(serviceId);
 		
-		this.serviceUsers = serviceUsers;
+		this.teamMembers = teamMembers;
 	}
 	
 	@Override
 	public String postData() {
-		return ((new Gson()).toJson(serviceUsers));
+		Map<String, String> map = Maps.newHashMapWithExpectedSize(1);
+		
+		map.put("team_members", (new Gson()).toJson(teamMembers));
+		
+		return JsonUtil.createSimpleJson(map, false);
 	}
 	
 	@Override
-	public Class<ServiceUsersResponseMessage> resultClass() {
-		return ServiceUsersResponseMessage.class;
+	public Class<ServiceUsersResultMessage> resultClass() {
+		return ServiceUsersResultMessage.class;
 	}
 	
 	@Override
@@ -94,10 +100,7 @@ public class ChangeTeamMembersRolesRequest extends ServiceRequest implements Api
 		public ChangeTeamMembersRolesRequest build() {
 			validate();
 			
-			ServiceUsers serviceUsers = new ServiceUsers();
-			serviceUsers.team_members = this.members;
-			
-			return new ChangeTeamMembersRolesRequest(serviceId, serviceUsers);
+			return new ChangeTeamMembersRolesRequest(serviceId, this.members);
 		}
 	}
 }

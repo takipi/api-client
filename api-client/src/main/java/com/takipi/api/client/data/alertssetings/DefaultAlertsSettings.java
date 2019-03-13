@@ -1,8 +1,6 @@
 package com.takipi.api.client.data.alertssetings;
 
-import com.takipi.api.core.result.intf.ApiResult;
-
-public class DefaultAlertsSettings implements ApiResult
+public class DefaultAlertsSettings
 {
 	public AlertsDefaultEmailSettings email;
 	public AlertsDefaultSlackSettings slack;
@@ -10,8 +8,6 @@ public class DefaultAlertsSettings implements ApiResult
 	public AlertsDefaultPagerDutySettings pager_duty;
 	public AlertsDefaultWebhookSettings webhook;
 	public AlertsDefaultServiceNowSettings service_now;
-	
-	public InitializedFields initializedFields;
 	
 	public static class AlertsDefaultEmailSettings
 	{
@@ -49,12 +45,5 @@ public class DefaultAlertsSettings implements ApiResult
 		public String user_id;
 		public String password;
 		public String table;
-	}
-	
-	public static class InitializedFields
-	{
-		public boolean emailAlertMeInitialized;
-		public boolean emailAlertAllTeamMembersInitialized;
-		public boolean emailAlertAdditionalEmailsInitialized;
 	}
 }

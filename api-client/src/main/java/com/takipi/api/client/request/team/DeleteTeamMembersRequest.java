@@ -2,28 +2,34 @@ package com.takipi.api.client.request.team;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.gson.Gson;
-import com.takipi.api.client.data.team.ServiceUsers;
-import com.takipi.api.client.data.team.ServiceUsers.TeamMember;
-import com.takipi.api.client.data.team.ServiceUsersResponseMessage;
+import com.takipi.api.client.data.team.TeamMember;
+import com.takipi.api.client.result.team.ServiceUsersResultMessage;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.core.request.intf.ApiDeleteRequest;
+import com.takipi.common.util.JsonUtil;
 
 import java.util.List;
+import java.util.Map;
 
-public class DeleteTeamMembersRequest extends ServiceRequest implements ApiDeleteRequest<ServiceUsersResponseMessage>
+public class DeleteTeamMembersRequest extends ServiceRequest implements ApiDeleteRequest<ServiceUsersResultMessage>
 {
-	private final ServiceUsers serviceUsers;
+	private final List<TeamMember> teamMembers;
 	
-	DeleteTeamMembersRequest(String serviceId, ServiceUsers serviceUsers) {
+	DeleteTeamMembersRequest(String serviceId, List<TeamMember> teamMembers) {
 		super(serviceId);
 		
-		this.serviceUsers = serviceUsers;
+		this.teamMembers = teamMembers;
 	}
 	
 	@Override
 	public String postData() {
-		return ((new Gson()).toJson(serviceUsers));
+		Map<String, String> map = Maps.newHashMapWithExpectedSize(1);
+		
+		map.put("team_members", (new Gson()).toJson(teamMembers));
+		
+		return JsonUtil.createSimpleJson(map, false);
 	}
 	
 	@Override
@@ -32,8 +38,8 @@ public class DeleteTeamMembersRequest extends ServiceRequest implements ApiDelet
 	}
 	
 	@Override
-	public Class<ServiceUsersResponseMessage> resultClass() {
-		return ServiceUsersResponseMessage.class;
+	public Class<ServiceUsersResultMessage> resultClass() {
+		return ServiceUsersResultMessage.class;
 	}
 	
 	public static Builder newBuilder() {
@@ -54,7 +60,7 @@ public class DeleteTeamMembersRequest extends ServiceRequest implements ApiDelet
 			return this;
 		}
 		
-		public DeleteTeamMembersRequest.Builder addTeamMemberToDelete(String email) {
+		public Builder addTeamMemberToDelete(String email) {
 			this.usersToRemove.add(email);
 			
 			return this;
@@ -82,18 +88,17 @@ public class DeleteTeamMembersRequest extends ServiceRequest implements ApiDelet
 		public DeleteTeamMembersRequest build() {
 			validate();
 			
-			ServiceUsers serviceUsers = new ServiceUsers();
-			serviceUsers.team_members = Lists.newArrayList();
+			List<TeamMember> teamMembers = Lists.newArrayList();
 			
 			for (String email: this.usersToRemove)
 			{
 				TeamMember teamMember = new TeamMember();
 				teamMember.email = email;
 				
-				serviceUsers.team_members.add(teamMember);
+				teamMembers.add(teamMember);
 			}
 			
-			return new DeleteTeamMembersRequest(serviceId, serviceUsers);
+			return new DeleteTeamMembersRequest(serviceId, teamMembers);
 		}
 	}
 }
