@@ -13,11 +13,11 @@ import com.takipi.common.util.JsonUtil;
 import java.util.List;
 import java.util.Map;
 
-public class UpdateTeamMembersRequest extends ServiceRequest implements ApiPostRequest<ServiceUsersResult>
+public class AddTeamMembersRequest extends ServiceRequest implements ApiPostRequest<ServiceUsersResult>
 {
 	private final List<TeamMember> teamMembers;
 	
-	protected UpdateTeamMembersRequest(String serviceId, List<TeamMember> teamMembers) {
+	protected AddTeamMembersRequest(String serviceId, List<TeamMember> teamMembers) {
 		super(serviceId);
 		
 		this.teamMembers = teamMembers;
@@ -85,7 +85,7 @@ public class UpdateTeamMembersRequest extends ServiceRequest implements ApiPostR
 			}
 		}
 		
-		public UpdateTeamMembersRequest build() {
+		public AddTeamMembersRequest build() {
 			validate();
 			
 			List<TeamMember> teamMembers = Lists.newArrayList();
@@ -98,7 +98,7 @@ public class UpdateTeamMembersRequest extends ServiceRequest implements ApiPostR
 				teamMembers.add(teamMember);
 			}
 			
-			return new UpdateTeamMembersRequest(serviceId, teamMembers);
+			return new AddTeamMembersRequest(serviceId, teamMembers);
 		}
 	}
 }
