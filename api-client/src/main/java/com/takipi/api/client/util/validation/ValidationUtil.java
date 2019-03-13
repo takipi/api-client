@@ -32,6 +32,22 @@ public class ValidationUtil {
 		return isInteger(id.substring(prefix.length()));
 	}
 
+	public static boolean isLegalUserRole(String role) {
+		if (Strings.isNullOrEmpty(role)) {
+			return false;
+		}
+
+		try
+		{
+			UserRole.valueOf(role.toLowerCase());
+			return true;
+		}
+		catch (Exception e)
+		{
+			return false;
+		}
+	}
+
 	private static boolean isInteger(String s) {
 		try {
 			Integer.parseInt(s);
@@ -56,5 +72,9 @@ public class ValidationUtil {
 
 	public enum GraphResolution {
 		M1, M5, H1, H8
+	}
+
+	public enum UserRole {
+		owner, admin, member
 	}
 }

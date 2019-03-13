@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.takipi.api.client.data.team.TeamMember;
 import com.takipi.api.client.result.team.ServiceUsersResultMessage;
 import com.takipi.api.client.request.ServiceRequest;
+import com.takipi.api.client.util.validation.ValidationUtil;
 import com.takipi.api.core.request.intf.ApiPostRequest;
 import com.takipi.common.util.JsonUtil;
 
@@ -47,10 +48,10 @@ public class ChangeTeamMembersRolesRequest extends ServiceRequest implements Api
 	}
 	
 	public static class Builder extends ServiceRequest.Builder {
-		private List<TeamMember> members = Lists.newArrayList();
+		private Map<String, String> membersRoles;
 		
 		Builder() {
-		
+			this.membersRoles = Maps.newHashMap();
 		}
 		
 		@Override
@@ -61,11 +62,7 @@ public class ChangeTeamMembersRolesRequest extends ServiceRequest implements Api
 		}
 		
 		public Builder addTeamMemberNewRole(String email, String role) {
-			TeamMember teamMember = new TeamMember();
-			teamMember.email = email;
-			teamMember.role = role;
-			
-			this.members.add(teamMember);
+			this.membersRoles.put(email, role);
 			
 			return this;
 		}
@@ -75,22 +72,22 @@ public class ChangeTeamMembersRolesRequest extends ServiceRequest implements Api
 		{
 			super.validate();
 			
-			if (this.members.isEmpty())
+			if (this.membersRoles.isEmpty())
 			{
 				throw new IllegalArgumentException("Request is empty");
 			}
 			
-			for (TeamMember teamMember : this.members)
+			for (String email : this.membersRoles.keySet())
 			{
-				if ((Strings.isNullOrEmpty(teamMember.email)) ||
-					(Strings.isNullOrEmpty(teamMember.role)))
+				if (Strings.isNullOrEmpty(email))
 				{
-					throw new IllegalArgumentException("User email or role cannot be empty");
+					throw new IllegalArgumentException("User email must not be empty");
 				}
-				
-				if (!((teamMember.role.equalsIgnoreCase("Owner")) ||
-					  (teamMember.role.equalsIgnoreCase("Admin")) ||
-					  (teamMember.role.equalsIgnoreCase("Member"))))
+			}
+			
+			for (String memberRole : this.membersRoles.values())
+			{
+				if (!ValidationUtil.isLegalUserRole(memberRole))
 				{
 					throw new IllegalArgumentException("User role must be Owner/Admin/Member");
 				}
@@ -100,7 +97,18 @@ public class ChangeTeamMembersRolesRequest extends ServiceRequest implements Api
 		public ChangeTeamMembersRolesRequest build() {
 			validate();
 			
-			return new ChangeTeamMembersRolesRequest(serviceId, this.members);
+			List<TeamMember> teamMembers = Lists.newArrayList();
+			
+			for (String email : membersRoles.keySet())
+			{
+				TeamMember teamMember = new TeamMember();
+				teamMember.email = email;
+				teamMember.role = membersRoles.get(email);
+				
+				teamMembers.add(teamMember);
+			}
+			
+			return new ChangeTeamMembersRolesRequest(serviceId, teamMembers);
 		}
 	}
 }
