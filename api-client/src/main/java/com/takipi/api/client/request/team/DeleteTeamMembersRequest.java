@@ -71,7 +71,7 @@ public class DeleteTeamMembersRequest extends ServiceRequest implements ApiDelet
 		{
 			super.validate();
 			
-			if (this.usersToRemove.size() == 0)
+			if (this.usersToRemove.isEmpty())
 			{
 				throw new IllegalArgumentException("Request is empty");
 			}

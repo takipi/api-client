@@ -75,7 +75,7 @@ public class ChangeTeamMembersRolesRequest extends ServiceRequest implements Api
 		{
 			super.validate();
 			
-			if (this.members.size() == 0)
+			if (this.members.isEmpty())
 			{
 				throw new IllegalArgumentException("Request is empty");
 			}

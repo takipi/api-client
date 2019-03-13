@@ -71,7 +71,7 @@ public class UpdateTeamMembersRequest extends ServiceRequest implements ApiPostR
 		{
 			super.validate();
 			
-			if (this.emailsToAdd.size() == 0)
+			if (this.emailsToAdd.isEmpty())
 			{
 				throw new IllegalArgumentException("Request is empty");
 			}

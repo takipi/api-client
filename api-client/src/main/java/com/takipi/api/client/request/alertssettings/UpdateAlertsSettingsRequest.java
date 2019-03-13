@@ -50,7 +50,7 @@ public class UpdateAlertsSettingsRequest extends ServiceRequest implements ApiPo
 			emailsMap.put("additional_emails_to_alert", JsonUtil.stringify(defaultAlertsSettings.email.additional_emails_to_alert));
 		}
 		
-		if (emailsMap.values().size() > 0)
+		if (!emailsMap.isEmpty())
 		{
 			map.put("email", JsonUtil.createSimpleJson(emailsMap));
 		}
@@ -61,7 +61,7 @@ public class UpdateAlertsSettingsRequest extends ServiceRequest implements ApiPo
 			slackMap.put("inhook_url", JsonUtil.stringify(defaultAlertsSettings.slack.inhook_url));
 		}
 		
-		if (slackMap.values().size() > 0)
+		if (!slackMap.isEmpty())
 		{
 			map.put("slack", JsonUtil.createSimpleJson(slackMap));
 		}
@@ -80,7 +80,7 @@ public class UpdateAlertsSettingsRequest extends ServiceRequest implements ApiPo
 			hipChatMap.put("url", JsonUtil.stringify(defaultAlertsSettings.hip_chat.url));
 		}
 		
-		if (hipChatMap.values().size() > 0)
+		if (!hipChatMap.isEmpty())
 		{
 			map.put("hip_chat", JsonUtil.createSimpleJson(hipChatMap));
 		}
@@ -91,7 +91,7 @@ public class UpdateAlertsSettingsRequest extends ServiceRequest implements ApiPo
 			pagerDutyMap.put("service_integration_key", JsonUtil.stringify(defaultAlertsSettings.pager_duty.service_integration_key));
 		}
 		
-		if (pagerDutyMap.values().size() > 0)
+		if (!pagerDutyMap.isEmpty())
 		{
 			map.put("pager_duty", JsonUtil.createSimpleJson(pagerDutyMap));
 		}
@@ -102,7 +102,7 @@ public class UpdateAlertsSettingsRequest extends ServiceRequest implements ApiPo
 			webhookMap.put("webhook_url", JsonUtil.stringify(defaultAlertsSettings.webhook.webhook_url));
 		}
 		
-		if (webhookMap.values().size() > 0)
+		if (!webhookMap.isEmpty())
 		{
 			map.put("webhook", JsonUtil.createSimpleJson(webhookMap));
 		}
@@ -125,7 +125,7 @@ public class UpdateAlertsSettingsRequest extends ServiceRequest implements ApiPo
 			serviceNowMap.put("table", JsonUtil.stringify(defaultAlertsSettings.service_now.table));
 		}
 		
-		if (serviceNowMap.values().size() > 0)
+		if (!serviceNowMap.isEmpty())
 		{
 			map.put("service_now", JsonUtil.createSimpleJson(serviceNowMap));
 		}
