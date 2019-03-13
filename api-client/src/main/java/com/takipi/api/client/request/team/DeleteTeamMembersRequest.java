@@ -3,6 +3,7 @@ package com.takipi.api.client.request.team;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.takipi.api.client.data.team.TeamMember;
 import com.takipi.api.client.result.team.ServiceUsersResultMessage;
@@ -12,6 +13,7 @@ import com.takipi.common.util.JsonUtil;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class DeleteTeamMembersRequest extends ServiceRequest implements ApiDeleteRequest<ServiceUsersResultMessage>
 {
@@ -47,10 +49,10 @@ public class DeleteTeamMembersRequest extends ServiceRequest implements ApiDelet
 	}
 	
 	public static class Builder extends ServiceRequest.Builder {
-		private List<String> usersToRemove = Lists.newArrayList();
+		private Set<String> usersToRemove;
 		
 		Builder() {
-		
+			this.usersToRemove = Sets.newHashSet();
 		}
 		
 		@Override
