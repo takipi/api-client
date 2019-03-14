@@ -55,78 +55,50 @@ public class UpdateAlertsSettingsRequest extends ServiceRequest implements ApiPo
 			map.put("email", JsonUtil.createSimpleJson(emailsMap));
 		}
 		
-		Map<String, String> slackMap = Maps.newHashMap();
-		
-		if (defaultAlertsSettings.slack.inhook_url != null) {
+		if (defaultAlertsSettings.slack != null) {
+			Map<String, String> slackMap = Maps.newHashMap();
 			slackMap.put("inhook_url", JsonUtil.stringify(defaultAlertsSettings.slack.inhook_url));
-		}
-		
-		if (!slackMap.isEmpty())
-		{
 			map.put("slack", JsonUtil.createSimpleJson(slackMap));
 		}
 		
-		Map<String, String> hipChatMap = Maps.newHashMap();
-		
-		if (defaultAlertsSettings.hip_chat.token != null) {
+		if (defaultAlertsSettings.hip_chat != null) {
+			Map<String, String> hipChatMap = Maps.newHashMap();
+			
 			hipChatMap.put("token", JsonUtil.stringify(defaultAlertsSettings.hip_chat.token));
-		}
-		
-		if (defaultAlertsSettings.hip_chat.room != null) {
 			hipChatMap.put("room", JsonUtil.stringify(defaultAlertsSettings.hip_chat.room));
-		}
-		
-		if (defaultAlertsSettings.hip_chat.url != null) {
-			hipChatMap.put("url", JsonUtil.stringify(defaultAlertsSettings.hip_chat.url));
-		}
-		
-		if (!hipChatMap.isEmpty())
-		{
+			
+			if (defaultAlertsSettings.hip_chat.url != null) {
+				hipChatMap.put("url", JsonUtil.stringify(defaultAlertsSettings.hip_chat.url));
+			}
 			map.put("hip_chat", JsonUtil.createSimpleJson(hipChatMap));
 		}
 		
-		Map<String, String> pagerDutyMap = Maps.newHashMap();
-		
-		if (defaultAlertsSettings.pager_duty.service_integration_key != null) {
+		if (defaultAlertsSettings.pager_duty != null) {
+			Map<String, String> pagerDutyMap = Maps.newHashMap();
+			
 			pagerDutyMap.put("service_integration_key", JsonUtil.stringify(defaultAlertsSettings.pager_duty.service_integration_key));
-		}
-		
-		if (!pagerDutyMap.isEmpty())
-		{
+			
 			map.put("pager_duty", JsonUtil.createSimpleJson(pagerDutyMap));
 		}
 		
-		Map<String, String> webhookMap = Maps.newHashMap();
 		
-		if (defaultAlertsSettings.webhook.webhook_url != null) {
+		if (defaultAlertsSettings.webhook != null) {
+			Map<String, String> webhookMap = Maps.newHashMap();
+			
 			webhookMap.put("webhook_url", JsonUtil.stringify(defaultAlertsSettings.webhook.webhook_url));
-		}
-		
-		if (!webhookMap.isEmpty())
-		{
+			
 			map.put("webhook", JsonUtil.createSimpleJson(webhookMap));
 		}
 		
-		Map<String, String> serviceNowMap = Maps.newHashMap();
 		
-		if (defaultAlertsSettings.service_now.url != null) {
+		if (defaultAlertsSettings.service_now != null) {
+			Map<String, String> serviceNowMap = Maps.newHashMap();
+			
 			serviceNowMap.put("url", JsonUtil.stringify(defaultAlertsSettings.service_now.url));
-		}
-		
-		if (defaultAlertsSettings.service_now.user_id != null) {
 			serviceNowMap.put("user_id", JsonUtil.stringify(defaultAlertsSettings.service_now.user_id));
-		}
-		
-		if (defaultAlertsSettings.service_now.password != null) {
 			serviceNowMap.put("password", JsonUtil.stringify(defaultAlertsSettings.service_now.password));
-		}
-		
-		if (defaultAlertsSettings.service_now.table != null) {
 			serviceNowMap.put("table", JsonUtil.stringify(defaultAlertsSettings.service_now.table));
-		}
-		
-		if (!serviceNowMap.isEmpty())
-		{
+			
 			map.put("service_now", JsonUtil.createSimpleJson(serviceNowMap));
 		}
 		
@@ -154,11 +126,6 @@ public class UpdateAlertsSettingsRequest extends ServiceRequest implements ApiPo
 		Builder() {
 			this.defaultAlertsSettings = new DefaultAlertsSettings();
 			this.defaultAlertsSettings.email = new AlertsDefaultEmailSettings();
-			this.defaultAlertsSettings.slack = new AlertsDefaultSlackSettings();
-			this.defaultAlertsSettings.hip_chat = new AlertsDefaultHipChatSettings();
-			this.defaultAlertsSettings.pager_duty = new AlertsDefaultPagerDutySettings();
-			this.defaultAlertsSettings.webhook = new AlertsDefaultWebhookSettings();
-			this.defaultAlertsSettings.service_now = new AlertsDefaultServiceNowSettings();
 			this.initializedFields = new InitializedFields();
 		}
 		
@@ -199,63 +166,50 @@ public class UpdateAlertsSettingsRequest extends ServiceRequest implements ApiPo
 			return this;
 		}
 		
-		public Builder setSlackInhookUrl(String slackInhookUrl) {
+		public Builder setSlackSettings(String slackInhookUrl) {
+			this.defaultAlertsSettings.slack = new AlertsDefaultSlackSettings();
+			
 			this.defaultAlertsSettings.slack.inhook_url = slackInhookUrl;
 			
 			return this;
 		}
 		
-		public Builder setHipChatToken(String hipChatToken) {
+		public Builder setHipChatSettings(String hipChatToken, String hipChatRoom, String hipChatUrl) {
+			this.defaultAlertsSettings.hip_chat = new AlertsDefaultHipChatSettings();
+			
 			this.defaultAlertsSettings.hip_chat.token = hipChatToken;
-			
-			return this;
-		}
-		
-		public Builder setHipChatRoom(String hipChatRoom) {
 			this.defaultAlertsSettings.hip_chat.room = hipChatRoom;
-			
-			return this;
-		}
-		
-		public Builder setHipChatUrl(String hipChatUrl) {
 			this.defaultAlertsSettings.hip_chat.url = hipChatUrl;
 			
+			
 			return this;
 		}
 		
-		public Builder setPagerDutyServiceIntegrationKey(String pagerDutyServiceIntegrationKey) {
+		public Builder setPagerDutySettings(String pagerDutyServiceIntegrationKey) {
+			this.defaultAlertsSettings.pager_duty = new AlertsDefaultPagerDutySettings();
+			
 			this.defaultAlertsSettings.pager_duty.service_integration_key = pagerDutyServiceIntegrationKey;
 			
 			return this;
 		}
 		
-		public Builder setWebhookUrl(String webhookUrl) {
+		public Builder setWebhookSettings(String webhookUrl) {
+			this.defaultAlertsSettings.webhook = new AlertsDefaultWebhookSettings();
+			
 			this.defaultAlertsSettings.webhook.webhook_url = webhookUrl;
 			
 			return this;
 		}
 		
-		public Builder setServiceNowUrl(String serviceNowUrl) {
+		public Builder setServiceNowSettings(String serviceNowUrl, String serviceNowUserId, String serviceNowPassword,
+				String serviceNowTable) {
+			this.defaultAlertsSettings.service_now = new AlertsDefaultServiceNowSettings();
+			
 			this.defaultAlertsSettings.service_now.url = serviceNowUrl;
-			
-			return this;
-		}
-		
-		public Builder setServiceNowUserId(String serviceNowUserId) {
 			this.defaultAlertsSettings.service_now.user_id = serviceNowUserId;
-			
-			return this;
-		}
-		
-		public Builder setServiceNowPassword(String serviceNowPassword) {
 			this.defaultAlertsSettings.service_now.password = serviceNowPassword;
-			
-			return this;
-		}
-		
-		public Builder setServiceNowTable(String serviceNowTable) {
 			this.defaultAlertsSettings.service_now.table = serviceNowTable;
-			
+
 			return this;
 		}
 		
@@ -263,14 +217,13 @@ public class UpdateAlertsSettingsRequest extends ServiceRequest implements ApiPo
 		protected void validate() {
 			super.validate();
 			
-			if ((this.defaultAlertsSettings.slack.inhook_url != null) &&
+			if ((this.defaultAlertsSettings.slack != null) &&
 				(Strings.isNullOrEmpty(this.defaultAlertsSettings.slack.inhook_url)))
 			{
 				throw new IllegalArgumentException("No inhook URL supplied for Slack inhook connection request");
 			}
 			
-			if ((this.defaultAlertsSettings.hip_chat.token != null) ||
-				(this.defaultAlertsSettings.hip_chat.room != null))
+			if (this.defaultAlertsSettings.hip_chat != null)
 			{
 				if ((Strings.isNullOrEmpty(this.defaultAlertsSettings.hip_chat.token)) ||
 				 	(Strings.isNullOrEmpty(this.defaultAlertsSettings.hip_chat.room)))
@@ -279,22 +232,19 @@ public class UpdateAlertsSettingsRequest extends ServiceRequest implements ApiPo
 				}
 			}
 			
-			if ((this.defaultAlertsSettings.pager_duty.service_integration_key != null) &&
+			if ((this.defaultAlertsSettings.pager_duty != null) &&
 				(Strings.isNullOrEmpty(this.defaultAlertsSettings.pager_duty.service_integration_key)))
 			{
 				throw new IllegalArgumentException("No integration key supplied for PagerDuty connection request");
 			}
 			
-			if ((this.defaultAlertsSettings.webhook.webhook_url != null) &&
+			if ((this.defaultAlertsSettings.webhook != null) &&
 				(Strings.isNullOrEmpty(this.defaultAlertsSettings.webhook.webhook_url)))
 			{
 				throw new IllegalArgumentException("No webhook URL supplied for webhook request");
 			}
 			
-			if ((this.defaultAlertsSettings.service_now.url != null) ||
-				(this.defaultAlertsSettings.service_now.user_id != null) ||
-				(this.defaultAlertsSettings.service_now.password != null) ||
-				(this.defaultAlertsSettings.service_now.table != null))
+			if (this.defaultAlertsSettings.service_now != null)
 			{
 				if ((Strings.isNullOrEmpty(this.defaultAlertsSettings.service_now.url)) ||
 					(Strings.isNullOrEmpty(this.defaultAlertsSettings.service_now.user_id)) ||
