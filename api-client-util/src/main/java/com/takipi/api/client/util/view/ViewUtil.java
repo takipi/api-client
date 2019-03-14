@@ -26,7 +26,6 @@ import com.takipi.api.client.request.view.ViewsRequest;
 import com.takipi.api.client.result.EmptyResult;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.result.event.EventsResult;
-import com.takipi.api.client.result.event.EventsVolumeResult;
 import com.takipi.api.client.result.metrics.GraphResult;
 import com.takipi.api.client.result.view.CreateViewResult;
 import com.takipi.api.client.result.view.ViewsResult;
@@ -149,19 +148,19 @@ public class ViewUtil {
 		return result;
 	}
 
-	public static EventsVolumeResult getEventsVolume(ApiClient apiClient, String serviceId, String viewId,
+	public static EventsResult getEventsVolume(ApiClient apiClient, String serviceId, String viewId,
 			DateTime from, DateTime to) {
 		EventsVolumeRequest eventsVolumeRequest = EventsVolumeRequest.newBuilder().setServiceId(serviceId)
 				.setViewId(viewId).setFrom(from.toString(fmt)).setTo(to.toString(fmt)).setVolumeType(VolumeType.all)
 				.build();
 
-		Response<EventsVolumeResult> eventsVolumeResponse = apiClient.get(eventsVolumeRequest);
+		Response<EventsResult> eventsVolumeResponse = apiClient.get(eventsVolumeRequest);
 
 		if (eventsVolumeResponse.isBadResponse()) {
 			return null;
 		}
 
-		EventsVolumeResult eventsVolumeResult = eventsVolumeResponse.data;
+		EventsResult eventsVolumeResult = eventsVolumeResponse.data;
 
 		if (eventsVolumeResult == null) {
 			return null;

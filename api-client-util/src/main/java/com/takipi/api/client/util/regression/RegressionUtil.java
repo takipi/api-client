@@ -27,7 +27,7 @@ import com.takipi.api.client.request.deployment.DeploymentsRequest;
 import com.takipi.api.client.request.event.EventsVolumeRequest;
 import com.takipi.api.client.result.deployment.DeploymentsResult;
 import com.takipi.api.client.result.event.EventResult;
-import com.takipi.api.client.result.event.EventsVolumeResult;
+import com.takipi.api.client.result.event.EventsResult;
 import com.takipi.api.client.result.metrics.GraphResult;
 import com.takipi.api.client.util.validation.ValidationUtil.VolumeType;
 import com.takipi.api.client.util.view.ViewUtil;
@@ -415,7 +415,7 @@ public class RegressionUtil {
 		}
 	}
 
-	public static EventsVolumeResult getEventsVolume(ApiClient apiClient, RegressionInput input, DateTime from,
+	public static EventsResult getEventsVolume(ApiClient apiClient, RegressionInput input, DateTime from,
 			DateTime to) {
 
 		String fromStr = from.toString(ISODateTimeFormat.dateTime().withZoneUTC());
@@ -426,13 +426,13 @@ public class RegressionUtil {
 
 		ApplyFilter(builder, input, true);
 
-		Response<EventsVolumeResult> response = apiClient.get(builder.build());
+		Response<EventsResult> response = apiClient.get(builder.build());
 
 		if (response.isBadResponse()) {
 			throw new IllegalStateException("Error querying volume data with code " + response.responseCode);
 		}
 
-		EventsVolumeResult result = response.data;
+		EventsResult result = response.data;
 
 		return result;
 	}
@@ -470,7 +470,7 @@ public class RegressionUtil {
 		return graph;
 	}
 
-	private static boolean validateVolume(ApiClient apiClient, EventsVolumeResult eventResult, RegressionInput input,
+	private static boolean validateVolume(ApiClient apiClient, EventsResult eventResult, RegressionInput input,
 			PrintStream printStream) {
 
 		if (CollectionUtil.safeIsEmpty(eventResult.events)) {
@@ -602,7 +602,7 @@ public class RegressionUtil {
 
 			// add one minute in case the date range is not a full minute which causes the
 			// query to fail
-			EventsVolumeResult activeEventVolume = getEventsVolume(apiClient, input, activeWindowStart, DateTime.now());
+			EventsResult activeEventVolume = getEventsVolume(apiClient, input, activeWindowStart, DateTime.now());
 
 			if (!validateVolume(apiClient, activeEventVolume, input, printStream)) {
 				return null;
