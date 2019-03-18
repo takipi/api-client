@@ -6,7 +6,7 @@ import com.takipi.api.client.util.validation.ValidationUtil;
 import com.takipi.api.core.request.intf.ApiGetRequest;
 
 public class EventRequest extends ServiceRequest implements ApiGetRequest<EventResult> {
-	private final String eventId;
+	public final String eventId;
 
 	EventRequest(String serviceId, String eventId) {
 		super(serviceId);

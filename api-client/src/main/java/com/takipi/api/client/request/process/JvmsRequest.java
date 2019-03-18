@@ -7,7 +7,7 @@ import com.takipi.api.client.result.process.JvmsResult;
 import com.takipi.api.core.request.intf.ApiGetRequest;
 
 public class JvmsRequest extends ServiceRequest implements ApiGetRequest<JvmsResult> {
-	private final boolean connected;
+	public final boolean connected;
 
 	JvmsRequest(String serviceId, boolean connected) {
 		super(serviceId);

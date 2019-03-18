@@ -3,7 +3,7 @@ package com.takipi.api.client.request;
 import java.io.UnsupportedEncodingException;
 
 public abstract class ProcessTagRequest extends ServiceRequest {
-	private final boolean active;
+	public final boolean active;
 
 	protected ProcessTagRequest(String serviceId, boolean active) {
 		super(serviceId);

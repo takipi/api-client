@@ -4,11 +4,11 @@ import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 
 import com.takipi.api.client.request.ViewTimeframeRequest;
-import com.takipi.api.client.result.event.EventsVolumeResult;
+import com.takipi.api.client.result.event.EventsResult;
 import com.takipi.api.client.util.validation.ValidationUtil.VolumeType;
 import com.takipi.api.core.request.intf.ApiGetRequest;
 
-public class EventsVolumeRequest extends ViewTimeframeRequest implements ApiGetRequest<EventsVolumeResult> {
+public class EventsVolumeRequest extends ViewTimeframeRequest implements ApiGetRequest<EventsResult> {
 	public final VolumeType volumeType;
 
 	EventsVolumeRequest(String serviceId, String viewId, VolumeType volumeType, String from, String to, boolean raw,
@@ -19,8 +19,8 @@ public class EventsVolumeRequest extends ViewTimeframeRequest implements ApiGetR
 	}
 
 	@Override
-	public Class<EventsVolumeResult> resultClass() {
-		return EventsVolumeResult.class;
+	public Class<EventsResult> resultClass() {
+		return EventsResult.class;
 	}
 
 	@Override
