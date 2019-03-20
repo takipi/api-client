@@ -363,7 +363,7 @@ public class RemoteApiClient extends UrlClient implements ApiClient {
 			return this;
 		}
 
-		private Pair<String, String> getAuth() {
+		protected Pair<String, String> getAuth() {
 			if (!Strings.isNullOrEmpty(apiKey)) {
 				return Pair.of("X-API-Key", apiKey);
 			}
