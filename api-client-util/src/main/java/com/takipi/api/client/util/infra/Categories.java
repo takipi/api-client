@@ -2,17 +2,18 @@ package com.takipi.api.client.util.infra;
 
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.takipi.common.util.CollectionUtil;
-import com.takipi.common.util.Pair;
 
 public class Categories {
 	private static final String DEFAULT_CATEGORIES = "infra/categories.json";
@@ -80,20 +81,54 @@ public class Categories {
 		public List<String> labels;
 	}
 
-	public static Categories from(List<Pair<String, String>> namespaceToLabel) {
-		List<Category> categories = Lists.newArrayListWithExpectedSize(namespaceToLabel.size());
-
-		for (Pair<String, String> entry : namespaceToLabel) {
-			Category category = new Category();
-			category.names = Collections.singletonList(entry.getFirst());
-			category.labels = Collections.singletonList(entry.getSecond());
-
-			categories.add(category);
+	public static Categories expandWithDefaultCategories(Collection<Category> categories) {
+		if (CollectionUtil.safeIsEmpty(categories)) {
+			return defaultCategories();
 		}
 
 		Categories result = new Categories();
-		result.categories = categories;
+
+		result.categories = Lists.newArrayList(categories);
+		result.categories.addAll(defaultCategories().categories);
 
 		return result;
+	}
+
+	public static void fillMissingCategoryNames(Collection<Category> categories) {
+		if (CollectionUtil.safeIsEmpty(categories)) {
+			return;
+		}
+
+		for (Category category : categories) {
+			if (!CollectionUtil.safeIsEmpty(category.names)) {
+				continue;
+			}
+
+			for (Category defaultCategory : defaultCategories().categories) {
+				if (doCategoriesMatch(category, defaultCategory)) {
+					category.names = Lists.newArrayList(defaultCategory.names);
+					break;
+				}
+			}
+		}
+	}
+
+	private static boolean doCategoriesMatch(Category a, Category b) {
+		if ((CollectionUtil.safeIsEmpty(a.labels)) || (CollectionUtil.safeIsEmpty(b.labels))) {
+			return false;
+		}
+
+		for (String label : a.labels) {
+
+			if (Strings.isNullOrEmpty(label)) {
+				continue;
+			}
+
+			if (b.labels.contains(label)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
