@@ -57,7 +57,7 @@ public class RegressionSettings {
 	/**
 	 * Control whether to exclude an object that has had more than one slice /
 	 * season within the baseline window exceed the volume of the active window, or
-	 * 2 windows that have exceeded it by > 50% of the absolute volume of the active
+	 * 2 windows that have exceeded it by &gt; 50% of the absolute volume of the active
 	 * window. For example, if the active window is a day, and the baseline is set
 	 * to two weeks, and the volume of events for a target event within the active
 	 * window is 100, if any of the days in previous two weeks has seen more than
