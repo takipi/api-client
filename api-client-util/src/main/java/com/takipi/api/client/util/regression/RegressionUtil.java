@@ -43,7 +43,7 @@ public class RegressionUtil {
 	private static final int MAX_BASELINE_POINTS = 100;
 
 	private static final DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTime().withZoneUTC();
-	
+
 	public static class RegressionWindow {
 		public DateTime activeWindowStart;
 		public int activeTimespan;
@@ -144,7 +144,7 @@ public class RegressionUtil {
 		int timeWindows = baselineTimespan / activeTimespan;
 
 		for (GraphPoint graphPoint : baselineGraph.points) {
-			
+
 			DateTime firstSeen = dateTimeFormatter.parseDateTime(graphPoint.time);
 
 			if (firstSeen.isBefore(baselineStart)) {
@@ -419,8 +419,7 @@ public class RegressionUtil {
 		}
 	}
 
-	public static EventsResult getEventsVolume(ApiClient apiClient, RegressionInput input, DateTime from,
-			DateTime to) {
+	public static EventsResult getEventsVolume(ApiClient apiClient, RegressionInput input, DateTime from, DateTime to) {
 
 		String fromStr = from.toString(ISODateTimeFormat.dateTime().withZoneUTC());
 		String toStr = to.toString(ISODateTimeFormat.dateTime().withZoneUTC());
