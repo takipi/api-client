@@ -16,24 +16,30 @@ import com.takipi.api.client.util.regression.RateRegression;
 import com.takipi.api.client.util.regression.RegressionInput;
 import com.takipi.api.client.util.regression.RegressionStringUtil;
 import com.takipi.api.client.util.regression.RegressionUtil;
+import com.takipi.common.util.Pair;
 
 public class ProcessQualityGates {
 
 	private static QualityGateReport qualityReport;
 
 	// process CICD gates based on the inputs sent in
+	/**
+	 * @param verbose  
+	 */
 	public static QualityGateReport processCICDInputs(ApiClient apiClient, RegressionInput input, boolean newEvents,
 			boolean resurfacedEvents, String regexFilter, int topIssuesVolume, boolean countGate,
 			PrintStream printStream, boolean verbose) {
 
 		qualityReport = new QualityGateReport();
 
-		DateTime deploymentStart = RegressionUtil.getDeploymentStartTime(apiClient, input.serviceId, input.deployments);
+		Pair<DateTime, DateTime> deploymentTimespan = RegressionUtil.getDeploymentTimespan(apiClient, input.serviceId, input.deployments);
 
-		if (deploymentStart == null) {
+		if ((deploymentTimespan == null) || (deploymentTimespan.getFirst() == null)) {
 			throw new IllegalStateException("Deployment name " + input.deployments
 					+ " not found. Please ensure your collector and Jenkins configuration are pointing to the same enviornment.");
 		}
+		
+		DateTime deploymentStart = deploymentTimespan.getFirst();
 
 		Collection<EventResult> events = RegressionUtil.getActiveEventVolume(apiClient, input, deploymentStart,
 				printStream);
