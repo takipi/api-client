@@ -5,7 +5,7 @@ archivesBaseName = 'api-client'
 compileJava {
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
-  options.forkOptions.executable = backendJavac
+    options.forkOptions.executable = backendJavac
 }
 
 dependencies {
