@@ -57,4 +57,8 @@ public class ValidationUtil {
 	public enum GraphResolution {
 		M1, M5, H1, H8
 	}
+
+	public enum UserRole {
+		owner, admin, member, viewer
+	}
 }
