@@ -20,6 +20,7 @@ public class EventResult implements ApiResult, Cloneable {
 	public Location error_location;
 	public Location entry_point;
 	public Location error_origin;
+	public List<Location> stack_frames;
 
 	public String introduced_by;
 	public List<String> labels;
