@@ -16,19 +16,19 @@ import com.takipi.api.core.request.intf.ApiPostRequest;
 import com.takipi.common.util.JsonUtil;
 
 public class ChangeTeamMembersRolesRequest extends ServiceRequest implements ApiPostRequest<ChangeTeamMembersResult> {
-	private final Map<String, UserRole> newUsers;
+	private final Map<String, UserRole> membersRoles;
 
-	ChangeTeamMembersRolesRequest(String serviceId, Map<String, UserRole> newUsers) {
+	ChangeTeamMembersRolesRequest(String serviceId, Map<String, UserRole> membersRoles) {
 		super(serviceId);
 
-		this.newUsers = newUsers;
+		this.membersRoles = membersRoles;
 	}
 
 	@Override
 	public String postData() {
 		List<TeamMember> teamMembers = Lists.newArrayList();
 
-		for (Map.Entry<String, UserRole> entry : newUsers.entrySet()) {
+		for (Map.Entry<String, UserRole> entry : membersRoles.entrySet()) {
 			TeamMember teamMember = new TeamMember();
 			teamMember.email = entry.getKey();
 			teamMember.role = entry.getValue().name();
