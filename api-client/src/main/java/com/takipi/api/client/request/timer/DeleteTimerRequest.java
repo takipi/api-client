@@ -19,6 +19,11 @@ public class DeleteTimerRequest extends ServiceRequest implements ApiDeleteReque
 	}
 
 	@Override
+	public String postData() {
+		return null;
+	}
+
+	@Override
 	public Class<EmptyResult> resultClass() {
 		return EmptyResult.class;
 	}

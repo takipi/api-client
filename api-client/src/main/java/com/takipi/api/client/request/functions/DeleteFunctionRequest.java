@@ -20,6 +20,11 @@ public class DeleteFunctionRequest extends ServiceRequest implements ApiDeleteRe
 	}
 
 	@Override
+	public String postData() {
+		return null;
+	}
+
+	@Override
 	public Class<EmptyResult> resultClass() {
 		return EmptyResult.class;
 	}
