@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
+import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 import com.google.common.collect.Maps;
@@ -40,6 +41,8 @@ public class RegressionUtil {
 
 	public static final int POINT_FACTOR = 60;
 	private static final int MAX_BASELINE_POINTS = 100;
+
+	private static final DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTime().withZoneUTC();
 
 	public static class RegressionWindow {
 		public DateTime activeWindowStart;
@@ -141,7 +144,8 @@ public class RegressionUtil {
 		int timeWindows = baselineTimespan / activeTimespan;
 
 		for (GraphPoint graphPoint : baselineGraph.points) {
-			DateTime firstSeen = ISODateTimeFormat.dateTimeParser().parseDateTime(graphPoint.time);
+
+			DateTime firstSeen = dateTimeFormatter.parseDateTime(graphPoint.time);
 
 			if (firstSeen.isBefore(baselineStart)) {
 				continue;
@@ -182,7 +186,7 @@ public class RegressionUtil {
 	private static RegressionState processNewsIssueRegression(EventResult activeEvent, DateTime activeFrom,
 			RegressionInput input, RateRegression.Builder rateRegression, PrintStream printStream, boolean verbose) {
 
-		DateTime firstSeen = ISODateTimeFormat.dateTimeParser().parseDateTime(activeEvent.first_seen);
+		DateTime firstSeen = dateTimeFormatter.parseDateTime(activeEvent.first_seen);
 
 		boolean isEventNew = firstSeen.isAfter(activeFrom);
 		boolean hasOlderSmiliarEvent = hasOlderRelatedEvents(activeEvent, printStream, verbose);
@@ -415,8 +419,7 @@ public class RegressionUtil {
 		}
 	}
 
-	public static EventsResult getEventsVolume(ApiClient apiClient, RegressionInput input, DateTime from,
-			DateTime to) {
+	public static EventsResult getEventsVolume(ApiClient apiClient, RegressionInput input, DateTime from, DateTime to) {
 
 		String fromStr = from.toString(ISODateTimeFormat.dateTime().withZoneUTC());
 		String toStr = to.toString(ISODateTimeFormat.dateTime().withZoneUTC());

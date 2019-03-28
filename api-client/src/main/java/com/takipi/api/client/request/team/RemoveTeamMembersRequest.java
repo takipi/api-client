@@ -1,37 +1,37 @@
 package com.takipi.api.client.request.team;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.takipi.api.client.data.team.TeamMember;
 import com.takipi.api.client.request.ServiceRequest;
-import com.takipi.api.client.result.team.AddTeamMembersResult;
-import com.takipi.api.client.util.validation.ValidationUtil.UserRole;
-import com.takipi.api.core.request.intf.ApiPostRequest;
+import com.takipi.api.client.result.team.ChangeTeamMembersResult;
+import com.takipi.api.core.request.intf.ApiDeleteRequest;
 import com.takipi.common.util.JsonUtil;
 
-public class AddTeamMembersRequest extends ServiceRequest implements ApiPostRequest<AddTeamMembersResult> {
-	private final Map<String, UserRole> newUsers;
+public class RemoveTeamMembersRequest extends ServiceRequest implements ApiDeleteRequest<ChangeTeamMembersResult> {
+	private final Collection<String> usersToRemove;
 
-	AddTeamMembersRequest(String serviceId, Map<String, UserRole> newUsers) {
+	RemoveTeamMembersRequest(String serviceId, Collection<String> usersToRemove) {
 		super(serviceId);
 
-		this.newUsers = newUsers;
+		this.usersToRemove = usersToRemove;
 	}
 
 	@Override
 	public String postData() {
 		List<TeamMember> teamMembers = Lists.newArrayList();
 
-		for (Map.Entry<String, UserRole> entry : newUsers.entrySet()) {
+		for (String userToRemove : usersToRemove) {
 			TeamMember teamMember = new TeamMember();
-			teamMember.email = entry.getKey();
-			teamMember.role = entry.getValue().name();
+			teamMember.email = userToRemove;
 
 			teamMembers.add(teamMember);
 		}
@@ -42,13 +42,13 @@ public class AddTeamMembersRequest extends ServiceRequest implements ApiPostRequ
 	}
 
 	@Override
-	public Class<AddTeamMembersResult> resultClass() {
-		return AddTeamMembersResult.class;
+	public String urlPath() {
+		return baseUrlPath() + "/team";
 	}
 
 	@Override
-	public String urlPath() {
-		return baseUrlPath() + "/team";
+	public Class<ChangeTeamMembersResult> resultClass() {
+		return ChangeTeamMembersResult.class;
 	}
 
 	public static Builder newBuilder() {
@@ -56,10 +56,10 @@ public class AddTeamMembersRequest extends ServiceRequest implements ApiPostRequ
 	}
 
 	public static class Builder extends ServiceRequest.Builder {
-		private Map<String, UserRole> newUsers;
+		private Set<String> usersToRemove;
 
 		Builder() {
-			newUsers = Maps.newHashMap();
+			this.usersToRemove = Sets.newHashSet();
 		}
 
 		@Override
@@ -69,20 +69,12 @@ public class AddTeamMembersRequest extends ServiceRequest implements ApiPostRequ
 			return this;
 		}
 
-		public Builder addTeamMember(String email) {
-			return addTeamMember(email, UserRole.member);
-		}
-
-		public Builder addTeamMember(String email, UserRole role) {
+		public Builder addTeamMemberToRemove(String email) {
 			if (Strings.isNullOrEmpty(email)) {
 				throw new IllegalArgumentException("User email cannot be empty");
 			}
 
-			if ((role != UserRole.member) && (role != UserRole.viewer)) {
-				throw new IllegalArgumentException("Illegal user role " + role);
-			}
-
-			this.newUsers.put(email, role);
+			this.usersToRemove.add(email);
 
 			return this;
 		}
@@ -91,15 +83,15 @@ public class AddTeamMembersRequest extends ServiceRequest implements ApiPostRequ
 		protected void validate() {
 			super.validate();
 
-			if (this.newUsers.isEmpty()) {
+			if (this.usersToRemove.isEmpty()) {
 				throw new IllegalArgumentException("Request is empty");
 			}
 		}
 
-		public AddTeamMembersRequest build() {
+		public RemoveTeamMembersRequest build() {
 			validate();
 
-			return new AddTeamMembersRequest(serviceId, newUsers);
+			return new RemoveTeamMembersRequest(serviceId, usersToRemove);
 		}
 	}
 }

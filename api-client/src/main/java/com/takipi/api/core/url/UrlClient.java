@@ -183,7 +183,8 @@ public abstract class UrlClient {
 		}
 	}
 
-	public Response<String> delete(String targetUrl, Pair<String, String> auth, byte[] data, String contentType, String... params) {
+	public Response<String> delete(String targetUrl, Pair<String, String> auth, byte[] data, String contentType,
+			String... params) {
 		HttpURLConnection connection = null;
 
 		try {
