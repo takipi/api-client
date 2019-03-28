@@ -9,7 +9,7 @@ import com.takipi.api.client.util.performance.calc.PerformanceState;
 import com.takipi.api.client.util.transaction.TransactionUtil;
 import com.takipi.common.util.CollectionUtil;
 
-public class GraphPerformanceCalculator implements PerformanceCalculator<TransactionGraph> {
+public class GraphPerformanceCalculator implements PerformanceCalculator<TransactionGraph, TransactionGraph> {
 	private final long activeInvocationsThreshold;
 	private final long baselineInvocationsThreshold;
 	private final double overAvgSlowingPercentage;
