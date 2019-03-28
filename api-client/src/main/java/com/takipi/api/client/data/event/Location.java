@@ -8,6 +8,7 @@ public class Location {
 	public String method_name;
 	public String method_desc;
 	public int method_position = -1;
+	public boolean in_filter;
 
 	@Override
 	public boolean equals(Object obj) {
@@ -30,6 +31,10 @@ public class Location {
 		}
 
 		if (method_position != other.method_position) {
+			return false;
+		}
+
+		if (in_filter != other.in_filter) {
 			return false;
 		}
 
