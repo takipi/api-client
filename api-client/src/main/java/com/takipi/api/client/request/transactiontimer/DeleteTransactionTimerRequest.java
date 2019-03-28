@@ -19,6 +19,11 @@ public class DeleteTransactionTimerRequest extends ServiceRequest implements Api
 	}
 
 	@Override
+	public String postData() {
+		return null;
+	}
+
+	@Override
 	public Class<EmptyResult> resultClass() {
 		return EmptyResult.class;
 	}
