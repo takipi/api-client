@@ -1,13 +1,12 @@
 package com.takipi.api.client.util.performance.transaction;
 
-import com.takipi.api.client.data.transaction.Stats;
+import com.takipi.api.client.data.transaction.Transaction;
 import com.takipi.api.client.data.transaction.TransactionGraph;
 import com.takipi.api.client.util.performance.calc.PerformanceScore;
-import com.takipi.api.client.util.transaction.TransactionUtil;
 import com.takipi.common.util.CollectionUtil;
 
-public class GraphPerformanceCalculator extends BaseGraphPerformanceCalculator<TransactionGraph> {
-	private GraphPerformanceCalculator(long activeInvocationsThreshold, long baselineInvocationsThreshold,
+public class HybridPerformanceCalculator extends BaseGraphPerformanceCalculator<Transaction> {
+	private HybridPerformanceCalculator(long activeInvocationsThreshold, long baselineInvocationsThreshold,
 			int minDeltaThreshold, double overAvgSlowingPercentage, double overAvgCriticalPercentage,
 			double stdDevFactor) {
 		super(activeInvocationsThreshold, baselineInvocationsThreshold, minDeltaThreshold, overAvgSlowingPercentage,
@@ -15,22 +14,20 @@ public class GraphPerformanceCalculator extends BaseGraphPerformanceCalculator<T
 	}
 
 	@Override
-	public PerformanceScore calc(TransactionGraph active, TransactionGraph baseline) {
+	public PerformanceScore calc(TransactionGraph active, Transaction baseline) {
 		if ((active == null) || (CollectionUtil.safeIsEmpty(active.points)) || (baseline == null)
-				|| (CollectionUtil.safeIsEmpty(baseline.points))) {
+				|| (baseline.stats == null)) {
 			return PerformanceScore.NO_DATA;
 		}
 
-		Stats baselineStats = TransactionUtil.aggregateGraph(baseline);
-
-		return doCalc(active, baselineStats);
+		return doCalc(active, baseline.stats);
 	}
 
-	public static GraphPerformanceCalculator of(long activeInvocationsThreshold, long baselineInvocationsThreshold,
+	public static HybridPerformanceCalculator of(long activeInvocationsThreshold, long baselineInvocationsThreshold,
 			int minDeltaThreshold, double overAvgSlowingPercentage, double overAvgCriticalPercentage,
 			double stdDevFactor) {
 
-		return new GraphPerformanceCalculator(activeInvocationsThreshold, baselineInvocationsThreshold,
+		return new HybridPerformanceCalculator(activeInvocationsThreshold, baselineInvocationsThreshold,
 				minDeltaThreshold, overAvgSlowingPercentage, overAvgCriticalPercentage, stdDevFactor);
 	}
 }
