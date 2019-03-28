@@ -19,6 +19,11 @@ public class DeleteViewRequest extends ServiceRequest implements ApiDeleteReques
 		return baseUrlPath() + "/views/" + viewId;
 	}
 
+	@Override
+	public String postData() {
+		return null;
+	}
+
 	public static Builder newBuilder() {
 		return new Builder();
 	}
