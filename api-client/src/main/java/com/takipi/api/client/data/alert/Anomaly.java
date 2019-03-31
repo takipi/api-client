@@ -1,4 +1,4 @@
-package com.takipi.api.client.request.alert;
+package com.takipi.api.client.data.alert;
 
 import java.util.Collections;
 import java.util.List;

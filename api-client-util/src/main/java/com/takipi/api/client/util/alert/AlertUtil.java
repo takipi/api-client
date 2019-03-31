@@ -5,7 +5,7 @@ import java.util.Collection;
 import org.joda.time.DateTime;
 
 import com.takipi.api.client.ApiClient;
-import com.takipi.api.client.request.alert.Anomaly;
+import com.takipi.api.client.data.alert.Anomaly;
 import com.takipi.api.client.request.alert.AnomalyAlertRequest;
 import com.takipi.api.client.result.GenericResult;
 import com.takipi.api.client.result.event.EventResult;
