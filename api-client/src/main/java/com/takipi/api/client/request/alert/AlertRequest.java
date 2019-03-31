@@ -1,11 +1,11 @@
 package com.takipi.api.client.request.alert;
 
 import com.takipi.api.client.request.ServiceRequest;
-import com.takipi.api.client.result.GenericResult;
+import com.takipi.api.client.result.EmptyResult;
 import com.takipi.api.client.util.validation.ValidationUtil;
 import com.takipi.api.core.request.intf.ApiPostRequest;
 
-public abstract class AlertRequest extends ServiceRequest implements ApiPostRequest<GenericResult> {
+public abstract class AlertRequest extends ServiceRequest implements ApiPostRequest<EmptyResult> {
 	private final String viewId;
 
 	protected AlertRequest(String serviceId, String viewId) {
@@ -20,8 +20,8 @@ public abstract class AlertRequest extends ServiceRequest implements ApiPostRequ
 	}
 
 	@Override
-	public Class<GenericResult> resultClass() {
-		return GenericResult.class;
+	public Class<EmptyResult> resultClass() {
+		return EmptyResult.class;
 	}
 
 	public static class Builder extends ServiceRequest.Builder {
