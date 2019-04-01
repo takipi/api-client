@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
@@ -11,17 +12,17 @@ import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.JsonUtil;
 
 public class CustomAlertRequest extends AlertRequest {
-	private final String title;
-	private final String body;
+	public final String title;
+	public final String body;
 
-	private final List<AlertLink> links;
+	public final List<AlertLink> links;
 
 	protected CustomAlertRequest(String serviceId, String viewId, String title, String body, List<AlertLink> links) {
 		super(serviceId, viewId);
 
 		this.title = title;
 		this.body = body;
-		this.links = links;
+		this.links = ImmutableList.copyOf(links);
 	}
 
 	@Override
