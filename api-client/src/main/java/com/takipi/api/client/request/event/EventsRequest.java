@@ -8,9 +8,13 @@ import com.takipi.api.client.result.event.EventsResult;
 import com.takipi.api.core.request.intf.ApiGetRequest;
 
 public class EventsRequest extends ViewTimeframeRequest implements ApiGetRequest<EventsResult> {
+	public final boolean includeStacktrace;
+
 	EventsRequest(String serviceId, String viewId, String from, String to, boolean raw, Collection<String> servers,
-			Collection<String> apps, Collection<String> deployments) {
+			Collection<String> apps, Collection<String> deployments, boolean includeStacktrace) {
 		super(serviceId, viewId, from, to, raw, servers, apps, deployments);
+
+		this.includeStacktrace = includeStacktrace;
 	}
 
 	@Override
@@ -28,11 +32,29 @@ public class EventsRequest extends ViewTimeframeRequest implements ApiGetRequest
 		return buildParams();
 	}
 
+	@Override
+	protected int paramsCount() {
+		// One slot for the stacktace flag.
+		//
+		return super.paramsCount() + 1;
+	}
+
+	@Override
+	protected int fillParams(String[] params, int startIndex) throws UnsupportedEncodingException {
+		int index = super.fillParams(params, startIndex);
+
+		params[index++] = "stacktrace=" + Boolean.toString(includeStacktrace);
+
+		return index;
+	}
+
 	public static Builder newBuilder() {
 		return new Builder();
 	}
 
 	public static class Builder extends ViewTimeframeRequest.Builder {
+		private boolean includeStacktrace;
+
 		@Override
 		public Builder setServiceId(String serviceId) {
 			super.setServiceId(serviceId);
@@ -89,10 +111,16 @@ public class EventsRequest extends ViewTimeframeRequest implements ApiGetRequest
 			return this;
 		}
 
+		public Builder setIncludeStacktrace(boolean includeStacktrace) {
+			this.includeStacktrace = includeStacktrace;
+
+			return this;
+		}
+
 		public EventsRequest build() {
 			validate();
 
-			return new EventsRequest(serviceId, viewId, from, to, raw, servers, apps, deployments);
+			return new EventsRequest(serviceId, viewId, from, to, raw, servers, apps, deployments, includeStacktrace);
 		}
 	}
 }
