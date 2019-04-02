@@ -5,9 +5,9 @@ import com.takipi.api.client.util.regression.RegressionStringUtil;
 
 public class OOReportEvent {
 
-	protected final EventResult event;
-	protected final String arcLink;
-	protected final String type;
+	private EventResult event;
+	private String arcLink;
+	private String type;
 
 	public OOReportEvent(EventResult event, String arcLink) {
 		this(event, null, arcLink);
@@ -44,6 +44,10 @@ public class OOReportEvent {
 
 	public String getARCLink() {
 		return arcLink;
+	}
+
+	public void setArcLink(String arcLink) {
+		this.arcLink = arcLink;
 	}
 
 	public long getHits() {
