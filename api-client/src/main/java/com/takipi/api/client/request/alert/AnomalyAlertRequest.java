@@ -9,8 +9,9 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.takipi.api.client.request.alert.Anomaly.AnomalyContributor;
-import com.takipi.api.client.request.alert.Anomaly.AnomalyPeriod;
+import com.takipi.api.client.data.alert.Anomaly;
+import com.takipi.api.client.data.alert.Anomaly.AnomalyContributor;
+import com.takipi.api.client.data.alert.Anomaly.AnomalyPeriod;
 import com.takipi.common.util.JsonUtil;
 
 public class AnomalyAlertRequest extends AlertRequest {

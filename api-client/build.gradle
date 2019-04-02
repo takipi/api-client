@@ -2,6 +2,12 @@ apply plugin: 'maven'
 
 archivesBaseName = 'api-client'
 
+if (project.ext.has("backendJavac")) {
+  compileJava {
+    options.forkOptions.executable = project.ext.get("backendJavac")
+  }
+}
+
 compileJava {
 	sourceCompatibility = 1.8
 	targetCompatibility = 1.8
