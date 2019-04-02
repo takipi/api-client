@@ -133,7 +133,7 @@ public class RateRegression {
 
 		private final List<EventResult> nonRegressions;
 
-		private DateTime activeWndowStart;
+		private DateTime activeWindowStart;
 
 		Builder() {
 			allRegressions = Maps.newHashMap();
@@ -144,8 +144,8 @@ public class RateRegression {
 			nonRegressions = Lists.newArrayList();
 		}
 
-		public void setActiveWndowStart(DateTime activeWndowStart) {
-			this.activeWndowStart = activeWndowStart;
+		public void setActiveWindowStart(DateTime activeWindowStart) {
+			this.activeWindowStart = activeWindowStart;
 		}
 
 		public void addNonRegressions(EventResult event) {
@@ -174,7 +174,7 @@ public class RateRegression {
 
 		public RateRegression build() {
 			return new RateRegression(allNewEvents, allRegressions, criticalRegressions, exceededNewEvents,
-					criticalNewEvents, activeWndowStart, nonRegressions);
+					criticalNewEvents, activeWindowStart, nonRegressions);
 		}
 	}
 }

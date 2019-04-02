@@ -9,9 +9,11 @@ import java.util.regex.Pattern;
 import org.joda.time.DateTime;
 
 import com.google.gson.Gson;
+import com.takipi.common.util.Pair;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.util.event.EventUtil;
+import com.takipi.api.client.util.regression.DeploymentTimespan;
 import com.takipi.api.client.util.regression.RateRegression;
 import com.takipi.api.client.util.regression.RegressionInput;
 import com.takipi.api.client.util.regression.RegressionStringUtil;
@@ -27,14 +29,17 @@ public class ProcessQualityGates {
 			PrintStream printStream, boolean verbose) {
 
 		qualityReport = new QualityGateReport();
-
-		DateTime deploymentStart = RegressionUtil.getDeploymentStartTime(apiClient, input.serviceId, input.deployments);
-
-		if (deploymentStart == null) {
+		
+		DeploymentTimespan deploymentTimespan = RegressionUtil.getDeploymentTimespan(apiClient, input.serviceId, input.deployments);
+		Pair<DateTime, DateTime> deploymentActiveWindow = deploymentTimespan.getActiveWindow();
+		
+		if ((deploymentActiveWindow == null) || (deploymentActiveWindow.getFirst() == null)) {
 			throw new IllegalStateException("Deployment name " + input.deployments
 					+ " not found. Please ensure your collector and Jenkins configuration are pointing to the same enviornment.");
 		}
-
+		
+		DateTime deploymentStart = deploymentActiveWindow.getFirst();
+		
 		Collection<EventResult> events = RegressionUtil.getActiveEventVolume(apiClient, input, deploymentStart,
 				printStream);
 

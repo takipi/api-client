@@ -30,7 +30,7 @@ public class EventResult implements ApiResult, Cloneable {
 
 	public String jira_issue_url;
 
-	public Stats stats;
+	public MainStats stats;
 
 	@Override
 	public String toString() {
@@ -74,7 +74,7 @@ public class EventResult implements ApiResult, Cloneable {
 	}
 
 	@Override
-	public Object clone() throws CloneNotSupportedException {
+	public Object clone() {
 		EventResult result = new EventResult();
 
 		result.id = this.id;

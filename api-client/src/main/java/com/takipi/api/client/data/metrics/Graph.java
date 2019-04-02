@@ -8,6 +8,10 @@ public class Graph {
 	public String type;
 	public String id;
 	public List<GraphPoint> points;
+	
+	public String machine_name;
+	public String application_name;
+	public String deployment_name;
 
 	public static class GraphPoint {
 		public String time;
