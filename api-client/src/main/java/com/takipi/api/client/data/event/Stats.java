@@ -1,12 +1,9 @@
 package com.takipi.api.client.data.event;
 
-import com.takipi.api.client.result.event.IApiStats;
+import com.takipi.api.client.result.event.ApiBaseStats;
 
-public class Stats implements IApiStats
+public class Stats extends ApiBaseStats
 {
-	public long hits;
-	public long invocations;
-	
 	public String machine_name;
 	public String application_name;
 	public String deployment_name;

@@ -5,27 +5,25 @@ import com.takipi.api.client.data.event.Stats;
 
 import java.util.List;
 
-public class MainStats implements IApiStats
+public class MainStats extends ApiBaseStats
 {
-	public long hits;
-	public long invocations;
-	
 	public List<Stats> contributors = Lists.newArrayList();
 	
-	@Override
-	public Object clone()
-	{
-		MainStats mainStats = new MainStats();
+	public MainStats() { }
+	
+	public MainStats(MainStats mainStats) {
+		this.hits = mainStats.hits;
+		this.invocations = mainStats.invocations;
 		
-		mainStats.hits = this.hits;
-		mainStats.invocations = this.invocations;
-		mainStats.contributors = Lists.newArrayList();
+		this.contributors = Lists.newArrayList();
 		
-		for (Stats stat : this.contributors)
-		{
-			mainStats.contributors.add((Stats) stat.clone());
+		for (Stats stat : mainStats.contributors) {
+			this.contributors.add((Stats) stat.clone());
 		}
-		
-		return mainStats;
+	}
+	
+	@Override
+	public Object clone() {
+		return new MainStats(this);
 	}
 }

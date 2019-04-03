@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-import com.takipi.api.client.result.event.IApiStats;
+import com.takipi.api.client.result.event.ApiBaseStats;
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 import org.joda.time.format.DateTimeFormatter;
@@ -177,7 +177,7 @@ public class RegressionUtil {
 		return result;
 	}
 
-	private static String ps(IApiStats stats) {
+	private static String ps(ApiBaseStats stats) {
 		if (stats == null) {
 			return "(null)";
 		}
