@@ -29,7 +29,6 @@ import com.takipi.api.client.request.event.EventsVolumeRequest;
 import com.takipi.api.client.result.deployment.DeploymentsResult;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.result.event.EventsResult;
-import com.takipi.api.client.result.event.MainStats;
 import com.takipi.api.client.result.metrics.GraphResult;
 import com.takipi.api.client.util.validation.ValidationUtil.VolumeType;
 import com.takipi.api.client.util.view.ViewUtil;
@@ -509,16 +508,25 @@ public class RegressionUtil {
 		
 		Map<String, Pair<DateTime, DateTime>> deploymentLifetime = Maps.newHashMap();
 		
-		DateTime minDeploymentStart = null, maxDeploymentEnd = new DateTime();
+		DateTime minDeploymentStart = null;
+		DateTime maxDeploymentEnd = new DateTime(0L);
 		
-		for (SummarizedDeployment dep : response.data.deployments) {
-			if ((deployments.contains(dep.name) && (dep.first_seen != null))) {
+		Map<String, SummarizedDeployment> summarizedDeploymentByName = Maps.newHashMap();
+		
+		for (SummarizedDeployment summaryDeployment : response.data.deployments) {
+			summarizedDeploymentByName.put(summaryDeployment.name, summaryDeployment);
+		}
+		
+		for (String deployment : deployments) {
+			SummarizedDeployment summarizedDeployment = summarizedDeploymentByName.get(deployment);
+			
+			if ((summarizedDeployment != null) && (summarizedDeployment.first_seen != null)) {
 				
-				DateTime start = dateTimeFormatter.parseDateTime(dep.first_seen);
+				DateTime start = dateTimeFormatter.parseDateTime(summarizedDeployment.first_seen);
 				DateTime end = null;
 				
-				if (dep.last_seen != null) {
-					end = dateTimeFormatter.parseDateTime(dep.last_seen);
+				if (summarizedDeployment.last_seen != null) {
+					end = dateTimeFormatter.parseDateTime(summarizedDeployment.last_seen);
 				}
 				
 				if ((minDeploymentStart == null) ||
@@ -527,9 +535,9 @@ public class RegressionUtil {
 					minDeploymentStart = start;
 				}
 				
-				if (dep.last_seen != null) {
+				if (summarizedDeployment.last_seen != null) {
 					
-					end = dateTimeFormatter.parseDateTime(dep.last_seen);
+					end = dateTimeFormatter.parseDateTime(summarizedDeployment.last_seen);
 				}
 				
 				if ((end == null) ||
@@ -539,7 +547,12 @@ public class RegressionUtil {
 					maxDeploymentEnd = end;
 				}
 				
-				deploymentLifetime.put(dep.name, Pair.of(start, end));
+				deploymentLifetime.put(summarizedDeployment.name, Pair.of(start, end));
+			}
+			else
+			{
+				// if deployment not found return null and it will be search in non-active deployments
+				return null;
 			}
 		}
 		
@@ -550,14 +563,8 @@ public class RegressionUtil {
 
 	public static DeploymentTimespan getDeploymentTimespan(ApiClient apiClient, String serviceId,
 			Collection<String> deployments) {
-
-		DeploymentTimespan result = getDeploymentTimespan(apiClient, serviceId, deployments, true);
-
-		if (result == null) {
-			result = getDeploymentTimespan(apiClient, serviceId, deployments, false);
-		}
-
-		return result;
+		
+		return getDeploymentTimespan(apiClient, serviceId, deployments, false);
 	}
 
 	public static RegressionWindow getActiveWindow(ApiClient apiClient, RegressionInput input,
