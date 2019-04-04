@@ -6,7 +6,7 @@ import com.takipi.api.client.util.performance.calc.PerformanceCalculator;
 import com.takipi.api.client.util.performance.calc.PerformanceScore;
 import com.takipi.api.client.util.performance.calc.PerformanceState;
 
-public class AvgTimePerformanceCalculator implements PerformanceCalculator<Transaction> {
+public class AvgTimePerformanceCalculator implements PerformanceCalculator<Transaction, Transaction> {
 	private final long minActiveInvocations;
 	private final long minBaselineInvocations;
 	private final double slowThresholdPercentage;
