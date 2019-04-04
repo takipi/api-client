@@ -6,7 +6,7 @@ subprojects {
   apply plugin: 'idea'
 
   group = 'com.takipi'
-  version = '2.19.0'
+  version = '2.20.0'
 
   repositories {
       mavenCentral()
