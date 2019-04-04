@@ -491,19 +491,28 @@ public class RegressionUtil {
 	}
 
 	private static DeploymentTimespan getDeploymentTimespan(ApiClient apiClient, String serviceId,
-			Collection<String> deployments, boolean active) {
+			Collection<String> deployments, Collection<SummarizedDeployment> deploymentsSummary, boolean active) {
 
 		DeploymentsRequest request = DeploymentsRequest.newBuilder().setServiceId(serviceId).setActive(active).build();
-
-		Response<DeploymentsResult> response = apiClient.get(request);
-
-		if ((response.isBadResponse()) || (response.data == null)) {
-			throw new IllegalStateException(
-					"Could not acquire deployments for service " + serviceId + " . Error " + response.responseCode);
-		}
-
-		if (response.data.deployments == null) {
-			return null;
+		
+		Collection<SummarizedDeployment> deploymetsData = deploymentsSummary;
+		
+		if (deploymetsData == null)
+		{
+			Response<DeploymentsResult> response = apiClient.get(request);
+			
+			if ((response.isBadResponse()) || (response.data == null))
+			{
+				throw new IllegalStateException(
+						"Could not acquire deployments for service " + serviceId + " . Error " + response.responseCode);
+			}
+			
+			if (response.data.deployments == null)
+			{
+				return null;
+			}
+			
+			deploymetsData = response.data.deployments;
 		}
 		
 		Map<String, Pair<DateTime, DateTime>> deploymentLifetime = Maps.newHashMap();
@@ -513,7 +522,7 @@ public class RegressionUtil {
 		
 		Map<String, SummarizedDeployment> summarizedDeploymentByName = Maps.newHashMap();
 		
-		for (SummarizedDeployment summaryDeployment : response.data.deployments) {
+		for (SummarizedDeployment summaryDeployment : deploymetsData) {
 			summarizedDeploymentByName.put(summaryDeployment.name, summaryDeployment);
 		}
 		
@@ -564,11 +573,17 @@ public class RegressionUtil {
 	public static DeploymentTimespan getDeploymentTimespan(ApiClient apiClient, String serviceId,
 			Collection<String> deployments) {
 		
-		return getDeploymentTimespan(apiClient, serviceId, deployments, false);
+		return getDeploymentTimespan(apiClient, serviceId, deployments, null, false);
+	}
+	
+	public static RegressionWindow getActiveWindow(ApiClient apiClient, RegressionInput input,
+		   PrintStream printStream) {
+		return  getActiveWindow(apiClient, input,
+				printStream, null);
 	}
 
 	public static RegressionWindow getActiveWindow(ApiClient apiClient, RegressionInput input,
-			PrintStream printStream) {
+			PrintStream printStream, Collection<SummarizedDeployment> deploymentsSummary) {
 
 		RegressionWindow result = new RegressionWindow();
 
@@ -583,7 +598,8 @@ public class RegressionUtil {
 			
 			if (!CollectionUtil.safeIsEmpty(input.deployments)) {
 				
-				DeploymentTimespan deploymentTimespan = getDeploymentTimespan(apiClient, input.serviceId, input.deployments);
+				DeploymentTimespan deploymentTimespan = getDeploymentTimespan(apiClient, input.serviceId,
+						input.deployments, deploymentsSummary, false);
 				
 				Pair<DateTime, DateTime> depTimespan = deploymentTimespan.getActiveWindow();
 				result.activeWindowStart = depTimespan.getFirst();
