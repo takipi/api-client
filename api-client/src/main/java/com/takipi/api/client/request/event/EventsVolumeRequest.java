@@ -10,12 +10,15 @@ import com.takipi.api.core.request.intf.ApiGetRequest;
 
 public class EventsVolumeRequest extends ViewTimeframeRequest implements ApiGetRequest<EventsResult> {
 	public final VolumeType volumeType;
+	public final boolean includeStacktrace;
 
 	EventsVolumeRequest(String serviceId, String viewId, VolumeType volumeType, String from, String to, boolean raw,
-			Collection<String> servers, Collection<String> apps, Collection<String> deployments) {
+			Collection<String> servers, Collection<String> apps, Collection<String> deployments,
+			boolean includeStacktrace) {
 		super(serviceId, viewId, from, to, raw, servers, apps, deployments);
 
 		this.volumeType = volumeType;
+		this.includeStacktrace = includeStacktrace;
 	}
 
 	@Override
@@ -30,9 +33,9 @@ public class EventsVolumeRequest extends ViewTimeframeRequest implements ApiGetR
 
 	@Override
 	protected int paramsCount() {
-		// One slot for the volume type.
+		// One slot for the volume type and one for the include stacktrace.
 		//
-		return super.paramsCount() + 1;
+		return super.paramsCount() + 2;
 	}
 
 	@Override
@@ -40,6 +43,7 @@ public class EventsVolumeRequest extends ViewTimeframeRequest implements ApiGetR
 		int index = super.fillParams(params, startIndex);
 
 		params[index++] = "stats=" + volumeType.toString();
+		params[index++] = "stacktrace=" + Boolean.toString(includeStacktrace);
 
 		return index;
 	}
@@ -55,6 +59,7 @@ public class EventsVolumeRequest extends ViewTimeframeRequest implements ApiGetR
 
 	public static class Builder extends ViewTimeframeRequest.Builder {
 		private VolumeType volumeType;
+		private boolean includeStacktrace;
 
 		@Override
 		public Builder setServiceId(String serviceId) {
@@ -118,6 +123,12 @@ public class EventsVolumeRequest extends ViewTimeframeRequest implements ApiGetR
 			return this;
 		}
 
+		public Builder setIncludeStacktrace(boolean includeStacktrace) {
+			this.includeStacktrace = includeStacktrace;
+
+			return this;
+		}
+
 		@Override
 		protected void validate() {
 			super.validate();
@@ -130,7 +141,8 @@ public class EventsVolumeRequest extends ViewTimeframeRequest implements ApiGetR
 		public EventsVolumeRequest build() {
 			validate();
 
-			return new EventsVolumeRequest(serviceId, viewId, volumeType, from, to, raw, servers, apps, deployments);
+			return new EventsVolumeRequest(serviceId, viewId, volumeType, from, to, raw, servers, apps, deployments,
+					includeStacktrace);
 		}
 	}
 }

@@ -31,14 +31,14 @@ public class PerformanceUtil {
 	private static final String PERF_SUFFIX = ".perf";
 
 	public static Map<Transaction, PerformanceScore> getTransactionStates(Collection<Transaction> activeTransactions,
-			Collection<Transaction> baselineTransactions, PerformanceCalculator<Transaction> calculator) {
+			Collection<Transaction> baselineTransactions, PerformanceCalculator<Transaction, Transaction> calculator) {
 
 		return getTransactionStates(TransactionUtil.getTransactionsMap(activeTransactions),
 				TransactionUtil.getTransactionsMap(baselineTransactions), calculator);
 	}
 
 	public static Map<Transaction, PerformanceScore> getTransactionStates(ApiClient apiClient, String serviceId,
-			String viewId, PerformanceCalculator<Transaction> calculator, int baselineTimespanMinutes,
+			String viewId, PerformanceCalculator<Transaction, Transaction> calculator, int baselineTimespanMinutes,
 			int activeTimespanMinutes) {
 
 		DateTime now = DateTime.now();
@@ -57,12 +57,12 @@ public class PerformanceUtil {
 	}
 
 	public static Map<Transaction, PerformanceScore> getTransactionStates(Map<String, Transaction> activeTransactions,
-			Map<String, Transaction> baselineTransactions, PerformanceCalculator<Transaction> calculator) {
+			Map<String, Transaction> baselineTransactions, PerformanceCalculator<Transaction, Transaction> calculator) {
 		return getPerformanceStates(activeTransactions, baselineTransactions, calculator);
 	}
 
-	public static <T> Map<T, PerformanceScore> getPerformanceStates(Map<String, T> activeTargets,
-			Map<String, T> baselineTargets, PerformanceCalculator<T> calculator) {
+	public static <T, S> Map<T, PerformanceScore> getPerformanceStates(Map<String, T> activeTargets,
+			Map<String, S> baselineTargets, PerformanceCalculator<T, S> calculator) {
 
 		if (CollectionUtil.safeIsEmpty(activeTargets)) {
 			return Collections.emptyMap();
@@ -81,7 +81,7 @@ public class PerformanceUtil {
 		for (Entry<String, T> entry : activeTargets.entrySet()) {
 			String name = entry.getKey();
 			T active = entry.getValue();
-			T baseline = baselineTargets.get(name);
+			S baseline = baselineTargets.get(name);
 
 			if (baseline == null) {
 				result.put(active, PerformanceScore.NO_DATA);
