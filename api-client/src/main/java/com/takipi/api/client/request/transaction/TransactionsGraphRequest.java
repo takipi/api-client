@@ -9,18 +9,18 @@ import com.takipi.api.client.util.validation.ValidationUtil.GraphResolution;
 import com.takipi.api.core.request.intf.ApiGetRequest;
 
 public class TransactionsGraphRequest extends ViewTimeframeRequest implements ApiGetRequest<TransactionsGraphResult> {
-	public final boolean breakdown;
 	public final int wantedPointCount;
 	public final GraphResolution resolution;
+	public final boolean breakdown;
 
 	TransactionsGraphRequest(String serviceId, String viewId, String from, String to, boolean raw, int wantedPointCount,
 							 GraphResolution resolution, Collection<String> servers, Collection<String> apps,
 							 Collection<String> deployments, boolean breakdown) {
 		super(serviceId, viewId, from, to, raw, servers, apps, deployments);
 
-		this.breakdown = breakdown;
 		this.wantedPointCount = wantedPointCount;
 		this.resolution = resolution;
+		this.breakdown = breakdown;
 	}
 
 	@Override
@@ -37,14 +37,16 @@ public class TransactionsGraphRequest extends ViewTimeframeRequest implements Ap
 	protected int paramsCount() {
 		// One slot for the points count / resolution.
 		//
-		return super.paramsCount() + 2;
+		return super.paramsCount() + 1 + (breakdown ? 1 : 0);
 	}
 
 	@Override
 	protected int fillParams(String[] params, int startIndex) throws UnsupportedEncodingException {
 		int index = super.fillParams(params, startIndex);
 
-		params[index++] = "breakdown=" + breakdown;
+		if (breakdown) {
+			params[index++] = "breakdown=" + breakdown;
+		}
 		
 		if (resolution != null) {
 			params[index++] = "resolution=" + resolution.name();
@@ -65,9 +67,9 @@ public class TransactionsGraphRequest extends ViewTimeframeRequest implements Ap
 	}
 
 	public static class Builder extends ViewTimeframeRequest.Builder {
-		private boolean breakdown;
 		private int wantedPointCount;
 		private GraphResolution resolution;
+		private boolean breakdown;
 		
 		@Override
 		public Builder setServiceId(String serviceId) {

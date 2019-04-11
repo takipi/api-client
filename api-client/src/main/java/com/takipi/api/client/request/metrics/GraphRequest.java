@@ -22,11 +22,11 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 			Collection<String> apps, Collection<String> deployments, boolean breakdown) {
 		super(serviceId, viewId, from, to, raw, servers, apps, deployments);
 
-		this.breakdown = breakdown;
 		this.graphType = graphType;
 		this.volumeType = volumeType;
 		this.wantedPointCount = wantedPointCount;
 		this.resolution = resolution;
+		this.breakdown = breakdown;
 	}
 
 	@Override
@@ -43,14 +43,16 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 	protected int paramsCount() {
 		// One slot for the points count / resolution.
 		//
-		return super.paramsCount() + 2 + (volumeType != null ? 1 : 0);
+		return super.paramsCount() + 1 + (breakdown ? 1 : 0) + (volumeType != null ? 1 : 0);
 	}
 
 	@Override
 	protected int fillParams(String[] params, int startIndex) throws UnsupportedEncodingException {
 		int index = super.fillParams(params, startIndex);
 
-		params[index++] = "breakdown=" + breakdown;
+		if (breakdown) {
+			params[index++] = "breakdown=" + breakdown;
+		}
 		
 		if (resolution != null) {
 			params[index++] = "resolution=" + resolution.name();
