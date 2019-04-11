@@ -655,7 +655,7 @@ public class RegressionUtil {
 
 			if (pointsWanted > 0) {
 				GraphResult graphResult = ViewUtil.getEventsGraphResult(apiClient, input.serviceId, input.viewId,
-						pointsWanted, VolumeType.all, baselineStart, activeWindowStart, true);
+						pointsWanted, VolumeType.all, baselineStart, activeWindowStart, true, true);
 
 				if (graphResult != null) {
 					result = validateGraph(apiClient, graphResult, input, printStream);
