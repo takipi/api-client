@@ -11,7 +11,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.takipi.api.client.ApiClient;
-import com.takipi.api.client.data.event.Location;
 import com.takipi.api.client.data.view.SummarizedView;
 import com.takipi.api.client.data.view.ViewFilters;
 import com.takipi.api.client.data.view.ViewInfo;
@@ -41,8 +40,10 @@ public class InfraUtil {
 	public static void categorizeEvent(String eventId, String serviceId, Map<CategoryType, String> categoryIds,
 			Categories categories, Set<String> existingLabels, ApiClient apiClient, boolean applyLabels) {
 
+		boolean includeStacktrace = categoryIds.containsKey(CategoryType.app);
+
 		EventRequest metadataRequest = EventRequest.newBuilder().setEventId(eventId).setServiceId(serviceId)
-				.setIncludeStacktrace(true).build();
+				.setIncludeStacktrace(includeStacktrace).build();
 
 		Response<EventResult> metadataResult = apiClient.get(metadataRequest);
 
@@ -54,58 +55,31 @@ public class InfraUtil {
 				applyLabels);
 	}
 
-	private static void updateEventLabels(EventResult event, Set<String> tierLabels, Set<String> existingLabels,
-			Set<String> labelsToRemove, Set<String> labelsToAdd, CategoryType type, String serviceId, String categoryId,
-			ApiClient apiClient) {
-
-		if (!CollectionUtil.safeIsEmpty(tierLabels)) {
-
-			for (String tierLabel : tierLabels) {
-				String labelName = toTierLabelName(tierLabel, type);
-
-				labelsToRemove.remove(labelName);
-
-				if (CollectionUtil.safeContains(event.labels, labelName)) {
-					continue;
-				}
-
-				labelsToAdd.add(labelName);
-
-				if (existingLabels.add(tierLabel)) {
-					validateTierView(tierLabel, type, categoryId, serviceId, apiClient);
-				}
-			}
-		}
-	}
-
 	public static Pair<Collection<String>, Collection<String>> categorizeEvent(EventResult event, String serviceId,
 			Map<CategoryType, String> categoryIds, Categories categories, Set<String> existingLabels,
 			ApiClient apiClient, boolean applyLabels) {
 
-		if ((event == null) || (event.error_origin == null)) {
+		if (event == null) {
 			return Pair.of(Collections.emptySet(), Collections.emptySet());
 		}
 
-		Set<String> labelsToRemove = getEventTiers(event);
 		Set<String> labelsToAdd = Sets.newHashSet();
+		Set<String> labelsToRemove = Sets.newHashSet();
 
-		Location errorOrigin = event.error_origin;
+		for (Map.Entry<CategoryType, String> entry : categoryIds.entrySet()) {
+			CategoryType categoryType = entry.getKey();
 
-		Set<String> infraLabels = categories.getCategories(errorOrigin.class_name, CategoryType.infra);
-		Set<String> appLabels = Sets.newHashSet();
+			Categorizer categorizer = Categorizer.get(categoryType);
 
-		if (!CollectionUtil.safeIsEmpty(event.stack_frames)) {
-			for (Location location : event.stack_frames) {
-				Collection<String> frameMatches = categories.getCategories(location.class_name, CategoryType.app);
-				appLabels.addAll(frameMatches);
+			if (categorizer == null) {
+				continue;
 			}
+
+			String categoryId = entry.getValue();
+
+			categorizer.categorizeEvent(event, categories, labelsToAdd, labelsToRemove, existingLabels, serviceId,
+					categoryId, apiClient);
 		}
-
-		updateEventLabels(event, appLabels, existingLabels, labelsToRemove, labelsToAdd, CategoryType.app, serviceId,
-				categoryIds.get(CategoryType.app), apiClient);
-
-		updateEventLabels(event, infraLabels, existingLabels, labelsToRemove, labelsToAdd, CategoryType.infra,
-				serviceId, categoryIds.get(CategoryType.infra), apiClient);
 
 		if (!applyLabels) {
 			return Pair.of(labelsToAdd, labelsToRemove);
@@ -125,7 +99,7 @@ public class InfraUtil {
 		return Pair.of(labelsToAdd, labelsToRemove);
 	}
 
-	private static void validateTierView(String locationLabel, CategoryType type, String categoryId, String serviceId,
+	public static void validateTierView(String locationLabel, CategoryType type, String categoryId, String serviceId,
 			ApiClient apiClient) {
 
 		boolean labelExisted = createTierLabel(locationLabel, type, serviceId, apiClient);
@@ -201,32 +175,11 @@ public class InfraUtil {
 		return view.id;
 	}
 
-	private static Set<String> getEventTiers(EventResult event) {
-
-		if (CollectionUtil.safeIsEmpty(event.labels)) {
-			return Collections.emptySet();
-		}
-
-		Set<String> result = Sets.newHashSet();
-
-		for (String label : event.labels) {
-
-			for (CategoryType type : CategoryType.values()) {
-				if (label.endsWith(getTierLabelPostfix(type))) {
-					result.add(label);
-				}
-			}
-		}
-
-		return result;
-	}
-
-	private static String getTierLabelPostfix(CategoryType type) {
+	public static String getTierLabelPostfix(CategoryType type) {
 		return TIER_LABEL_SEPERATOR + type.toString().toLowerCase();
 	}
 
 	public static String getTierNameFromLabel(String tierName, CategoryType type) {
-
 		String postfix = getTierLabelPostfix(type);
 
 		if ((tierName == null) || (tierName.isEmpty()) || (!tierName.endsWith(postfix))) {
