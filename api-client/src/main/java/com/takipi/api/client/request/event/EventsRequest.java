@@ -8,13 +8,15 @@ import com.takipi.api.client.result.event.EventsResult;
 import com.takipi.api.core.request.intf.ApiGetRequest;
 
 public class EventsRequest extends ViewTimeframeRequest implements ApiGetRequest<EventsResult> {
+	public final boolean breakdown;
 	public final boolean includeStacktrace;
 
 	EventsRequest(String serviceId, String viewId, String from, String to, boolean raw, Collection<String> servers,
-			Collection<String> apps, Collection<String> deployments, boolean includeStacktrace) {
+			Collection<String> apps, Collection<String> deployments, boolean includeStacktrace, boolean breakdown) {
 		super(serviceId, viewId, from, to, raw, servers, apps, deployments);
-
+		
 		this.includeStacktrace = includeStacktrace;
+		this.breakdown = breakdown;
 	}
 
 	@Override
@@ -36,13 +38,17 @@ public class EventsRequest extends ViewTimeframeRequest implements ApiGetRequest
 	protected int paramsCount() {
 		// One slot for the stacktace flag.
 		//
-		return super.paramsCount() + 1;
+		return super.paramsCount() + 1 + (this.breakdown ? 1 : 0);
 	}
 
 	@Override
 	protected int fillParams(String[] params, int startIndex) throws UnsupportedEncodingException {
 		int index = super.fillParams(params, startIndex);
-
+		
+		if (this.breakdown) {
+			params[index++] = "breakdown=" + Boolean.toString(breakdown);
+		}
+		
 		params[index++] = "stacktrace=" + Boolean.toString(includeStacktrace);
 
 		return index;
@@ -54,7 +60,8 @@ public class EventsRequest extends ViewTimeframeRequest implements ApiGetRequest
 
 	public static class Builder extends ViewTimeframeRequest.Builder {
 		private boolean includeStacktrace;
-
+		private boolean breakdown;
+		
 		@Override
 		public Builder setServiceId(String serviceId) {
 			super.setServiceId(serviceId);
@@ -116,11 +123,17 @@ public class EventsRequest extends ViewTimeframeRequest implements ApiGetRequest
 
 			return this;
 		}
+		
+		public Builder setBreakdown(boolean breakdown) {
+			this.breakdown = breakdown;
+			
+			return this;
+		}
 
 		public EventsRequest build() {
 			validate();
 
-			return new EventsRequest(serviceId, viewId, from, to, raw, servers, apps, deployments, includeStacktrace);
+			return new EventsRequest(serviceId, viewId, from, to, raw, servers, apps, deployments, includeStacktrace, breakdown);
 		}
 	}
 }
