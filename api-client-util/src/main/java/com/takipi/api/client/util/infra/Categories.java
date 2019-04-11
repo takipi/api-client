@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -21,6 +22,11 @@ public class Categories {
 
 	private static volatile Categories instance = null;
 
+	public enum CategoryType {
+		App,
+		Infra
+	}
+	
 	public static Categories defaultCategories() {
 		if (instance == null) {
 			synchronized (Categories.class) {
@@ -56,13 +62,17 @@ public class Categories {
 
 	public List<Category> categories;
 
-	public Set<String> getCategories(String className) {
+	public Set<String> getCategories(String className, CategoryType type) {
 		if (CollectionUtil.safeIsEmpty(categories)) {
 			return Collections.emptySet();
 		}
 
 		for (Category category : categories) {
 			if ((CollectionUtil.safeIsEmpty(category.names)) || (CollectionUtil.safeIsEmpty(category.labels))) {
+				continue;
+			}
+			
+			if ((type != null) && (type != category.getType())) {
 				continue;
 			}
 
@@ -77,8 +87,71 @@ public class Categories {
 	}
 
 	public static class Category {
+		
 		public List<String> names;
 		public List<String> labels;
+		public CategoryType type;
+		
+		public CategoryType getType() {
+			
+			if (type == null) {
+				return CategoryType.Infra;
+			}
+			
+			return type;
+		}
+		
+		private boolean compare(Collection<String> a, Collection<String> b) {
+						
+			if (a == null) {
+				return b == null;
+			} 
+			
+			if (b == null) {
+				return false;
+			}
+			
+			if (a.size() != b.size()) {
+				return false;
+			}
+			
+			return a.containsAll(b);	
+		}
+		
+		@Override
+		public boolean equals(Object obj) {
+			
+			if (!(obj instanceof Category)) {
+				return false;
+			}
+			
+			Category other = (Category)obj;
+			
+			if (!Objects.equal(this.getType(), other.getType())) {
+				return false;
+			}
+
+			if (!compare(names, other.names)) {
+				return false;
+			}
+			
+			if (!compare(labels, other.labels)) {
+				return false;
+			}
+			
+			return true;
+		}
+		
+		@Override
+		public int hashCode() {
+			
+			if (CollectionUtil.safeIsEmpty(names)) {
+				return super.hashCode();
+			}
+			
+			return String.join(",", names).hashCode();
+			
+		}
 	}
 
 	public static Categories expandWithDefaultCategories(Collection<Category> categories) {

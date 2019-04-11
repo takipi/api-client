@@ -1,12 +1,15 @@
 package com.takipi.api.client.util.infra;
 
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
+import com.google.gson.Gson;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.data.event.Location;
 import com.takipi.api.client.data.view.SummarizedView;
@@ -15,6 +18,7 @@ import com.takipi.api.client.data.view.ViewInfo;
 import com.takipi.api.client.request.event.EventModifyLabelsRequest;
 import com.takipi.api.client.request.event.EventRequest;
 import com.takipi.api.client.request.label.CreateLabelRequest;
+import com.takipi.api.client.request.reliability.UpdateReliabilitySettingsRequest;
 import com.takipi.api.client.request.view.CreateViewRequest;
 import com.takipi.api.client.request.view.ViewsRequest;
 import com.takipi.api.client.result.EmptyResult;
@@ -22,16 +26,24 @@ import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.result.view.CreateViewResult;
 import com.takipi.api.client.result.view.ViewsResult;
 import com.takipi.api.client.util.category.CategoryUtil;
+import com.takipi.api.client.util.infra.Categories.Category;
+import com.takipi.api.client.util.infra.Categories.CategoryType;
+import com.takipi.api.client.util.settings.ServiceSettingsData;
+import com.takipi.api.client.util.settings.SettingsUtil;
 import com.takipi.api.core.url.UrlClient.Response;
 import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.Pair;
 
 public class InfraUtil {
-	private static final String INFRA_SUFFIX = ".infra";
 
-	public static void categorizeEvent(String eventId, String serviceId, String categoryId, Categories categories,
+	private static final String TIER_LABEL_SEPERATOR = ".";
+
+	public static void categorizeEvent(String eventId, String serviceId, 
+			Map<CategoryType, String> categoryIds, Categories categories,
 			Set<String> existingLabels, ApiClient apiClient, boolean applyLabels) {
-		EventRequest metadataRequest = EventRequest.newBuilder().setEventId(eventId).setServiceId(serviceId).build();
+				
+		EventRequest metadataRequest = EventRequest.newBuilder().setEventId(eventId).setServiceId(serviceId)
+			.setIncludeStacktrace(true).build();
 
 		Response<EventResult> metadataResult = apiClient.get(metadataRequest);
 
@@ -39,49 +51,66 @@ public class InfraUtil {
 			throw new IllegalStateException("Can't apply infrastructure routing to event " + eventId);
 		}
 
-		categorizeEvent(metadataResult.data, serviceId, categoryId, categories, existingLabels, apiClient, applyLabels);
+		categorizeEvent(metadataResult.data, serviceId, categoryIds, categories, existingLabels, apiClient, applyLabels);
+	}
+	
+	private static void updateEventLabels(EventResult event,
+		Set<String> tierLabels, Set<String> existingLabels,
+		Set<String> labelsToRemove, Set<String> labelsToAdd,
+		CategoryType type, String serviceId, String categoryId, ApiClient apiClient) {
+			
+		if (!CollectionUtil.safeIsEmpty(tierLabels)) {
+			
+			for (String tierLabel : tierLabels) {
+				String labelName = toTierLabelName(tierLabel, type);
+
+				labelsToRemove.remove(labelName);
+
+				if (CollectionUtil.safeContains(event.labels, labelName)) {
+					continue;
+				}
+
+				labelsToAdd.add(labelName);
+
+				if (existingLabels.add(tierLabel)) {
+					validateTierView(tierLabel, type, 
+						categoryId, serviceId, apiClient);
+				}
+			}
+		}
 	}
 
-	public static Pair<Collection<String>, Collection<String>> categorizeEvent(EventResult event, String serviceId,
-			String categoryId, Categories categories, Set<String> existingLabels, ApiClient apiClient,
-			boolean applyLabels) {
+	public static Pair<Collection<String>, Collection<String>> categorizeEvent(EventResult event, 
+		String serviceId, Map<CategoryType, String> categoryIds, Categories categories, Set<String> existingLabels, 
+		ApiClient apiClient, boolean applyLabels) {
+		
 		if ((event == null) || (event.error_origin == null)) {
 			return Pair.of(Collections.emptySet(), Collections.emptySet());
 		}
 
-		Set<String> labelsToRemove = Sets.newHashSet();
-
-		if (!CollectionUtil.safeIsEmpty(event.labels)) {
-			for (String currentLabel : event.labels) {
-				if (currentLabel.endsWith(INFRA_SUFFIX)) {
-					labelsToRemove.add(currentLabel);
-				}
-			}
-		}
-
+		Set<String> labelsToRemove = getEventTiers(event);
 		Set<String> labelsToAdd = Sets.newHashSet();
 
 		Location errorOrigin = event.error_origin;
 
-		Set<String> locationLabels = categories.getCategories(errorOrigin.class_name);
+		Set<String> infraLabels = categories.getCategories(errorOrigin.class_name, CategoryType.Infra);
+		Set<String> appLabels = Sets.newHashSet();
 
-		if (!CollectionUtil.safeIsEmpty(locationLabels)) {
-			for (String locationLabel : locationLabels) {
-				String infraLabelName = toInternalInfraLabelName(locationLabel);
-
-				labelsToRemove.remove(infraLabelName);
-
-				if (CollectionUtil.safeContains(event.labels, infraLabelName)) {
-					continue;
-				}
-
-				labelsToAdd.add(infraLabelName);
-
-				if (existingLabels.add(locationLabel)) {
-					validateInfraView(locationLabel, categoryId, serviceId, apiClient);
-				}
+		if (!CollectionUtil.safeIsEmpty(event.stack_frames)) {
+			for (Location location : event.stack_frames) {
+				Collection<String> frameMatches = categories.getCategories(location.class_name, CategoryType.App);
+				appLabels.addAll(frameMatches);
 			}
 		}
+		
+		updateEventLabels(event, appLabels, existingLabels, 
+			labelsToRemove, labelsToAdd, CategoryType.App, 
+			serviceId, categoryIds.get(CategoryType.App),
+			apiClient);
+		
+		updateEventLabels(event, infraLabels, existingLabels, 
+			labelsToRemove, labelsToAdd, CategoryType.Infra, 
+			serviceId, categoryIds.get(CategoryType.Infra), apiClient);
 
 		if (!applyLabels) {
 			return Pair.of(labelsToAdd, labelsToRemove);
@@ -101,38 +130,40 @@ public class InfraUtil {
 		return Pair.of(labelsToAdd, labelsToRemove);
 	}
 
-	private static void validateInfraView(String locationLabel, String categoryId, String serviceId,
-			ApiClient apiClient) {
-		boolean labelExisted = createInfraLabel(locationLabel, serviceId, apiClient);
+	private static void validateTierView(String locationLabel, 
+		CategoryType type, String categoryId, String serviceId, ApiClient apiClient) {
+		
+		boolean labelExisted = createTierLabel(locationLabel, type, serviceId, apiClient);
 
 		if (labelExisted) {
 			return;
 		}
 
-		String viewId = createInfraView(locationLabel, serviceId, apiClient);
+		String viewId = createTierView(locationLabel, type, serviceId, apiClient);
 		CategoryUtil.addViewToCategory(categoryId, viewId, serviceId, apiClient);
 	}
 
 	// Returns true if the label already existed.
 	//
-	private static boolean createInfraLabel(String labelName, String serviceId, ApiClient apiClient) {
-		String infraLabelName = toInternalInfraLabelName(labelName);
+	private static boolean createTierLabel(String labelName, CategoryType type,
+		String serviceId, ApiClient apiClient) {
+		String tierLabelName = toTierLabelName(labelName, type);
 
 		CreateLabelRequest createLabelRequest = CreateLabelRequest.newBuilder().setServiceId(serviceId)
-				.setName(infraLabelName).build();
+				.setName(tierLabelName).build();
 
 		Response<EmptyResult> createResponse = apiClient.post(createLabelRequest);
 
 		if ((createResponse.isBadResponse()) && (createResponse.responseCode != HttpURLConnection.HTTP_CONFLICT)) {
-			throw new IllegalStateException("Can't create label " + infraLabelName);
+			throw new IllegalStateException("Can't create label " + tierLabelName);
 		}
 
 		return (createResponse.responseCode == HttpURLConnection.HTTP_CONFLICT);
 	}
 
-	private static String createInfraView(String labelName, String serviceId, ApiClient apiClient) {
+	private static String createTierView(String labelName, CategoryType type, String serviceId, ApiClient apiClient) {
 		ViewFilters viewFilters = new ViewFilters();
-		viewFilters.labels = Collections.singletonList(toInternalInfraLabelName(labelName));
+		viewFilters.labels = Collections.singletonList(toTierLabelName(labelName, type));
 
 		ViewInfo viewInfo = new ViewInfo();
 		viewInfo.name = labelName;
@@ -176,7 +207,95 @@ public class InfraUtil {
 		return view.id;
 	}
 
-	private static String toInternalInfraLabelName(String labelName) {
-		return labelName + INFRA_SUFFIX;
+	private static Set<String> getEventTiers(EventResult event) {
+		
+		if (CollectionUtil.safeIsEmpty(event.labels)) {
+			return Collections.emptySet();
+		}
+		
+		Set<String> result = Sets.newHashSet();
+		
+		for (String label : event.labels) {
+			
+			for (CategoryType type : CategoryType.values()) {
+				if (label.endsWith(getTierLabelPostfix(type))) {
+					result.add(label);
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	private static String getTierLabelPostfix(CategoryType type) {
+		return TIER_LABEL_SEPERATOR + type.toString().toLowerCase();
+	}
+		
+	public static String getTierNameFromLabel(String tierName, CategoryType type) {
+		
+		String postfix = getTierLabelPostfix(type);
+		
+		if ((tierName == null) || (tierName.isEmpty()) 
+		|| (!tierName.endsWith(postfix))) {
+			return null;
+		}
+		
+		String result = tierName.substring(0, tierName.length() - postfix.length());
+		
+		return result;
+		
+	}
+	
+	public static String toTierLabelName(String tierName, CategoryType type) {
+		return tierName + getTierLabelPostfix(type);
+	}
+		
+	public static ServiceSettingsData appendTier(ApiClient apiClient, String serviceId,
+		Collection<Category> categories, boolean update) {
+		
+		ServiceSettingsData result = SettingsUtil.getServiceReliabilitySettings(apiClient, serviceId);
+		
+		if (result == null) {
+			return null;
+		}
+		
+		boolean modified = false;
+		
+		for (Category category : categories) {
+			
+			boolean found;
+			
+			if (!CollectionUtil.safeIsEmpty(result.tiers)) {
+				found = result.tiers.contains(category);	
+			} else {
+				found = false;
+			}
+			
+			if (!found) {
+				
+				if (result.tiers == null) {
+					result.tiers = new ArrayList<Category>();
+				}
+				
+				modified = true;
+				result.tiers.add(category);
+			}	
+		}
+		
+		if ((update) && (modified)) {
+			
+			String modifiedJson = new Gson().toJson(result);
+			
+			UpdateReliabilitySettingsRequest updateReliabilitySettingsRequest = UpdateReliabilitySettingsRequest.newBuilder().
+					setServiceId(serviceId).setReliabilitySettingsJson(modifiedJson).build();
+			
+			Response<EmptyResult> updateReaponse = apiClient.post(updateReliabilitySettingsRequest);
+			
+			if ((updateReaponse == null) || (updateReaponse.isBadResponse())) {
+				throw new IllegalStateException("Could not update reliability settings for " + serviceId + " with " + modifiedJson);
+			}
+		}
+		
+		return result;
 	}
 }
