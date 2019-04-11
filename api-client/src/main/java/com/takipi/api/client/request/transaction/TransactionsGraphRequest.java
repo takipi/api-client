@@ -9,14 +9,16 @@ import com.takipi.api.client.util.validation.ValidationUtil.GraphResolution;
 import com.takipi.api.core.request.intf.ApiGetRequest;
 
 public class TransactionsGraphRequest extends ViewTimeframeRequest implements ApiGetRequest<TransactionsGraphResult> {
+	public final boolean breakdown;
 	public final int wantedPointCount;
 	public final GraphResolution resolution;
 
 	TransactionsGraphRequest(String serviceId, String viewId, String from, String to, boolean raw, int wantedPointCount,
-			GraphResolution resolution, Collection<String> servers, Collection<String> apps,
-			Collection<String> deployments) {
+							 GraphResolution resolution, Collection<String> servers, Collection<String> apps,
+							 Collection<String> deployments, boolean breakdown) {
 		super(serviceId, viewId, from, to, raw, servers, apps, deployments);
 
+		this.breakdown = breakdown;
 		this.wantedPointCount = wantedPointCount;
 		this.resolution = resolution;
 	}
@@ -35,13 +37,15 @@ public class TransactionsGraphRequest extends ViewTimeframeRequest implements Ap
 	protected int paramsCount() {
 		// One slot for the points count / resolution.
 		//
-		return super.paramsCount() + 1;
+		return super.paramsCount() + 2;
 	}
 
 	@Override
 	protected int fillParams(String[] params, int startIndex) throws UnsupportedEncodingException {
 		int index = super.fillParams(params, startIndex);
 
+		params[index++] = "breakdown=" + breakdown;
+		
 		if (resolution != null) {
 			params[index++] = "resolution=" + resolution.name();
 		} else {
@@ -61,9 +65,10 @@ public class TransactionsGraphRequest extends ViewTimeframeRequest implements Ap
 	}
 
 	public static class Builder extends ViewTimeframeRequest.Builder {
+		private boolean breakdown;
 		private int wantedPointCount;
 		private GraphResolution resolution;
-
+		
 		@Override
 		public Builder setServiceId(String serviceId) {
 			super.setServiceId(serviceId);
@@ -96,6 +101,12 @@ public class TransactionsGraphRequest extends ViewTimeframeRequest implements Ap
 		public Builder setTo(String to) {
 			super.setTo(to);
 
+			return this;
+		}
+		
+		public Builder setBreakdown(boolean breakdown) {
+			this.breakdown = breakdown;
+			
 			return this;
 		}
 
@@ -146,7 +157,7 @@ public class TransactionsGraphRequest extends ViewTimeframeRequest implements Ap
 			validate();
 
 			return new TransactionsGraphRequest(serviceId, viewId, from, to, raw, wantedPointCount, resolution, servers,
-					apps, deployments);
+					apps, deployments, breakdown);
 		}
 	}
 }

@@ -69,21 +69,21 @@ public class TransactionUtil {
 	}
 
 	public static Map<String, TransactionGraph> getTransactionGraphs(ApiClient apiClient, String serviceId,
-			String viewId, DateTime to, int timespanMinutes, int pointsWanted) {
+			String viewId, DateTime to, int timespanMinutes, int pointsWanted, boolean breakdown) {
 
 		DateTime from = to.minusHours(timespanMinutes);
 
-		return getTransactionGraphs(apiClient, serviceId, viewId, to, from, pointsWanted);
+		return getTransactionGraphs(apiClient, serviceId, viewId, to, from, pointsWanted, breakdown);
 	}
 
 	public static Map<String, TransactionGraph> getTransactionGraphs(ApiClient apiClient, String serviceId,
-			String viewId, DateTime from, DateTime to, int pointsWanted) {
+			String viewId, DateTime from, DateTime to, int pointsWanted, boolean breakdown) {
 
 		DateTimeFormatter fmt = ISODateTimeFormat.dateTime().withZoneUTC();
 
 		TransactionsGraphRequest transactionsGraphRequest = TransactionsGraphRequest.newBuilder()
 				.setServiceId(serviceId).setViewId(viewId).setFrom(from.toString(fmt)).setTo(to.toString(fmt))
-				.setWantedPointCount(pointsWanted).build();
+				.setWantedPointCount(pointsWanted).setBreakdown(breakdown).build();
 
 		Response<TransactionsGraphResult> transactionsGraphResponse = apiClient.get(transactionsGraphRequest);
 
