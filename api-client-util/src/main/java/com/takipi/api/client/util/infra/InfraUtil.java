@@ -7,9 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.gson.Gson;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.data.view.SummarizedView;
 import com.takipi.api.client.data.view.ViewFilters;
@@ -17,7 +15,6 @@ import com.takipi.api.client.data.view.ViewInfo;
 import com.takipi.api.client.request.event.EventModifyLabelsRequest;
 import com.takipi.api.client.request.event.EventRequest;
 import com.takipi.api.client.request.label.CreateLabelRequest;
-import com.takipi.api.client.request.reliability.UpdateReliabilitySettingsRequest;
 import com.takipi.api.client.request.view.CreateViewRequest;
 import com.takipi.api.client.request.view.ViewsRequest;
 import com.takipi.api.client.result.EmptyResult;
@@ -25,10 +22,7 @@ import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.result.view.CreateViewResult;
 import com.takipi.api.client.result.view.ViewsResult;
 import com.takipi.api.client.util.category.CategoryUtil;
-import com.takipi.api.client.util.infra.Categories.Category;
 import com.takipi.api.client.util.infra.Categories.CategoryType;
-import com.takipi.api.client.util.settings.ServiceSettingsData;
-import com.takipi.api.client.util.settings.SettingsUtil;
 import com.takipi.api.core.url.UrlClient.Response;
 import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.Pair;
@@ -194,55 +188,5 @@ public class InfraUtil {
 
 	public static String toTierLabelName(String tierName, CategoryType type) {
 		return tierName + getTierLabelPostfix(type);
-	}
-
-	public static ServiceSettingsData appendTier(ApiClient apiClient, String serviceId, Collection<Category> categories,
-			boolean update) {
-
-		ServiceSettingsData result = SettingsUtil.getServiceReliabilitySettings(apiClient, serviceId);
-
-		if (result == null) {
-			return null;
-		}
-
-		boolean modified = false;
-
-		for (Category category : categories) {
-
-			boolean found;
-
-			if (!CollectionUtil.safeIsEmpty(result.tiers)) {
-				found = result.tiers.contains(category);
-			} else {
-				found = false;
-			}
-
-			if (!found) {
-
-				if (result.tiers == null) {
-					result.tiers = Lists.newArrayList();
-				}
-
-				modified = true;
-				result.tiers.add(category);
-			}
-		}
-
-		if ((update) && (modified)) {
-
-			String modifiedJson = new Gson().toJson(result);
-
-			UpdateReliabilitySettingsRequest updateReliabilitySettingsRequest = UpdateReliabilitySettingsRequest
-					.newBuilder().setServiceId(serviceId).setReliabilitySettingsJson(modifiedJson).build();
-
-			Response<EmptyResult> updateReaponse = apiClient.post(updateReliabilitySettingsRequest);
-
-			if ((updateReaponse == null) || (updateReaponse.isBadResponse())) {
-				throw new IllegalStateException(
-						"Could not update reliability settings for " + serviceId + " with " + modifiedJson);
-			}
-		}
-
-		return result;
 	}
 }
