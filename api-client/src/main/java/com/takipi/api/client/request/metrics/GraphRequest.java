@@ -43,7 +43,7 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 	protected int paramsCount() {
 		// One slot for the points count / resolution.
 		//
-		return super.paramsCount() + 1 + (volumeType != null ? 1 : 0);
+		return super.paramsCount() + 2 + (volumeType != null ? 1 : 0);
 	}
 
 	@Override
