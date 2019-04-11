@@ -23,8 +23,8 @@ public class Categories {
 	private static volatile Categories instance = null;
 
 	public enum CategoryType {
-		App,
-		Infra
+		app,
+		infra
 	}
 	
 	public static Categories defaultCategories() {
@@ -95,7 +95,7 @@ public class Categories {
 		public CategoryType getType() {
 			
 			if (type == null) {
-				return CategoryType.Infra;
+				return CategoryType.infra;
 			}
 			
 			return type;

@@ -93,24 +93,24 @@ public class InfraUtil {
 
 		Location errorOrigin = event.error_origin;
 
-		Set<String> infraLabels = categories.getCategories(errorOrigin.class_name, CategoryType.Infra);
+		Set<String> infraLabels = categories.getCategories(errorOrigin.class_name, CategoryType.infra);
 		Set<String> appLabels = Sets.newHashSet();
 
 		if (!CollectionUtil.safeIsEmpty(event.stack_frames)) {
 			for (Location location : event.stack_frames) {
-				Collection<String> frameMatches = categories.getCategories(location.class_name, CategoryType.App);
+				Collection<String> frameMatches = categories.getCategories(location.class_name, CategoryType.app);
 				appLabels.addAll(frameMatches);
 			}
 		}
 		
 		updateEventLabels(event, appLabels, existingLabels, 
-			labelsToRemove, labelsToAdd, CategoryType.App, 
-			serviceId, categoryIds.get(CategoryType.App),
+			labelsToRemove, labelsToAdd, CategoryType.app, 
+			serviceId, categoryIds.get(CategoryType.app),
 			apiClient);
 		
 		updateEventLabels(event, infraLabels, existingLabels, 
-			labelsToRemove, labelsToAdd, CategoryType.Infra, 
-			serviceId, categoryIds.get(CategoryType.Infra), apiClient);
+			labelsToRemove, labelsToAdd, CategoryType.infra, 
+			serviceId, categoryIds.get(CategoryType.infra), apiClient);
 
 		if (!applyLabels) {
 			return Pair.of(labelsToAdd, labelsToRemove);
