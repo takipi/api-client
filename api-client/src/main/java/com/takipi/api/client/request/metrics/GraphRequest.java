@@ -15,16 +15,18 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 	public final VolumeType volumeType;
 	public final int wantedPointCount;
 	public final GraphResolution resolution;
-
+	private final boolean breakdown;
+	
 	GraphRequest(String serviceId, String viewId, GraphType graphType, VolumeType volumeType, String from, String to,
 			boolean raw, int wantedPointCount, GraphResolution resolution, Collection<String> servers,
-			Collection<String> apps, Collection<String> deployments) {
+			Collection<String> apps, Collection<String> deployments, boolean breakdown) {
 		super(serviceId, viewId, from, to, raw, servers, apps, deployments);
 
 		this.graphType = graphType;
 		this.volumeType = volumeType;
 		this.wantedPointCount = wantedPointCount;
 		this.resolution = resolution;
+		this.breakdown = breakdown;
 	}
 
 	@Override
@@ -41,13 +43,17 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 	protected int paramsCount() {
 		// One slot for the points count / resolution.
 		//
-		return super.paramsCount() + 1 + (volumeType != null ? 1 : 0);
+		return super.paramsCount() + 1 + (breakdown ? 1 : 0) + (volumeType != null ? 1 : 0);
 	}
 
 	@Override
 	protected int fillParams(String[] params, int startIndex) throws UnsupportedEncodingException {
 		int index = super.fillParams(params, startIndex);
 
+		if (breakdown) {
+			params[index++] = "breakdown=" + breakdown;
+		}
+		
 		if (resolution != null) {
 			params[index++] = "resolution=" + resolution.name();
 		} else {
@@ -75,7 +81,8 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 		private VolumeType volumeType;
 		private int wantedPointCount;
 		private GraphResolution resolution;
-
+		private boolean breakdown;
+		
 		@Override
 		public Builder setServiceId(String serviceId) {
 			super.setServiceId(serviceId);
@@ -120,6 +127,12 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 		public Builder setTo(String to) {
 			super.setTo(to);
 
+			return this;
+		}
+		
+		public Builder setBreakdown(boolean breakdown) {
+			this.breakdown = breakdown;
+			
 			return this;
 		}
 
@@ -174,7 +187,7 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 			validate();
 
 			return new GraphRequest(serviceId, viewId, graphType, volumeType, from, to, raw, wantedPointCount,
-					resolution, servers, apps, deployments);
+					resolution, servers, apps, deployments, breakdown);
 		}
 	}
 }
