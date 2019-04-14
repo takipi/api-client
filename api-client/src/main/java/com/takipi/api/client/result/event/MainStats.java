@@ -5,8 +5,7 @@ import com.takipi.api.client.data.event.Stats;
 
 import java.util.List;
 
-public class MainStats extends ApiBaseStats
-{
+public class MainStats extends ApiBaseStats {
 	public List<Stats> contributors = Lists.newArrayList();
 	
 	public MainStats() { }

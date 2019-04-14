@@ -5,14 +5,12 @@ import org.joda.time.DateTime;
 
 import java.util.Map;
 
-public class DeploymentTimespan
-{
+public class DeploymentTimespan {
 	private Map<String, Pair<DateTime, DateTime>> deploymentLifetime;
 	private Pair<DateTime, DateTime> activeWindow;
 	
 	public DeploymentTimespan(Map<String, Pair<DateTime, DateTime>> deploymentLifetime,
-							  Pair<DateTime, DateTime> activeWindow)
-	{
+			Pair<DateTime, DateTime> activeWindow) {
 		this.deploymentLifetime = deploymentLifetime;
 		this.activeWindow = activeWindow;
 	}
