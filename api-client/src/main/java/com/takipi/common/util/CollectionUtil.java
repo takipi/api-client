@@ -19,4 +19,20 @@ public class CollectionUtil {
 	public static <K, V> boolean safeContainsKey(Map<K, V> map, K key) {
 		return ((map != null) && (map.containsKey(key)));
 	}
+
+	public static <T> boolean equalCollections(Collection<T> a, Collection<T> b) {
+		if (a == null) {
+			return (b == null);
+		}
+
+		if (b == null) {
+			return false;
+		}
+
+		if (a.size() != b.size()) {
+			return false;
+		}
+
+		return a.containsAll(b);
+	}
 }
