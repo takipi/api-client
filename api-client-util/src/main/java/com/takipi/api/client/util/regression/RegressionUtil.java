@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-import com.takipi.api.client.result.event.ApiBaseStats;
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 import org.joda.time.format.DateTimeFormatter;
@@ -27,6 +26,7 @@ import com.takipi.api.client.request.ViewTimeframeRequest;
 import com.takipi.api.client.request.deployment.DeploymentsRequest;
 import com.takipi.api.client.request.event.EventsVolumeRequest;
 import com.takipi.api.client.result.deployment.DeploymentsResult;
+import com.takipi.api.client.result.event.ApiBaseStats;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.result.event.EventsResult;
 import com.takipi.api.client.result.metrics.GraphResult;
