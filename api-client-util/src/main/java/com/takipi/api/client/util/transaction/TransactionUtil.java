@@ -83,7 +83,7 @@ public class TransactionUtil {
 
 		TransactionsGraphRequest transactionsGraphRequest = TransactionsGraphRequest.newBuilder()
 				.setServiceId(serviceId).setViewId(viewId).setFrom(from.toString(fmt)).setTo(to.toString(fmt))
-				.setWantedPointCount(pointsWanted).setBreakdown(breakdown).build();
+				.setWantedPointCount(pointsWanted).build();
 
 		Response<TransactionsGraphResult> transactionsGraphResponse = apiClient.get(transactionsGraphRequest);
 
