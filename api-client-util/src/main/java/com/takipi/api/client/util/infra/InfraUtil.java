@@ -32,7 +32,8 @@ public class InfraUtil {
 	private static final String TIER_LABEL_SEPERATOR = ".";
 
 	public static void categorizeEvent(String eventId, String serviceId, Map<CategoryType, String> categoryIds,
-			Categories categories, Set<String> existingLabels, ApiClient apiClient, boolean applyLabels) {
+			Categories categories, Set<String> existingLabels, ApiClient apiClient, boolean applyLabels,
+			boolean handleSimilarEvents) {
 
 		boolean includeStacktrace = categoryIds.containsKey(CategoryType.app);
 
@@ -45,13 +46,13 @@ public class InfraUtil {
 			throw new IllegalStateException("Can't apply infrastructure routing to event " + eventId);
 		}
 
-		categorizeEvent(metadataResult.data, serviceId, categoryIds, categories, existingLabels, apiClient,
-				applyLabels);
+		categorizeEvent(metadataResult.data, serviceId, categoryIds, categories, existingLabels, apiClient, applyLabels,
+				handleSimilarEvents);
 	}
 
 	public static Pair<Collection<String>, Collection<String>> categorizeEvent(EventResult event, String serviceId,
 			Map<CategoryType, String> categoryIds, Categories categories, Set<String> existingLabels,
-			ApiClient apiClient, boolean applyLabels) {
+			ApiClient apiClient, boolean applyLabels, boolean handleSimilarEvents) {
 
 		if (event == null) {
 			return Pair.of(Collections.emptySet(), Collections.emptySet());
@@ -81,7 +82,8 @@ public class InfraUtil {
 
 		if ((!labelsToAdd.isEmpty()) || (!labelsToRemove.isEmpty())) {
 			EventModifyLabelsRequest labelsRequest = EventModifyLabelsRequest.newBuilder().setServiceId(serviceId)
-					.setEventId(event.id).addLabels(labelsToAdd).removeLabels(labelsToRemove).build();
+					.setEventId(event.id).setHandleSimilarEvents(handleSimilarEvents).addLabels(labelsToAdd)
+					.removeLabels(labelsToRemove).build();
 
 			Response<EmptyResult> addResult = apiClient.post(labelsRequest);
 
