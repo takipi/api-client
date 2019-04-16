@@ -3,7 +3,6 @@ package com.takipi.api.client.result.event;
 import java.util.List;
 
 import com.takipi.api.client.data.event.Location;
-import com.takipi.api.client.data.event.Stats;
 import com.takipi.api.core.result.intf.ApiResult;
 
 public class EventResult implements ApiResult, Cloneable {
@@ -30,7 +29,7 @@ public class EventResult implements ApiResult, Cloneable {
 
 	public String jira_issue_url;
 
-	public MainStats stats;
+	public MainEventStats stats;
 
 	@Override
 	public String toString() {
@@ -89,7 +88,7 @@ public class EventResult implements ApiResult, Cloneable {
 		result.introduced_by = this.introduced_by;
 		result.labels = this.labels;
 		result.similar_event_ids = this.similar_event_ids;
-		result.stats = (MainStats) this.stats.clone();
+		result.stats = (MainEventStats) this.stats.clone();
 		result.jira_issue_url = this.jira_issue_url;
 		result.class_group = this.class_group;
 		result.call_stack_group = this.call_stack_group;

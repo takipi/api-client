@@ -5,24 +5,24 @@ import com.takipi.api.client.data.event.Stats;
 
 import java.util.List;
 
-public class MainStats extends ApiBaseStats {
+public class MainEventStats extends ApiBaseStats {
 	public List<Stats> contributors = Lists.newArrayList();
 	
-	public MainStats() { }
+	public MainEventStats() { }
 	
-	public MainStats(MainStats mainStats) {
-		this.hits = mainStats.hits;
-		this.invocations = mainStats.invocations;
+	public MainEventStats(MainEventStats mainEventStats) {
+		this.hits = mainEventStats.hits;
+		this.invocations = mainEventStats.invocations;
 		
 		this.contributors = Lists.newArrayList();
 		
-		for (Stats stat : mainStats.contributors) {
+		for (Stats stat : mainEventStats.contributors) {
 			this.contributors.add((Stats) stat.clone());
 		}
 	}
 	
 	@Override
 	public Object clone() {
-		return new MainStats(this);
+		return new MainEventStats(this);
 	}
 }
