@@ -51,7 +51,7 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 		int index = super.fillParams(params, startIndex);
 
 		if (breakdown) {
-			params[index++] = "breakdown=" + breakdown;
+			params[index++] = "breakdown=" + Boolean.toString(breakdown);
 		}
 		
 		if (resolution != null) {
