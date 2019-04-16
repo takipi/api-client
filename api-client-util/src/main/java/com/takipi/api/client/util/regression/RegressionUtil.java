@@ -490,7 +490,7 @@ public class RegressionUtil {
 		return true;
 	}
 
-	private static DeploymentTimespan getDeploymentTimespan(ApiClient apiClient, String serviceId,
+	private static DeploymentsTimespan getDeploymentsTimespan(ApiClient apiClient, String serviceId,
 			Collection<String> deployments, Collection<SummarizedDeployment> deploymentsSummary, boolean active) {
 
 		DeploymentsRequest request = DeploymentsRequest.newBuilder().setServiceId(serviceId).setActive(active).build();
@@ -565,15 +565,15 @@ public class RegressionUtil {
 			}
 		}
 		
-		DeploymentTimespan deploymentTimespan = new DeploymentTimespan(deploymentLifetime, Pair.of(minDeploymentStart, maxDeploymentEnd));
+		DeploymentsTimespan deploymentsTimespan = new DeploymentsTimespan(deploymentLifetime, Pair.of(minDeploymentStart, maxDeploymentEnd));
 		
-		return deploymentTimespan;
+		return deploymentsTimespan;
 	}
 
-	public static DeploymentTimespan getDeploymentTimespan(ApiClient apiClient, String serviceId,
-			Collection<String> deployments) {
+	public static DeploymentsTimespan getDeploymentsTimespan(ApiClient apiClient, String serviceId,
+															 Collection<String> deployments) {
 		
-		return getDeploymentTimespan(apiClient, serviceId, deployments, null, false);
+		return getDeploymentsTimespan(apiClient, serviceId, deployments, null, false);
 	}
 	
 	public static RegressionWindow getActiveWindow(ApiClient apiClient, RegressionInput input,

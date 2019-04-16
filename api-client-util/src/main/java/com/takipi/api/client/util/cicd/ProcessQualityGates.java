@@ -12,7 +12,7 @@ import com.google.gson.Gson;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.util.event.EventUtil;
-import com.takipi.api.client.util.regression.DeploymentTimespan;
+import com.takipi.api.client.util.regression.DeploymentsTimespan;
 import com.takipi.api.client.util.regression.RateRegression;
 import com.takipi.api.client.util.regression.RegressionInput;
 import com.takipi.api.client.util.regression.RegressionStringUtil;
@@ -30,8 +30,8 @@ public class ProcessQualityGates {
 
 		qualityReport = new QualityGateReport();
 		
-		DeploymentTimespan deploymentTimespan = RegressionUtil.getDeploymentTimespan(apiClient, input.serviceId, input.deployments);
-		Pair<DateTime, DateTime> deploymentActiveWindow = deploymentTimespan.getActiveWindow();
+		DeploymentsTimespan deploymentsTimespan = RegressionUtil.getDeploymentsTimespan(apiClient, input.serviceId, input.deployments);
+		Pair<DateTime, DateTime> deploymentActiveWindow = deploymentsTimespan.getActiveWindow();
 		
 		if ((deploymentActiveWindow == null) || (deploymentActiveWindow.getFirst() == null)) {
 			throw new IllegalStateException("Deployment name " + input.deployments
