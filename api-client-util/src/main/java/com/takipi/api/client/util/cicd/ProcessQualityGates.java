@@ -39,9 +39,9 @@ public class ProcessQualityGates {
 					+ " not found. Please ensure your collector and Jenkins configuration are pointing to the same enviornment.");
 		}
 		
-		Pair<DateTime, DateTime> deploymentActiveWindow = deploymentsTimespan.getActiveWindow();
+		Pair<DateTime, DateTime> deploymentsActiveWindow = deploymentsTimespan.getActiveWindow();
 		
-		DateTime deploymentStart = deploymentActiveWindow.getFirst();
+		DateTime deploymentStart = deploymentsActiveWindow.getFirst();
 		
 		Collection<EventResult> events = RegressionUtil.getActiveEventVolume(apiClient, input, deploymentStart,
 				printStream);

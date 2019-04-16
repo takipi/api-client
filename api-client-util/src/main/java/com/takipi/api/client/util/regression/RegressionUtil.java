@@ -517,14 +517,14 @@ public class RegressionUtil {
 		
 		Map<String, Pair<DateTime, DateTime>> deploymentLifetime = Maps.newHashMap();
 		
-		DateTime minDeploymentStart = null;
-		DateTime maxDeploymentEnd = new DateTime(0L);
-		
 		Map<String, SummarizedDeployment> summarizedDeploymentByName = Maps.newHashMap();
 		
 		for (SummarizedDeployment summaryDeployment : deploymentsData) {
 			summarizedDeploymentByName.put(summaryDeployment.name, summaryDeployment);
 		}
+		
+		DateTime minDeploymentStart = null;
+		DateTime maxDeploymentEnd = new DateTime(0L);
 		
 		for (String deployment : deployments) {
 			SummarizedDeployment summarizedDeployment = summarizedDeploymentByName.get(deployment);
@@ -553,10 +553,8 @@ public class RegressionUtil {
 				
 				deploymentLifetime.put(summarizedDeployment.name, Pair.of(start, end));
 			}
-			else
-			{
-				// if deployment not found return null and it will be search in non-active deployments
-				return null;
+			else {
+				continue;
 			}
 		}
 		
@@ -582,31 +580,30 @@ public class RegressionUtil {
 
 		RegressionWindow result = new RegressionWindow();
 
-		DateTime now = DateTime.now();
-
+		result.activeTimespan = input.activeTimespan;
+		
 		if (input.activeWindowStart != null) {
 			result.activeWindowStart = input.activeWindowStart;
-			result.activeTimespan = input.activeTimespan;
 			
 			return result;
 		}
 		
-		DateTime activeWindowEnd;
+		DateTime now = DateTime.now();
 		
 		if (CollectionUtil.safeIsEmpty(input.deployments)) {
 			result.activeWindowStart = now.minusMinutes(input.activeTimespan);
-			result.activeTimespan = input.activeTimespan;
+			
+			return result;
 		}
 		
 		DeploymentsTimespan deploymentsTimespan = getDeploymentsTimespan(apiClient, input.serviceId,
 				input.deployments, deploymentsSummary, false);
 		
 		if (deploymentsTimespan == null) {
-			printStream.println("Deployment timespan is null for serviceId: " + input.serviceId +
-					"deployments: " + input.deployments.toArray());
+			printStream.println("Deployments timespan is null for serviceId: " + input.serviceId +
+					"deployments: " + Arrays.toString(input.deployments.toArray()));
 			
 			result.activeWindowStart = now.minusMinutes(input.activeTimespan);
-			result.activeTimespan = input.activeTimespan;
 			
 			return result;
 		}
@@ -615,31 +612,29 @@ public class RegressionUtil {
 		
 		result.activeWindowStart = depTimespan.getFirst();
 		
-		if (depTimespan.getSecond() != null) {
-			activeWindowEnd = depTimespan.getSecond();
-		} else {
-			activeWindowEnd = now;
-		}
-		
 		if (result.activeWindowStart == null) {
-			result.activeTimespan = input.activeTimespan;
-			
 			if (printStream != null) {
-				printStream.println("Could not acquire start time for deployment "
+				printStream.println("Could not acquire start time for deployments "
 						+ Arrays.toString(input.deployments.toArray()));
 			}
 			
 			return result;
 		}
 		
-		int activeTimespan = (int) TimeUnit.MILLISECONDS
+		DateTime activeWindowEnd;
+		
+		if (depTimespan.getSecond() != null) {
+			activeWindowEnd = depTimespan.getSecond();
+		} else {
+			activeWindowEnd = now;
+		}
+		
+		result.activeTimespan = (int) TimeUnit.MILLISECONDS
 				.toMinutes(activeWindowEnd.minus(result.activeWindowStart.getMillis()).getMillis());
 
-		if (activeTimespan <= 0) {
+		if (result.activeTimespan <= 0) {
 			result.activeTimespan = (int) (TimeUnit.DAYS.toMinutes(1));
-			result.activeWindowStart = DateTime.now().minusDays(1);
-		} else {
-			result.activeTimespan = activeTimespan;
+			result.activeWindowStart = now.minusDays(1);
 		}
 		
 		result.deploymentFound = true;
