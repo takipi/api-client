@@ -495,9 +495,9 @@ public class RegressionUtil {
 
 		DeploymentsRequest request = DeploymentsRequest.newBuilder().setServiceId(serviceId).setActive(active).build();
 		
-		Collection<SummarizedDeployment> deploymetsData = deploymentsSummary;
+		Collection<SummarizedDeployment> deploymentsData = deploymentsSummary;
 		
-		if (deploymetsData == null)
+		if (deploymentsData == null)
 		{
 			Response<DeploymentsResult> response = apiClient.get(request);
 			
@@ -512,7 +512,7 @@ public class RegressionUtil {
 				return null;
 			}
 			
-			deploymetsData = response.data.deployments;
+			deploymentsData = response.data.deployments;
 		}
 		
 		Map<String, Pair<DateTime, DateTime>> deploymentLifetime = Maps.newHashMap();
@@ -522,7 +522,7 @@ public class RegressionUtil {
 		
 		Map<String, SummarizedDeployment> summarizedDeploymentByName = Maps.newHashMap();
 		
-		for (SummarizedDeployment summaryDeployment : deploymetsData) {
+		for (SummarizedDeployment summaryDeployment : deploymentsData) {
 			summarizedDeploymentByName.put(summaryDeployment.name, summaryDeployment);
 		}
 		
@@ -542,11 +542,6 @@ public class RegressionUtil {
 					(start.isBefore(minDeploymentStart))) {
 					
 					minDeploymentStart = start;
-				}
-				
-				if (summarizedDeployment.last_seen != null) {
-					
-					end = dateTimeFormatter.parseDateTime(summarizedDeployment.last_seen);
 				}
 				
 				if ((end == null) ||
