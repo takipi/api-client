@@ -587,54 +587,64 @@ public class RegressionUtil {
 		if (input.activeWindowStart != null) {
 			result.activeWindowStart = input.activeWindowStart;
 			result.activeTimespan = input.activeTimespan;
-		} else {
-
-			DateTime activeWindowEnd;
 			
-			if (!CollectionUtil.safeIsEmpty(input.deployments)) {
-				
-				DeploymentTimespan deploymentTimespan = getDeploymentTimespan(apiClient, input.serviceId,
-						input.deployments, deploymentsSummary, false);
-				
-				Pair<DateTime, DateTime> depTimespan = deploymentTimespan.getActiveWindow();
-				result.activeWindowStart = depTimespan.getFirst();
-				
-				if (depTimespan.getSecond() != null) {
-					activeWindowEnd = depTimespan.getSecond();
-				} else {
-					activeWindowEnd = now;
-				}
-
-				if (result.activeWindowStart != null) {
-					result.deploymentFound = true;
-					result.deploymentsTimespan = deploymentTimespan.getDeploymentLifetime();
-				} else {
-					if (printStream != null) {
-						printStream.println("Could not acquire start time for deployment "
-								+ Arrays.toString(input.deployments.toArray()));
-					}
-				}
-			} else {
-				activeWindowEnd = now;
-			}
-			
-			if (result.activeWindowStart != null) {
-
-				int activeTimespan = (int) TimeUnit.MILLISECONDS
-						.toMinutes(activeWindowEnd.minus(result.activeWindowStart.getMillis()).getMillis());
-
-				if (activeTimespan <= 0) {
-					result.activeTimespan = (int) (TimeUnit.DAYS.toMinutes(1));
-					result.activeWindowStart = DateTime.now().minusDays(1);
-				} else {
-					result.activeTimespan = activeTimespan;
-				}
-			} else {
-				result.activeWindowStart = now.minusMinutes(input.activeTimespan);
-				result.activeTimespan = input.activeTimespan;
-			}
+			return result;
 		}
+		
+		DateTime activeWindowEnd;
+		
+		if (CollectionUtil.safeIsEmpty(input.deployments)) {
+			result.activeWindowStart = now.minusMinutes(input.activeTimespan);
+			result.activeTimespan = input.activeTimespan;
+		}
+		
+		DeploymentsTimespan deploymentsTimespan = getDeploymentsTimespan(apiClient, input.serviceId,
+				input.deployments, deploymentsSummary, false);
+		
+		if (deploymentsTimespan == null) {
+			printStream.println("Deployment timespan is null for serviceId: " + input.serviceId +
+					"deployments: " + input.deployments.toArray());
+			
+			result.activeWindowStart = now.minusMinutes(input.activeTimespan);
+			result.activeTimespan = input.activeTimespan;
+			
+			return result;
+		}
+		
+		Pair<DateTime, DateTime> depTimespan = deploymentsTimespan.getActiveWindow();
+		
+		result.activeWindowStart = depTimespan.getFirst();
+		
+		if (depTimespan.getSecond() != null) {
+			activeWindowEnd = depTimespan.getSecond();
+		} else {
+			activeWindowEnd = now;
+		}
+		
+		if (result.activeWindowStart == null) {
+			result.activeTimespan = input.activeTimespan;
+			
+			if (printStream != null) {
+				printStream.println("Could not acquire start time for deployment "
+						+ Arrays.toString(input.deployments.toArray()));
+			}
+			
+			return result;
+		}
+		
+		int activeTimespan = (int) TimeUnit.MILLISECONDS
+				.toMinutes(activeWindowEnd.minus(result.activeWindowStart.getMillis()).getMillis());
 
+		if (activeTimespan <= 0) {
+			result.activeTimespan = (int) (TimeUnit.DAYS.toMinutes(1));
+			result.activeWindowStart = DateTime.now().minusDays(1);
+		} else {
+			result.activeTimespan = activeTimespan;
+		}
+		
+		result.deploymentFound = true;
+		result.deploymentsTimespan = deploymentsTimespan.getDeploymentsLifetimeMap();
+		
 		return result;
 	}
 
