@@ -2,6 +2,7 @@ package com.takipi.api.client.util.cicd;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -35,7 +36,7 @@ public class ProcessQualityGates {
 		if ((deploymentsTimespan == null) ||
 			(deploymentsTimespan.getActiveWindow() == null) ||
 			(deploymentsTimespan.getActiveWindow().getFirst() == null)) {
-			throw new IllegalStateException("Deployment name " + input.deployments
+			throw new IllegalStateException("Deployments " + Arrays.toString(input.deployments.toArray())
 					+ " not found. Please ensure your collector and Jenkins configuration are pointing to the same enviornment.");
 		}
 		
