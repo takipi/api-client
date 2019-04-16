@@ -31,12 +31,15 @@ public class ProcessQualityGates {
 		qualityReport = new QualityGateReport();
 		
 		DeploymentsTimespan deploymentsTimespan = RegressionUtil.getDeploymentsTimespan(apiClient, input.serviceId, input.deployments);
-		Pair<DateTime, DateTime> deploymentActiveWindow = deploymentsTimespan.getActiveWindow();
 		
-		if ((deploymentActiveWindow == null) || (deploymentActiveWindow.getFirst() == null)) {
+		if ((deploymentsTimespan == null) ||
+			(deploymentsTimespan.getActiveWindow() == null) ||
+			(deploymentsTimespan.getActiveWindow().getFirst() == null)) {
 			throw new IllegalStateException("Deployment name " + input.deployments
 					+ " not found. Please ensure your collector and Jenkins configuration are pointing to the same enviornment.");
 		}
+		
+		Pair<DateTime, DateTime> deploymentActiveWindow = deploymentsTimespan.getActiveWindow();
 		
 		DateTime deploymentStart = deploymentActiveWindow.getFirst();
 		
