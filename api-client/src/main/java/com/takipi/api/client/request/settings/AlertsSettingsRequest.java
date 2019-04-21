@@ -7,10 +7,10 @@ import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.settings.AlertsSettingsResult;
 import com.takipi.api.core.request.intf.ApiGetRequest;
 
-public class GetAlertsSettingsRequest extends ServiceRequest implements ApiGetRequest<AlertsSettingsResult> {
+public class AlertsSettingsRequest extends ServiceRequest implements ApiGetRequest<AlertsSettingsResult> {
 	public final String email;
 
-	protected GetAlertsSettingsRequest(String serviceId, String email) {
+	protected AlertsSettingsRequest(String serviceId, String email) {
 		super(serviceId);
 
 		this.email = email;
@@ -63,10 +63,10 @@ public class GetAlertsSettingsRequest extends ServiceRequest implements ApiGetRe
 			return this;
 		}
 
-		public GetAlertsSettingsRequest build() {
+		public AlertsSettingsRequest build() {
 			validate();
 
-			return new GetAlertsSettingsRequest(serviceId, email);
+			return new AlertsSettingsRequest(serviceId, email);
 		}
 	}
 }
