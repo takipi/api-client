@@ -38,7 +38,7 @@ public class GetAlertsSettingsRequest extends ServiceRequest implements ApiGetRe
 
 		String[] params = new String[1];
 
-		params[0] = "email=" + email;
+		params[0] = "email=" + encode(email);
 
 		return params;
 	}
