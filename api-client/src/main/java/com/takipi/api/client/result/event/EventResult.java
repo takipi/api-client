@@ -3,6 +3,7 @@ package com.takipi.api.client.result.event;
 import java.util.List;
 
 import com.takipi.api.client.data.event.Location;
+import com.takipi.api.client.data.event.MainEventStats;
 import com.takipi.api.core.result.intf.ApiResult;
 
 public class EventResult implements ApiResult, Cloneable {

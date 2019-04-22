@@ -19,6 +19,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import com.google.common.collect.Maps;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.data.deployment.SummarizedDeployment;
+import com.takipi.api.client.data.event.BaseStats;
 import com.takipi.api.client.data.metrics.Graph;
 import com.takipi.api.client.data.metrics.Graph.GraphPoint;
 import com.takipi.api.client.data.metrics.Graph.GraphPointContributor;
@@ -26,7 +27,6 @@ import com.takipi.api.client.request.ViewTimeframeRequest;
 import com.takipi.api.client.request.deployment.DeploymentsRequest;
 import com.takipi.api.client.request.event.EventsVolumeRequest;
 import com.takipi.api.client.result.deployment.DeploymentsResult;
-import com.takipi.api.client.result.event.ApiBaseStats;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.result.event.EventsResult;
 import com.takipi.api.client.result.metrics.GraphResult;
@@ -177,7 +177,7 @@ public class RegressionUtil {
 		return result;
 	}
 
-	private static String ps(ApiBaseStats stats) {
+	private static String ps(BaseStats stats) {
 		if (stats == null) {
 			return "(null)";
 		}
