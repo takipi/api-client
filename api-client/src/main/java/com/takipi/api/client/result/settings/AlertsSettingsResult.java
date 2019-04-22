@@ -6,5 +6,5 @@ import com.takipi.api.client.data.settings.AlertSettings;
 import com.takipi.api.core.result.intf.ApiResult;
 
 public class AlertsSettingsResult implements ApiResult {
-	List<AlertSettings> alerts;
+	public List<AlertSettings> alerts;
 }
