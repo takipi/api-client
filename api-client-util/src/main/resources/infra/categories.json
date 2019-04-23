@@ -19,7 +19,11 @@
 		},
 		{
 			"names": [
-				"org.json"
+				"org.json",
+
+				"Newtsoft.json",
+				"System.Json",
+				"System.Runtime.Serialization.Json"
 			],
 			"labels": ["JSON"]
 		},
@@ -74,7 +78,10 @@
 		},
 		{
 			"names": [
-				"com.mysql"
+				"com.mysql",
+
+				"MySql",
+				"MySqlConnector"
 			],
 			"labels": ["MySQL"]
 		},
@@ -107,7 +114,11 @@
 		{
 			"names": [
 				"oracle",
-				"com.oracle"
+				"com.oracle",
+
+				"Devart.Data.Oracle",
+				"DDTek.Oracle",
+				"Oracle"
 			],
 			"labels": ["Oracle"]
 		},
@@ -940,6 +951,81 @@
 				"sunw"
 			],
 			"labels": ["Java-lang"]
+		},
+
+		{
+			"names": [
+				"NLog"
+			],
+			"labels": ["NLog"]
+		},
+		{
+			"names": [
+				"log4net"
+			],
+			"labels": ["Log4net"]
+		},
+		{
+			"names": [
+				"Amazon"
+			],
+			"labels": ["Amazon Web Services"]
+		},
+		{
+			"names": [
+				"Microsoft.Office",
+				"OfficeOpenXml"
+			],
+			"labels": ["Microsoft Office"]
+		},
+		{
+			"names": [
+				"Miscrosoft.Azure"
+			],
+			"labels": ["Miscrosoft Azure"]
+		},
+		{
+			"names": [
+				"Miscrosoft"
+			],
+			"labels": ["Miscrosoft"]
+		},
+		{
+			"names": [
+				"System.Data.Odbc"
+			],
+			"labels": ["ODBC"]
+		},
+		{
+			"names": [
+				"System.Data"
+			],
+			"labels": ["ADO.Net"]
+		},
+		{
+			"names": [
+				"System.security"
+			],
+			"labels": [".NET-Security"]
+		},
+		{
+			"names": [
+				"System.Net",
+				"System.Web"
+			],
+			"labels": [".NET-Net"]
+		},
+		{
+			"names": [
+				"System.IO"
+			],
+			"labels": [".NET-IO"]
+		},
+		{
+			"names": [
+				"System"
+			],
+			"labels": [".NET-Lang"]
 		}
 	]
 }
