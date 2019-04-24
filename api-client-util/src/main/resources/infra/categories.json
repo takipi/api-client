@@ -1004,7 +1004,7 @@
 		},
 		{
 			"names": [
-				"System.security"
+				"System.Security"
 			],
 			"labels": [".NET-Security"]
 		},
