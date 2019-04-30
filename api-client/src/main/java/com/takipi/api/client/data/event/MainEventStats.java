@@ -9,7 +9,7 @@ public class MainEventStats extends BaseStats {
 	public List<Stats> contributors;
 
 	@Override
-	public Object clone() {
+	public MainEventStats clone() {
 		MainEventStats result = new MainEventStats();
 
 		result.hits = this.hits;

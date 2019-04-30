@@ -89,7 +89,7 @@ public class EventResult implements ApiResult, Cloneable {
 		result.introduced_by = this.introduced_by;
 		result.labels = this.labels;
 		result.similar_event_ids = this.similar_event_ids;
-		result.stats = (MainEventStats) this.stats.clone();
+		result.stats = this.stats.clone();
 		result.jira_issue_url = this.jira_issue_url;
 		result.class_group = this.class_group;
 		result.call_stack_group = this.call_stack_group;
