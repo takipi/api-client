@@ -12,7 +12,7 @@ public class ServiceSettingsData {
 	/**
 	 * The version for this settings 
 	 */
-	public double version;
+	public String version;
 	
 	/**
 	 * General settings related to how data is presented and ordered in table and
