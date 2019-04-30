@@ -489,16 +489,36 @@ public class RegressionUtil {
 
 		return true;
 	}
+	
+	public static DeploymentsTimespan getDeploymentsTimespan(ApiClient apiClient, String serviceId,
+			Collection<String> deployments) {
+		
+		return getDeploymentsTimespan(apiClient, serviceId, deployments, null);
+	}
+	
+	private static DeploymentsTimespan getDeploymentsTimespan(ApiClient apiClient,
+			String serviceId, Collection<String> deployments, Collection<SummarizedDeployment> deploymentsSummary)
+	{
+		DeploymentsTimespan deploymentsTimespan = getDeploymentsTimespan(apiClient, serviceId,
+				deployments, deploymentsSummary, true);
+		
+		if (deploymentsTimespan != null) {
+			return deploymentsTimespan;
+		}
+		
+		return getDeploymentsTimespan(apiClient, serviceId,
+				deployments, deploymentsSummary, false);
+	}
 
 	private static DeploymentsTimespan getDeploymentsTimespan(ApiClient apiClient, String serviceId,
 			Collection<String> deployments, Collection<SummarizedDeployment> deploymentsSummary, boolean active) {
 
-		DeploymentsRequest request = DeploymentsRequest.newBuilder().setServiceId(serviceId).setActive(active).build();
-		
 		Collection<SummarizedDeployment> deploymentsData = deploymentsSummary;
 		
 		if (deploymentsData == null)
 		{
+			DeploymentsRequest request = DeploymentsRequest.newBuilder().setServiceId(serviceId).setActive(active).build();
+			
 			Response<DeploymentsResult> response = apiClient.get(request);
 			
 			if ((response.isBadResponse()) || (response.data == null))
@@ -529,44 +549,36 @@ public class RegressionUtil {
 		for (String deployment : deployments) {
 			SummarizedDeployment summarizedDeployment = summarizedDeploymentByName.get(deployment);
 			
-			if ((summarizedDeployment != null) && (summarizedDeployment.first_seen != null)) {
-				
-				DateTime start = dateTimeFormatter.parseDateTime(summarizedDeployment.first_seen);
-				DateTime end = null;
-				
-				if (summarizedDeployment.last_seen != null) {
-					end = dateTimeFormatter.parseDateTime(summarizedDeployment.last_seen);
-				}
-				
-				if ((minDeploymentStart == null) ||
-					(start.isBefore(minDeploymentStart))) {
-					
-					minDeploymentStart = start;
-				}
-				
-				if ((end == null) ||
-					((end != null) &&
-					(end.isAfter(maxDeploymentEnd)))) {
-					
-					maxDeploymentEnd = end;
-				}
-				
-				deploymentLifetime.put(summarizedDeployment.name, Pair.of(start, end));
+			if ((summarizedDeployment == null) || (summarizedDeployment.first_seen == null))
+			{
+				return null;
 			}
-			else {
-				continue;
+			
+			DateTime start = dateTimeFormatter.parseDateTime(summarizedDeployment.first_seen);
+			DateTime end = null;
+			
+			if (summarizedDeployment.last_seen != null) {
+				end = dateTimeFormatter.parseDateTime(summarizedDeployment.last_seen);
 			}
+			
+			if ((minDeploymentStart == null) ||
+				(start.isBefore(minDeploymentStart))) {
+				
+				minDeploymentStart = start;
+			}
+			
+			if ((end == null) ||
+				(end.isAfter(maxDeploymentEnd))) {
+				
+				maxDeploymentEnd = end;
+			}
+			
+			deploymentLifetime.put(summarizedDeployment.name, Pair.of(start, end));
 		}
 		
 		DeploymentsTimespan deploymentsTimespan = new DeploymentsTimespan(deploymentLifetime, Pair.of(minDeploymentStart, maxDeploymentEnd));
 		
 		return deploymentsTimespan;
-	}
-
-	public static DeploymentsTimespan getDeploymentsTimespan(ApiClient apiClient, String serviceId,
-															 Collection<String> deployments) {
-		
-		return getDeploymentsTimespan(apiClient, serviceId, deployments, null, false);
 	}
 	
 	public static RegressionWindow getActiveWindow(ApiClient apiClient, RegressionInput input,
@@ -597,7 +609,7 @@ public class RegressionUtil {
 		}
 		
 		DeploymentsTimespan deploymentsTimespan = getDeploymentsTimespan(apiClient, input.serviceId,
-				input.deployments, deploymentsSummary, false);
+				input.deployments, deploymentsSummary);
 		
 		if (deploymentsTimespan == null) {
 			printStream.println("Deployments timespan is null for serviceId: " + input.serviceId +
