@@ -15,7 +15,7 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 	public final VolumeType volumeType;
 	public final int wantedPointCount;
 	public final GraphResolution resolution;
-	private final boolean breakdown;
+	public final boolean breakdown;
 	
 	GraphRequest(String serviceId, String viewId, GraphType graphType, VolumeType volumeType, String from, String to,
 			boolean raw, int wantedPointCount, GraphResolution resolution, Collection<String> servers,
@@ -41,18 +41,14 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 
 	@Override
 	protected int paramsCount() {
-		// One slot for the points count / resolution.
+		// One slot for the points count / resolution and one for breakdown.
 		//
-		return super.paramsCount() + 1 + (breakdown ? 1 : 0) + (volumeType != null ? 1 : 0);
+		return super.paramsCount() + 2 + (volumeType != null ? 1 : 0);
 	}
 
 	@Override
 	protected int fillParams(String[] params, int startIndex) throws UnsupportedEncodingException {
 		int index = super.fillParams(params, startIndex);
-
-		if (breakdown) {
-			params[index++] = "breakdown=" + Boolean.toString(breakdown);
-		}
 		
 		if (resolution != null) {
 			params[index++] = "resolution=" + resolution.name();
@@ -63,6 +59,8 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 		if (volumeType != null) {
 			params[index++] = "stats=" + volumeType.name();
 		}
+		
+		params[index++] = "breakdown=" + Boolean.toString(breakdown);
 
 		return index;
 	}

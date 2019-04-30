@@ -8,8 +8,8 @@ import com.takipi.api.client.result.event.EventsResult;
 import com.takipi.api.core.request.intf.ApiGetRequest;
 
 public class EventsRequest extends ViewTimeframeRequest implements ApiGetRequest<EventsResult> {
-	public final boolean breakdown;
 	public final boolean includeStacktrace;
+	public final boolean breakdown;
 
 	EventsRequest(String serviceId, String viewId, String from, String to, boolean raw, Collection<String> servers,
 			Collection<String> apps, Collection<String> deployments, boolean includeStacktrace, boolean breakdown) {
@@ -36,20 +36,18 @@ public class EventsRequest extends ViewTimeframeRequest implements ApiGetRequest
 
 	@Override
 	protected int paramsCount() {
-		// One slot for the stacktace flag.
+		// One slot for the stacktace flag and one for breakdown.
 		//
-		return super.paramsCount() + 1 + (this.breakdown ? 1 : 0);
+		return super.paramsCount() + 2;
 	}
 
 	@Override
 	protected int fillParams(String[] params, int startIndex) throws UnsupportedEncodingException {
 		int index = super.fillParams(params, startIndex);
 		
-		if (this.breakdown) {
-			params[index++] = "breakdown=" + Boolean.toString(breakdown);
-		}
-		
 		params[index++] = "stacktrace=" + Boolean.toString(includeStacktrace);
+		
+		params[index++] = "breakdown=" + Boolean.toString(breakdown);
 
 		return index;
 	}
