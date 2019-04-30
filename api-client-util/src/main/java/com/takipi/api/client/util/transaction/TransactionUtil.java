@@ -69,15 +69,15 @@ public class TransactionUtil {
 	}
 
 	public static Map<String, TransactionGraph> getTransactionGraphs(ApiClient apiClient, String serviceId,
-			String viewId, DateTime to, int timespanMinutes, int pointsWanted, boolean breakdown) {
+			String viewId, DateTime to, int timespanMinutes, int pointsWanted) {
 
 		DateTime from = to.minusHours(timespanMinutes);
 
-		return getTransactionGraphs(apiClient, serviceId, viewId, to, from, pointsWanted, breakdown);
+		return getTransactionGraphs(apiClient, serviceId, viewId, to, from, pointsWanted);
 	}
 
 	public static Map<String, TransactionGraph> getTransactionGraphs(ApiClient apiClient, String serviceId,
-			String viewId, DateTime from, DateTime to, int pointsWanted, boolean breakdown) {
+			String viewId, DateTime from, DateTime to, int pointsWanted) {
 
 		DateTimeFormatter fmt = ISODateTimeFormat.dateTime().withZoneUTC();
 
