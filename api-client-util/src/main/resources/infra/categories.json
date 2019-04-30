@@ -955,58 +955,58 @@
 
 		{
 			"names": [
-				"NLog"
+				"Amazon"
 			],
-			"labels": ["NLog"]
+			"labels": [".NET - Amazon Web Services"]
 		},
 		{
 			"names": [
 				"log4net"
 			],
-			"labels": ["Log4net"]
+			"labels": [".NET-Log4net"]
 		},
 		{
 			"names": [
-				"Amazon"
+				"Microsoft.Azure"
 			],
-			"labels": ["Amazon Web Services"]
+			"labels": [".NET - Microsoft Azure"]
 		},
 		{
 			"names": [
 				"Microsoft.Office",
 				"OfficeOpenXml"
 			],
-			"labels": ["Microsoft Office"]
+			"labels": [".NET - Microsoft Office"]
 		},
 		{
 			"names": [
-				"Miscrosoft.Azure"
+				"Microsoft"
 			],
-			"labels": ["Miscrosoft Azure"]
+			"labels": ["Microsoft"]
 		},
 		{
 			"names": [
-				"Miscrosoft"
+				"NLog"
 			],
-			"labels": ["Miscrosoft"]
+			"labels": [".NET-NLog"]
 		},
 		{
 			"names": [
 				"System.Data.Odbc"
 			],
-			"labels": ["ODBC"]
+			"labels": [".NET-ODBC"]
 		},
 		{
 			"names": [
 				"System.Data"
 			],
-			"labels": ["ADO.Net"]
+			"labels": [".NET-ADO.Net"]
 		},
 		{
 			"names": [
-				"System.Security"
+				"System.IO"
 			],
-			"labels": [".NET-Security"]
+			"labels": [".NET-IO"]
 		},
 		{
 			"names": [
@@ -1017,9 +1017,9 @@
 		},
 		{
 			"names": [
-				"System.IO"
+				"System.Security"
 			],
-			"labels": [".NET-IO"]
+			"labels": [".NET-Security"]
 		},
 		{
 			"names": [
