@@ -10,6 +10,11 @@ public class ServiceSettingsData {
 	public static final String ARRAY_SEPERATOR = Pattern.quote(ARRAY_SEPERATOR_RAW);
 
 	/**
+	 * The version for this settings 
+	 */
+	public String version;
+	
+	/**
 	 * General settings related to how data is presented and ordered in table and
 	 * graph widgets
 	 */
