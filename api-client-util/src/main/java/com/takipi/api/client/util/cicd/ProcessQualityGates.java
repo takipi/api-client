@@ -24,7 +24,7 @@ public class ProcessQualityGates {
 	// process CICD gates based on the inputs sent in
 	public static QualityGateReport processCICDInputs(ApiClient apiClient, RegressionInput input, boolean newEvents,
 			boolean resurfacedEvents, String regexFilter, int topIssuesVolume, boolean countGate,
-			PrintStream printStream, boolean verbose) {
+			PrintStream printStream, @SuppressWarnings("unused") boolean verbose) {
 
 		qualityReport = new QualityGateReport();
 
