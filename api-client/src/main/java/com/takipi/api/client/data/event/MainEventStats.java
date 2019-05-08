@@ -7,7 +7,7 @@ import com.takipi.common.util.CollectionUtil;
 
 public class MainEventStats extends BaseStats {
 	public List<Stats> contributors;
-
+	
 	@Override
 	public MainEventStats clone() {
 		MainEventStats result = new MainEventStats();
@@ -24,5 +24,14 @@ public class MainEventStats extends BaseStats {
 		}
 
 		return result;
+	}
+	
+	public static MainEventStats fromStats(Stats stats) {
+		MainEventStats eventStats = new MainEventStats();
+		
+		eventStats.invocations = stats.invocations;
+		eventStats.hits = stats.hits;
+		
+		return eventStats;
 	}
 }
