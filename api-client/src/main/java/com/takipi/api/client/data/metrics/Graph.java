@@ -34,7 +34,9 @@ public class Graph {
 				graphPoint.contributors = Lists.newArrayList();
 				
 				for (GraphPointContributor graphPointContributor : this.contributors) {
-					graphPoint.contributors.add(graphPointContributor.clone());
+					if (graphPointContributor != null) {
+						graphPoint.contributors.add(graphPointContributor.clone());
+					}
 				}
 			}
 			
