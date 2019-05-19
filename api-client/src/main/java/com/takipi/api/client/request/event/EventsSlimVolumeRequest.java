@@ -10,12 +10,19 @@ import com.takipi.api.core.request.intf.ApiGetRequest;
 
 public class EventsSlimVolumeRequest extends ViewTimeframeRequest implements ApiGetRequest<EventsSlimVolumeResult> {
 	public final VolumeType volumeType;
-
+	public final boolean breakServers;
+	public final boolean breakApps;
+	public final boolean breakDeployments;
+	
 	EventsSlimVolumeRequest(String serviceId, String viewId, VolumeType volumeType, String from, String to, boolean raw,
-			Collection<String> servers, Collection<String> apps, Collection<String> deployments) {
+			Collection<String> servers, Collection<String> apps, Collection<String> deployments, boolean breakServers,
+			boolean breakApps, boolean breakDeployments) {
 		super(serviceId, viewId, from, to, raw, servers, apps, deployments);
 
 		this.volumeType = volumeType;
+		this.breakServers = breakServers;
+		this.breakApps = breakApps;
+		this.breakDeployments = breakDeployments;
 	}
 
 	@Override
@@ -30,9 +37,9 @@ public class EventsSlimVolumeRequest extends ViewTimeframeRequest implements Api
 
 	@Override
 	protected int paramsCount() {
-		// One slot for the volume type.
+		// One slot for the volume type and three for breakdown.
 		//
-		return super.paramsCount() + 1;
+		return super.paramsCount() + 4;
 	}
 
 	@Override
@@ -40,7 +47,11 @@ public class EventsSlimVolumeRequest extends ViewTimeframeRequest implements Api
 		int index = super.fillParams(params, startIndex);
 
 		params[index++] = "stats=" + volumeType.toString();
-
+		
+		params[index++] = "breakServers=" + Boolean.toString(breakServers);
+		params[index++] = "breakApps=" + Boolean.toString(breakApps);
+		params[index++] = "breakDeployments=" + Boolean.toString(breakDeployments);
+		
 		return index;
 	}
 
@@ -55,6 +66,9 @@ public class EventsSlimVolumeRequest extends ViewTimeframeRequest implements Api
 
 	public static class Builder extends ViewTimeframeRequest.Builder {
 		private VolumeType volumeType;
+		private boolean breakServers;
+		private boolean breakApps;
+		private boolean breakDeployments;
 
 		@Override
 		public Builder setServiceId(String serviceId) {
@@ -117,7 +131,25 @@ public class EventsSlimVolumeRequest extends ViewTimeframeRequest implements Api
 
 			return this;
 		}
-
+		
+		public Builder setBreakServers(boolean breakServers) {
+			this.breakServers = breakServers;
+			
+			return this;
+		}
+		
+		public Builder setBreakApps(boolean breakApps) {
+			this.breakApps = breakApps;
+			
+			return this;
+		}
+		
+		public Builder setBreakDeployments(boolean breakDeployments) {
+			this.breakDeployments = breakDeployments;
+			
+			return this;
+		}
+		
 		@Override
 		protected void validate() {
 			super.validate();
@@ -131,7 +163,7 @@ public class EventsSlimVolumeRequest extends ViewTimeframeRequest implements Api
 			validate();
 
 			return new EventsSlimVolumeRequest(serviceId, viewId, volumeType, from, to, raw, servers, apps,
-					deployments);
+					deployments, breakServers, breakApps, breakDeployments);
 		}
 	}
 }

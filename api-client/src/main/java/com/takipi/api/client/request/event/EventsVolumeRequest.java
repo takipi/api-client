@@ -11,14 +11,20 @@ import com.takipi.api.core.request.intf.ApiGetRequest;
 public class EventsVolumeRequest extends ViewTimeframeRequest implements ApiGetRequest<EventsResult> {
 	public final VolumeType volumeType;
 	public final boolean includeStacktrace;
+	public final boolean breakServers;
+	public final boolean breakApps;
+	public final boolean breakDeployments;
 
 	EventsVolumeRequest(String serviceId, String viewId, VolumeType volumeType, String from, String to, boolean raw,
 			Collection<String> servers, Collection<String> apps, Collection<String> deployments,
-			boolean includeStacktrace) {
+			boolean includeStacktrace, boolean breakServers, boolean breakApps, boolean breakDeployments) {
 		super(serviceId, viewId, from, to, raw, servers, apps, deployments);
 
 		this.volumeType = volumeType;
 		this.includeStacktrace = includeStacktrace;
+		this.breakServers = breakServers;
+		this.breakApps = breakApps;
+		this.breakDeployments = breakDeployments;
 	}
 
 	@Override
@@ -33,9 +39,9 @@ public class EventsVolumeRequest extends ViewTimeframeRequest implements ApiGetR
 
 	@Override
 	protected int paramsCount() {
-		// One slot for the volume type and one for the include stacktrace.
+		// One slot for the volume type and one for the include stacktrace and three for breakdown.
 		//
-		return super.paramsCount() + 2;
+		return super.paramsCount() + 5;
 	}
 
 	@Override
@@ -44,6 +50,10 @@ public class EventsVolumeRequest extends ViewTimeframeRequest implements ApiGetR
 
 		params[index++] = "stats=" + volumeType.toString();
 		params[index++] = "stacktrace=" + Boolean.toString(includeStacktrace);
+		
+		params[index++] = "breakServers=" + Boolean.toString(breakServers);
+		params[index++] = "breakApps=" + Boolean.toString(breakApps);
+		params[index++] = "breakDeployments=" + Boolean.toString(breakDeployments);
 
 		return index;
 	}
@@ -60,6 +70,9 @@ public class EventsVolumeRequest extends ViewTimeframeRequest implements ApiGetR
 	public static class Builder extends ViewTimeframeRequest.Builder {
 		private VolumeType volumeType;
 		private boolean includeStacktrace;
+		private boolean breakServers;
+		private boolean breakApps;
+		private boolean breakDeployments;
 
 		@Override
 		public Builder setServiceId(String serviceId) {
@@ -128,7 +141,25 @@ public class EventsVolumeRequest extends ViewTimeframeRequest implements ApiGetR
 
 			return this;
 		}
-
+		
+		public Builder setBreakServers(boolean breakServers) {
+			this.breakServers = breakServers;
+			
+			return this;
+		}
+		
+		public Builder setBreakApps(boolean breakApps) {
+			this.breakApps = breakApps;
+			
+			return this;
+		}
+		
+		public Builder setBreakDeployments(boolean breakDeployments) {
+			this.breakDeployments = breakDeployments;
+			
+			return this;
+		}
+		
 		@Override
 		protected void validate() {
 			super.validate();
@@ -142,7 +173,7 @@ public class EventsVolumeRequest extends ViewTimeframeRequest implements ApiGetR
 			validate();
 
 			return new EventsVolumeRequest(serviceId, viewId, volumeType, from, to, raw, servers, apps, deployments,
-					includeStacktrace);
+					includeStacktrace, breakServers, breakApps, breakDeployments);
 		}
 	}
 }
