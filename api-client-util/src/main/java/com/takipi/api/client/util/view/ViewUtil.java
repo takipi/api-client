@@ -221,15 +221,19 @@ public class ViewUtil {
 
 	public static GraphResult getEventsGraphResult(ApiClient apiClient, String serviceId, String viewId,
 			int pointsCount, VolumeType volumeType, DateTime from, DateTime to) {
-		return getEventsGraphResult(apiClient, serviceId, viewId, pointsCount, volumeType, from, to, false, true);
+		return getEventsGraphResult(apiClient, serviceId, viewId, pointsCount, volumeType, from, to, false,
+				true, true, true);
 	}
 
 	public static GraphResult getEventsGraphResult(ApiClient apiClient, String serviceId, String viewId,
-			int pointsCount, VolumeType volumeType, DateTime from, DateTime to, boolean raw, boolean breakdown) {
+			int pointsCount, VolumeType volumeType, DateTime from, DateTime to, boolean raw, boolean breakServers,
+			boolean breakApps, boolean breakDeployments) {
 
 		GraphRequest graphRequest = GraphRequest.newBuilder().setServiceId(serviceId).setViewId(viewId)
 				.setGraphType(GraphType.view).setFrom(from.toString(fmt)).setTo(to.toString(fmt))
-				.setVolumeType(volumeType).setWantedPointCount(pointsCount).setRaw(raw).setBreakdown(breakdown).build();
+				.setVolumeType(volumeType).setWantedPointCount(pointsCount).setRaw(raw)
+				.setBreakServers(breakServers).setBreakApps(breakApps)
+				.setBreakDeployments(breakDeployments).build();
 
 		Response<GraphResult> graphResponse = apiClient.get(graphRequest);
 
