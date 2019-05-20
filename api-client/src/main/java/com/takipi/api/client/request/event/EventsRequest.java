@@ -9,14 +9,19 @@ import com.takipi.api.core.request.intf.ApiGetRequest;
 
 public class EventsRequest extends ViewTimeframeRequest implements ApiGetRequest<EventsResult> {
 	public final boolean includeStacktrace;
-	public final boolean breakdown;
+	public final boolean breakServers;
+	public final boolean breakApps;
+	public final boolean breakDeployments;
 
 	EventsRequest(String serviceId, String viewId, String from, String to, boolean raw, Collection<String> servers,
-			Collection<String> apps, Collection<String> deployments, boolean includeStacktrace, boolean breakdown) {
+			Collection<String> apps, Collection<String> deployments, boolean includeStacktrace, boolean breakServers,
+			boolean breakApps, boolean breakDeployments) {
 		super(serviceId, viewId, from, to, raw, servers, apps, deployments);
-		
+
 		this.includeStacktrace = includeStacktrace;
-		this.breakdown = breakdown;
+		this.breakServers = breakServers;
+		this.breakApps = breakApps;
+		this.breakDeployments = breakDeployments;
 	}
 
 	@Override
@@ -36,18 +41,20 @@ public class EventsRequest extends ViewTimeframeRequest implements ApiGetRequest
 
 	@Override
 	protected int paramsCount() {
-		// One slot for the stacktace flag and one for breakdown.
+		// One slot for the stacktace flag and three for breakdown.
 		//
-		return super.paramsCount() + 2;
+		return super.paramsCount() + 4;
 	}
 
 	@Override
 	protected int fillParams(String[] params, int startIndex) throws UnsupportedEncodingException {
 		int index = super.fillParams(params, startIndex);
-		
+
 		params[index++] = "stacktrace=" + Boolean.toString(includeStacktrace);
-		
-		params[index++] = "breakdown=" + Boolean.toString(breakdown);
+
+		params[index++] = "breakServers=" + Boolean.toString(breakServers);
+		params[index++] = "breakApps=" + Boolean.toString(breakApps);
+		params[index++] = "breakDeployments=" + Boolean.toString(breakDeployments);
 
 		return index;
 	}
@@ -58,8 +65,10 @@ public class EventsRequest extends ViewTimeframeRequest implements ApiGetRequest
 
 	public static class Builder extends ViewTimeframeRequest.Builder {
 		private boolean includeStacktrace;
-		private boolean breakdown;
-		
+		private boolean breakServers;
+		private boolean breakApps;
+		private boolean breakDeployments;
+
 		@Override
 		public Builder setServiceId(String serviceId) {
 			super.setServiceId(serviceId);
@@ -121,17 +130,30 @@ public class EventsRequest extends ViewTimeframeRequest implements ApiGetRequest
 
 			return this;
 		}
-		
-		public Builder setBreakdown(boolean breakdown) {
-			this.breakdown = breakdown;
-			
+
+		public Builder setBreakServers(boolean breakServers) {
+			this.breakServers = breakServers;
+
+			return this;
+		}
+
+		public Builder setBreakApps(boolean breakApps) {
+			this.breakApps = breakApps;
+
+			return this;
+		}
+
+		public Builder setBreakDeployments(boolean breakDeployments) {
+			this.breakDeployments = breakDeployments;
+
 			return this;
 		}
 
 		public EventsRequest build() {
 			validate();
 
-			return new EventsRequest(serviceId, viewId, from, to, raw, servers, apps, deployments, includeStacktrace, breakdown);
+			return new EventsRequest(serviceId, viewId, from, to, raw, servers, apps, deployments, includeStacktrace,
+					breakServers, breakApps, breakDeployments);
 		}
 	}
 }

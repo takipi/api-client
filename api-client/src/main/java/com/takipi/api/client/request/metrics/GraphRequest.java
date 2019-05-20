@@ -15,18 +15,23 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 	public final VolumeType volumeType;
 	public final int wantedPointCount;
 	public final GraphResolution resolution;
-	public final boolean breakdown;
-	
+	public final boolean breakServers;
+	public final boolean breakApps;
+	public final boolean breakDeployments;
+
 	GraphRequest(String serviceId, String viewId, GraphType graphType, VolumeType volumeType, String from, String to,
 			boolean raw, int wantedPointCount, GraphResolution resolution, Collection<String> servers,
-			Collection<String> apps, Collection<String> deployments, boolean breakdown) {
+			Collection<String> apps, Collection<String> deployments, boolean breakServers, boolean breakApps,
+			boolean breakDeployments) {
 		super(serviceId, viewId, from, to, raw, servers, apps, deployments);
 
 		this.graphType = graphType;
 		this.volumeType = volumeType;
 		this.wantedPointCount = wantedPointCount;
 		this.resolution = resolution;
-		this.breakdown = breakdown;
+		this.breakServers = breakServers;
+		this.breakApps = breakApps;
+		this.breakDeployments = breakDeployments;
 	}
 
 	@Override
@@ -41,15 +46,15 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 
 	@Override
 	protected int paramsCount() {
-		// One slot for the points count / resolution and one for breakdown.
+		// One slot for the points count / resolution and three for breakdown.
 		//
-		return super.paramsCount() + 2 + (volumeType != null ? 1 : 0);
+		return super.paramsCount() + 4 + (volumeType != null ? 1 : 0);
 	}
 
 	@Override
 	protected int fillParams(String[] params, int startIndex) throws UnsupportedEncodingException {
 		int index = super.fillParams(params, startIndex);
-		
+
 		if (resolution != null) {
 			params[index++] = "resolution=" + resolution.name();
 		} else {
@@ -59,8 +64,10 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 		if (volumeType != null) {
 			params[index++] = "stats=" + volumeType.name();
 		}
-		
-		params[index++] = "breakdown=" + Boolean.toString(breakdown);
+
+		params[index++] = "breakServers=" + Boolean.toString(breakServers);
+		params[index++] = "breakApps=" + Boolean.toString(breakApps);
+		params[index++] = "breakDeployments=" + Boolean.toString(breakDeployments);
 
 		return index;
 	}
@@ -79,8 +86,10 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 		private VolumeType volumeType;
 		private int wantedPointCount;
 		private GraphResolution resolution;
-		private boolean breakdown;
-		
+		private boolean breakServers;
+		private boolean breakApps;
+		private boolean breakDeployments;
+
 		@Override
 		public Builder setServiceId(String serviceId) {
 			super.setServiceId(serviceId);
@@ -127,10 +136,22 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 
 			return this;
 		}
-		
-		public Builder setBreakdown(boolean breakdown) {
-			this.breakdown = breakdown;
-			
+
+		public Builder setBreakServers(boolean breakServers) {
+			this.breakServers = breakServers;
+
+			return this;
+		}
+
+		public Builder setBreakApps(boolean breakApps) {
+			this.breakApps = breakApps;
+
+			return this;
+		}
+
+		public Builder setBreakDeployments(boolean breakDeployments) {
+			this.breakDeployments = breakDeployments;
+
 			return this;
 		}
 
@@ -185,7 +206,7 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 			validate();
 
 			return new GraphRequest(serviceId, viewId, graphType, volumeType, from, to, raw, wantedPointCount,
-					resolution, servers, apps, deployments, breakdown);
+					resolution, servers, apps, deployments, breakServers, breakApps, breakDeployments);
 		}
 	}
 }
