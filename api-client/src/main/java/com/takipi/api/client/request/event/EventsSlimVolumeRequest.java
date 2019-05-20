@@ -13,7 +13,7 @@ public class EventsSlimVolumeRequest extends ViewTimeframeRequest implements Api
 	public final boolean breakServers;
 	public final boolean breakApps;
 	public final boolean breakDeployments;
-	
+
 	EventsSlimVolumeRequest(String serviceId, String viewId, VolumeType volumeType, String from, String to, boolean raw,
 			Collection<String> servers, Collection<String> apps, Collection<String> deployments, boolean breakServers,
 			boolean breakApps, boolean breakDeployments) {
@@ -47,11 +47,11 @@ public class EventsSlimVolumeRequest extends ViewTimeframeRequest implements Api
 		int index = super.fillParams(params, startIndex);
 
 		params[index++] = "stats=" + volumeType.toString();
-		
+
 		params[index++] = "breakServers=" + Boolean.toString(breakServers);
 		params[index++] = "breakApps=" + Boolean.toString(breakApps);
 		params[index++] = "breakDeployments=" + Boolean.toString(breakDeployments);
-		
+
 		return index;
 	}
 
@@ -131,25 +131,25 @@ public class EventsSlimVolumeRequest extends ViewTimeframeRequest implements Api
 
 			return this;
 		}
-		
+
 		public Builder setBreakServers(boolean breakServers) {
 			this.breakServers = breakServers;
-			
+
 			return this;
 		}
-		
+
 		public Builder setBreakApps(boolean breakApps) {
 			this.breakApps = breakApps;
-			
+
 			return this;
 		}
-		
+
 		public Builder setBreakDeployments(boolean breakDeployments) {
 			this.breakDeployments = breakDeployments;
-			
+
 			return this;
 		}
-		
+
 		@Override
 		protected void validate() {
 			super.validate();
@@ -162,8 +162,8 @@ public class EventsSlimVolumeRequest extends ViewTimeframeRequest implements Api
 		public EventsSlimVolumeRequest build() {
 			validate();
 
-			return new EventsSlimVolumeRequest(serviceId, viewId, volumeType, from, to, raw, servers, apps,
-					deployments, breakServers, breakApps, breakDeployments);
+			return new EventsSlimVolumeRequest(serviceId, viewId, volumeType, from, to, raw, servers, apps, deployments,
+					breakServers, breakApps, breakDeployments);
 		}
 	}
 }

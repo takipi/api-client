@@ -18,7 +18,7 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 	public final boolean breakServers;
 	public final boolean breakApps;
 	public final boolean breakDeployments;
-	
+
 	GraphRequest(String serviceId, String viewId, GraphType graphType, VolumeType volumeType, String from, String to,
 			boolean raw, int wantedPointCount, GraphResolution resolution, Collection<String> servers,
 			Collection<String> apps, Collection<String> deployments, boolean breakServers, boolean breakApps,
@@ -54,7 +54,7 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 	@Override
 	protected int fillParams(String[] params, int startIndex) throws UnsupportedEncodingException {
 		int index = super.fillParams(params, startIndex);
-		
+
 		if (resolution != null) {
 			params[index++] = "resolution=" + resolution.name();
 		} else {
@@ -64,7 +64,7 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 		if (volumeType != null) {
 			params[index++] = "stats=" + volumeType.name();
 		}
-		
+
 		params[index++] = "breakServers=" + Boolean.toString(breakServers);
 		params[index++] = "breakApps=" + Boolean.toString(breakApps);
 		params[index++] = "breakDeployments=" + Boolean.toString(breakDeployments);
@@ -89,7 +89,7 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 		private boolean breakServers;
 		private boolean breakApps;
 		private boolean breakDeployments;
-		
+
 		@Override
 		public Builder setServiceId(String serviceId) {
 			super.setServiceId(serviceId);
@@ -136,22 +136,22 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 
 			return this;
 		}
-		
+
 		public Builder setBreakServers(boolean breakServers) {
 			this.breakServers = breakServers;
-			
+
 			return this;
 		}
-		
+
 		public Builder setBreakApps(boolean breakApps) {
 			this.breakApps = breakApps;
-			
+
 			return this;
 		}
-		
+
 		public Builder setBreakDeployments(boolean breakDeployments) {
 			this.breakDeployments = breakDeployments;
-			
+
 			return this;
 		}
 

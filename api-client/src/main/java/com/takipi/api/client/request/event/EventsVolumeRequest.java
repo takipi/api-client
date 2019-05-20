@@ -39,7 +39,8 @@ public class EventsVolumeRequest extends ViewTimeframeRequest implements ApiGetR
 
 	@Override
 	protected int paramsCount() {
-		// One slot for the volume type and one for the include stacktrace and three for breakdown.
+		// One slot for the volume type and one for the include stacktrace and three for
+		// breakdown.
 		//
 		return super.paramsCount() + 5;
 	}
@@ -50,7 +51,7 @@ public class EventsVolumeRequest extends ViewTimeframeRequest implements ApiGetR
 
 		params[index++] = "stats=" + volumeType.toString();
 		params[index++] = "stacktrace=" + Boolean.toString(includeStacktrace);
-		
+
 		params[index++] = "breakServers=" + Boolean.toString(breakServers);
 		params[index++] = "breakApps=" + Boolean.toString(breakApps);
 		params[index++] = "breakDeployments=" + Boolean.toString(breakDeployments);
@@ -141,25 +142,25 @@ public class EventsVolumeRequest extends ViewTimeframeRequest implements ApiGetR
 
 			return this;
 		}
-		
+
 		public Builder setBreakServers(boolean breakServers) {
 			this.breakServers = breakServers;
-			
+
 			return this;
 		}
-		
+
 		public Builder setBreakApps(boolean breakApps) {
 			this.breakApps = breakApps;
-			
+
 			return this;
 		}
-		
+
 		public Builder setBreakDeployments(boolean breakDeployments) {
 			this.breakDeployments = breakDeployments;
-			
+
 			return this;
 		}
-		
+
 		@Override
 		protected void validate() {
 			super.validate();

@@ -14,10 +14,10 @@ public class EventsRequest extends ViewTimeframeRequest implements ApiGetRequest
 	public final boolean breakDeployments;
 
 	EventsRequest(String serviceId, String viewId, String from, String to, boolean raw, Collection<String> servers,
-			Collection<String> apps, Collection<String> deployments, boolean includeStacktrace,
-			boolean breakServers, boolean breakApps, boolean breakDeployments) {
+			Collection<String> apps, Collection<String> deployments, boolean includeStacktrace, boolean breakServers,
+			boolean breakApps, boolean breakDeployments) {
 		super(serviceId, viewId, from, to, raw, servers, apps, deployments);
-		
+
 		this.includeStacktrace = includeStacktrace;
 		this.breakServers = breakServers;
 		this.breakApps = breakApps;
@@ -49,9 +49,9 @@ public class EventsRequest extends ViewTimeframeRequest implements ApiGetRequest
 	@Override
 	protected int fillParams(String[] params, int startIndex) throws UnsupportedEncodingException {
 		int index = super.fillParams(params, startIndex);
-		
+
 		params[index++] = "stacktrace=" + Boolean.toString(includeStacktrace);
-		
+
 		params[index++] = "breakServers=" + Boolean.toString(breakServers);
 		params[index++] = "breakApps=" + Boolean.toString(breakApps);
 		params[index++] = "breakDeployments=" + Boolean.toString(breakDeployments);
@@ -68,7 +68,7 @@ public class EventsRequest extends ViewTimeframeRequest implements ApiGetRequest
 		private boolean breakServers;
 		private boolean breakApps;
 		private boolean breakDeployments;
-		
+
 		@Override
 		public Builder setServiceId(String serviceId) {
 			super.setServiceId(serviceId);
@@ -130,22 +130,22 @@ public class EventsRequest extends ViewTimeframeRequest implements ApiGetRequest
 
 			return this;
 		}
-		
+
 		public Builder setBreakServers(boolean breakServers) {
 			this.breakServers = breakServers;
-			
+
 			return this;
 		}
-		
+
 		public Builder setBreakApps(boolean breakApps) {
 			this.breakApps = breakApps;
-			
+
 			return this;
 		}
-		
+
 		public Builder setBreakDeployments(boolean breakDeployments) {
 			this.breakDeployments = breakDeployments;
-			
+
 			return this;
 		}
 
