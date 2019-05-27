@@ -11,9 +11,9 @@ public class EventsRequest extends BaseEventsRequest implements ApiGetRequest<Ev
 	EventsRequest(String serviceId, String viewId, String from, String to, boolean raw, Collection<String> servers,
 			Collection<String> apps, Collection<String> deployments, boolean includeStacktrace, boolean breakServers,
 			boolean breakApps, boolean breakDeployments) {
-		
-		super(serviceId, viewId, from, to, raw, servers, apps, deployments, 
-				includeStacktrace, breakServers, breakApps, breakDeployments);
+
+		super(serviceId, viewId, from, to, raw, servers, apps, deployments, includeStacktrace, breakServers, breakApps,
+				breakDeployments);
 	}
 
 	@Override
@@ -36,7 +36,6 @@ public class EventsRequest extends BaseEventsRequest implements ApiGetRequest<Ev
 	}
 
 	public static class Builder extends BaseEventsRequest.Builder {
-		
 
 		@Override
 		public Builder setServiceId(String serviceId) {
@@ -121,7 +120,7 @@ public class EventsRequest extends BaseEventsRequest implements ApiGetRequest<Ev
 
 			return this;
 		}
-		
+
 		@Override
 		public EventsRequest build() {
 			validate();

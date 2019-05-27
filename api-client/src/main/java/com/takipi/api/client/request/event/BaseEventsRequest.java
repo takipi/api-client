@@ -13,9 +13,9 @@ public abstract class BaseEventsRequest extends ViewTimeframeRequest {
 	public final boolean breakApps;
 	public final boolean breakDeployments;
 
-	BaseEventsRequest(String serviceId, String viewId, String from, String to, boolean raw,
-			Collection<String> servers, Collection<String> apps, Collection<String> deployments,
-			boolean includeStacktrace, boolean breakServers, boolean breakApps, boolean breakDeployments) {
+	BaseEventsRequest(String serviceId, String viewId, String from, String to, boolean raw, Collection<String> servers,
+			Collection<String> apps, Collection<String> deployments, boolean includeStacktrace, boolean breakServers,
+			boolean breakApps, boolean breakDeployments) {
 		super(serviceId, viewId, from, to, raw, servers, apps, deployments);
 
 		this.includeStacktrace = includeStacktrace;
@@ -30,7 +30,7 @@ public abstract class BaseEventsRequest extends ViewTimeframeRequest {
 		//
 		return super.paramsCount() + 4;
 	}
-	
+
 	@Override
 	protected int fillParams(String[] params, int startIndex) throws UnsupportedEncodingException {
 		int index = super.fillParams(params, startIndex);
@@ -134,7 +134,7 @@ public abstract class BaseEventsRequest extends ViewTimeframeRequest {
 
 			return this;
 		}
-		
+
 		public abstract ApiGetRequest<EventsResult> build();
 	}
 }

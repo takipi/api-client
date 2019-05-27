@@ -8,14 +8,14 @@ import com.takipi.api.client.util.validation.ValidationUtil.VolumeType;
 import com.takipi.api.core.request.intf.ApiGetRequest;
 
 public class EventsVolumeRequest extends BaseEventsRequest implements ApiGetRequest<EventsResult> {
-	
+
 	public final VolumeType volumeType;
 
 	EventsVolumeRequest(String serviceId, String viewId, VolumeType volumeType, String from, String to, boolean raw,
 			Collection<String> servers, Collection<String> apps, Collection<String> deployments,
 			boolean includeStacktrace, boolean breakServers, boolean breakApps, boolean breakDeployments) {
-		super(serviceId, viewId, from, to, raw, servers, apps, deployments, 
-				includeStacktrace, breakServers, breakApps, breakDeployments);
+		super(serviceId, viewId, from, to, raw, servers, apps, deployments, includeStacktrace, breakServers, breakApps,
+				breakDeployments);
 
 		this.volumeType = volumeType;
 	}
