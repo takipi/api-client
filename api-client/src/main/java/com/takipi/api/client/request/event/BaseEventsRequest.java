@@ -5,7 +5,7 @@ import java.util.Collection;
 
 import com.takipi.api.client.request.ViewTimeframeRequest;
 
-public class BaseEventsRequest extends ViewTimeframeRequest {
+public abstract class BaseEventsRequest extends ViewTimeframeRequest {
 	public final boolean includeStacktrace;
 	public final boolean breakServers;
 	public final boolean breakApps;
@@ -127,11 +127,5 @@ public class BaseEventsRequest extends ViewTimeframeRequest {
 		}
 		
 		public abstract BaseEventsRequest build();
-
-	}
-
-	@Override
-	public String urlPath() {
-		return null;
 	}
 }
