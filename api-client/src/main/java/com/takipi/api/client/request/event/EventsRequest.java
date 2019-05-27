@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import com.takipi.api.client.result.event.EventsResult;
 import com.takipi.api.core.request.intf.ApiGetRequest;
-import com.takipi.common.util.CollectionUtil;
 
 public class EventsRequest extends BaseEventsRequest implements ApiGetRequest<EventsResult> {
 
@@ -128,21 +127,6 @@ public class EventsRequest extends BaseEventsRequest implements ApiGetRequest<Ev
 
 			return new EventsRequest(serviceId, viewId, from, to, raw, servers, apps, deployments, includeStacktrace,
 					breakServers, breakApps, breakDeployments);
-		}
-		
-		public void applyBreakFilter()
-		{
-			if (!CollectionUtil.safeIsEmpty(servers)) {
-				setBreakServers(true);
-			}
-			
-			if (!CollectionUtil.safeIsEmpty(apps)) {
-				setBreakApps(true);
-			}
-			
-			if (!CollectionUtil.safeIsEmpty(deployments)) {
-				setBreakDeployments(true);
-			}
 		}
 	}
 }
