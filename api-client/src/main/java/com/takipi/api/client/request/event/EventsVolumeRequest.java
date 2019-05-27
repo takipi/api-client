@@ -32,10 +32,9 @@ public class EventsVolumeRequest extends BaseEventsRequest implements ApiGetRequ
 
 	@Override
 	protected int paramsCount() {
-		// One slot for the volume type and one for the include stacktrace and three for
-		// breakdown.
+		// One slot for the volume type.
 		//
-		return super.paramsCount() + 5;
+		return super.paramsCount() + 1;
 	}
 
 	@Override

@@ -25,6 +25,13 @@ public abstract class BaseEventsRequest extends ViewTimeframeRequest {
 	}
 
 	@Override
+	protected int paramsCount() {
+		// One slot for the stacktace flag and three for breakdown.
+		//
+		return super.paramsCount() + 4;
+	}
+	
+	@Override
 	protected int fillParams(String[] params, int startIndex) throws UnsupportedEncodingException {
 		int index = super.fillParams(params, startIndex);
 

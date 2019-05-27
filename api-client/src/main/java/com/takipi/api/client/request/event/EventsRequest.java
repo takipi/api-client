@@ -31,13 +31,6 @@ public class EventsRequest extends BaseEventsRequest implements ApiGetRequest<Ev
 		return buildParams();
 	}
 
-	@Override
-	protected int paramsCount() {
-		// One slot for the stacktace flag and three for breakdown.
-		//
-		return super.paramsCount() + 4;
-	}
-
 	public static Builder newBuilder() {
 		return new Builder();
 	}
