@@ -123,6 +123,13 @@ public class EventsRequest extends BaseEventsRequest implements ApiGetRequest<Ev
 		}
 
 		@Override
+		public Builder setBreakDeployments(boolean breakDeployments) {
+			super.setBreakDeployments(breakDeployments);
+
+			return this;
+		}
+		
+		@Override
 		public EventsRequest build() {
 			validate();
 
