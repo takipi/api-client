@@ -44,11 +44,6 @@ public abstract class BaseEventsRequest extends ViewTimeframeRequest {
 		return index;
 	}
 
-	@Override
-	public String[] queryParams() throws UnsupportedEncodingException {
-		return buildParams();
-	}
-
 	public static abstract class Builder extends ViewTimeframeRequest.Builder {
 		protected boolean includeStacktrace;
 		protected boolean breakServers;
