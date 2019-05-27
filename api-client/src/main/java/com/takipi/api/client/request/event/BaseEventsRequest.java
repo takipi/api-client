@@ -4,6 +4,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 
 import com.takipi.api.client.request.ViewTimeframeRequest;
+import com.takipi.api.client.result.event.EventsResult;
+import com.takipi.api.core.request.intf.ApiGetRequest;
 
 public abstract class BaseEventsRequest extends ViewTimeframeRequest {
 	public final boolean includeStacktrace;
@@ -126,6 +128,6 @@ public abstract class BaseEventsRequest extends ViewTimeframeRequest {
 			return this;
 		}
 		
-		public abstract BaseEventsRequest build();
+		public abstract ApiGetRequest<EventsResult> build();
 	}
 }
