@@ -159,7 +159,7 @@ public class EventsVolumeRequest extends BaseEventsRequest implements ApiGetRequ
 		}
 
 		@Override
-		public BaseEventsRequest build() {
+		public EventsVolumeRequest build() {
 			validate();
 
 			return new EventsVolumeRequest(serviceId, viewId, volumeType, from, to, raw, servers, apps, deployments,
