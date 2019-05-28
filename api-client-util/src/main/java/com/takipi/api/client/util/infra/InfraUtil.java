@@ -133,6 +133,7 @@ public class InfraUtil {
 		viewInfo.name = labelName;
 		viewInfo.shared = true;
 		viewInfo.filters = viewFilters;
+		viewInfo.immutable = true;
 
 		CreateViewRequest createViewRequest = CreateViewRequest.newBuilder().setServiceId(serviceId)
 				.setViewInfo(viewInfo).build();
