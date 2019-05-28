@@ -92,7 +92,7 @@ public class ViewUtil {
 	}
 
 	public static void createLabelViewsIfNotExists(ApiClient apiClient, String serviceId,
-			Collection<Pair<String, String>> viewsAndLabels, String categoryId) {
+			Collection<Pair<String, String>> viewsAndLabels, boolean immutableViews, String categoryId) {
 
 		List<ViewInfo> viewInfos = Lists.newArrayList();
 
@@ -107,6 +107,7 @@ public class ViewUtil {
 			viewInfo.filters = new ViewFilters();
 			viewInfo.filters.labels = Collections.singletonList(labelName);
 			viewInfo.shared = true;
+			viewInfo.immutable = immutableViews;
 
 			viewInfos.add(viewInfo);
 		}
