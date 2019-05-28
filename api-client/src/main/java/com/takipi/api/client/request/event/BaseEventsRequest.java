@@ -2,10 +2,13 @@ package com.takipi.api.client.request.event;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
+import java.util.Set;
 
+import com.google.common.collect.Sets;
 import com.takipi.api.client.request.ViewTimeframeRequest;
 import com.takipi.api.client.result.event.EventsResult;
 import com.takipi.api.core.request.intf.ApiGetRequest;
+import com.takipi.common.util.CollectionUtil;
 
 public abstract class BaseEventsRequest extends ViewTimeframeRequest {
 	public final boolean includeStacktrace;
@@ -128,6 +131,24 @@ public abstract class BaseEventsRequest extends ViewTimeframeRequest {
 			this.breakDeployments = breakDeployments;
 
 			return this;
+		}
+
+		public Set<BreakdownType> getBreakFilters() {
+			Set<BreakdownType> breakdownTypes = Sets.newHashSet();
+
+			if (!CollectionUtil.safeIsEmpty(servers)) {
+				breakdownTypes.add(BreakdownType.Server);
+			}
+
+			if (!CollectionUtil.safeIsEmpty(apps)) {
+				breakdownTypes.add(BreakdownType.App);
+			}
+
+			if (!CollectionUtil.safeIsEmpty(deployments)) {
+				breakdownTypes.add(BreakdownType.Deployment);
+			}
+
+			return breakdownTypes;
 		}
 
 		public abstract ApiGetRequest<EventsResult> build();
