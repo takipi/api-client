@@ -209,17 +209,16 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 			return new GraphRequest(serviceId, viewId, graphType, volumeType, from, to, raw, wantedPointCount,
 					resolution, servers, apps, deployments, breakServers, breakApps, breakDeployments);
 		}
-		
-		public void applyBreakFilter()
-		{
+
+		public void applyBreakFilter() {
 			if (!CollectionUtil.safeIsEmpty(servers)) {
 				setBreakServers(true);
 			}
-			
+
 			if (!CollectionUtil.safeIsEmpty(apps)) {
 				setBreakApps(true);
 			}
-			
+
 			if (!CollectionUtil.safeIsEmpty(deployments)) {
 				setBreakDeployments(true);
 			}

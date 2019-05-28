@@ -504,8 +504,7 @@ public class RegressionUtil {
 	private static DeploymentsTimespan getDeploymentsTimespan(ApiClient apiClient, String serviceId,
 			Collection<String> deployments, boolean active) {
 
-		DeploymentsRequest request = DeploymentsRequest.newBuilder().setServiceId(serviceId).setActive(active)
-				.build();
+		DeploymentsRequest request = DeploymentsRequest.newBuilder().setServiceId(serviceId).setActive(active).build();
 
 		Response<DeploymentsResult> response = apiClient.get(request);
 
@@ -517,7 +516,7 @@ public class RegressionUtil {
 		if (response.data.deployments == null) {
 			return null;
 		}
-		
+
 		Collection<SummarizedDeployment> deploymentsData = response.data.deployments;
 
 		Map<String, Pair<DateTime, DateTime>> deploymentLifetime = Maps.newHashMap();
