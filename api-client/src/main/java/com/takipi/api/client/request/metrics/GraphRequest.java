@@ -9,6 +9,7 @@ import com.takipi.api.client.util.validation.ValidationUtil.GraphResolution;
 import com.takipi.api.client.util.validation.ValidationUtil.GraphType;
 import com.takipi.api.client.util.validation.ValidationUtil.VolumeType;
 import com.takipi.api.core.request.intf.ApiGetRequest;
+import com.takipi.common.util.CollectionUtil;
 
 public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<GraphResult> {
 	public final GraphType graphType;
@@ -184,6 +185,22 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 		@Override
 		public Builder addDeployment(String deployment) {
 			super.addDeployment(deployment);
+
+			return this;
+		}
+
+		public Builder breakExistingFilters() {
+			if (!CollectionUtil.safeIsEmpty(servers)) {
+				setBreakServers(true);
+			}
+
+			if (!CollectionUtil.safeIsEmpty(apps)) {
+				setBreakApps(true);
+			}
+
+			if (!CollectionUtil.safeIsEmpty(deployments)) {
+				setBreakDeployments(true);
+			}
 
 			return this;
 		}

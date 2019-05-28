@@ -492,44 +492,32 @@ public class RegressionUtil {
 
 	public static DeploymentsTimespan getDeploymentsTimespan(ApiClient apiClient, String serviceId,
 			Collection<String> deployments) {
-
-		return getDeploymentsTimespan(apiClient, serviceId, deployments, null);
-	}
-
-	private static DeploymentsTimespan getDeploymentsTimespan(ApiClient apiClient, String serviceId,
-			Collection<String> deployments, Collection<SummarizedDeployment> deploymentsSummary) {
-		DeploymentsTimespan deploymentsTimespan = getDeploymentsTimespan(apiClient, serviceId, deployments,
-				deploymentsSummary, true);
+		DeploymentsTimespan deploymentsTimespan = getDeploymentsTimespan(apiClient, serviceId, deployments, true);
 
 		if (deploymentsTimespan != null) {
 			return deploymentsTimespan;
 		}
 
-		return getDeploymentsTimespan(apiClient, serviceId, deployments, deploymentsSummary, false);
+		return getDeploymentsTimespan(apiClient, serviceId, deployments, false);
 	}
 
 	private static DeploymentsTimespan getDeploymentsTimespan(ApiClient apiClient, String serviceId,
-			Collection<String> deployments, Collection<SummarizedDeployment> deploymentsSummary, boolean active) {
+			Collection<String> deployments, boolean active) {
 
-		Collection<SummarizedDeployment> deploymentsData = deploymentsSummary;
+		DeploymentsRequest request = DeploymentsRequest.newBuilder().setServiceId(serviceId).setActive(active).build();
 
-		if (deploymentsData == null) {
-			DeploymentsRequest request = DeploymentsRequest.newBuilder().setServiceId(serviceId).setActive(active)
-					.build();
+		Response<DeploymentsResult> response = apiClient.get(request);
 
-			Response<DeploymentsResult> response = apiClient.get(request);
-
-			if ((response.isBadResponse()) || (response.data == null)) {
-				throw new IllegalStateException(
-						"Could not acquire deployments for service " + serviceId + " . Error " + response.responseCode);
-			}
-
-			if (response.data.deployments == null) {
-				return null;
-			}
-
-			deploymentsData = response.data.deployments;
+		if ((response.isBadResponse()) || (response.data == null)) {
+			throw new IllegalStateException(
+					"Could not acquire deployments for service " + serviceId + " . Error " + response.responseCode);
 		}
+
+		if (response.data.deployments == null) {
+			return null;
+		}
+
+		Collection<SummarizedDeployment> deploymentsData = response.data.deployments;
 
 		Map<String, Pair<DateTime, DateTime>> deploymentLifetime = Maps.newHashMap();
 
@@ -577,12 +565,6 @@ public class RegressionUtil {
 
 	public static RegressionWindow getActiveWindow(ApiClient apiClient, RegressionInput input,
 			PrintStream printStream) {
-		return getActiveWindow(apiClient, input, printStream, null);
-	}
-
-	public static RegressionWindow getActiveWindow(ApiClient apiClient, RegressionInput input, PrintStream printStream,
-			Collection<SummarizedDeployment> deploymentsSummary) {
-
 		RegressionWindow result = new RegressionWindow();
 
 		result.activeTimespan = input.activeTimespan;
@@ -601,8 +583,7 @@ public class RegressionUtil {
 			return result;
 		}
 
-		DeploymentsTimespan deploymentsTimespan = getDeploymentsTimespan(apiClient, input.serviceId, input.deployments,
-				deploymentsSummary);
+		DeploymentsTimespan deploymentsTimespan = getDeploymentsTimespan(apiClient, input.serviceId, input.deployments);
 
 		if (deploymentsTimespan == null) {
 			printStream.println("Deployments timespan is null for serviceId: " + input.serviceId + "deployments: "
