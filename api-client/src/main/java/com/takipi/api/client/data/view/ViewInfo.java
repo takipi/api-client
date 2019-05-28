@@ -5,6 +5,7 @@ public class ViewInfo {
 	public String name;
 	public String description;
 	public boolean shared;
+	public boolean immutable;
 	public ViewFilters filters;
 
 	@Override
