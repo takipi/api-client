@@ -98,11 +98,7 @@ public class InfraUtil {
 	public static void validateTierView(String locationLabel, CategoryType type, String categoryId, String serviceId,
 			ApiClient apiClient) {
 
-		boolean labelExisted = createTierLabel(locationLabel, type, serviceId, apiClient);
-
-		if (labelExisted) {
-			return;
-		}
+		createTierLabel(locationLabel, type, serviceId, apiClient);
 
 		String viewId = createTierView(locationLabel, type, serviceId, apiClient);
 		CategoryUtil.addViewToCategory(categoryId, viewId, serviceId, apiClient);
