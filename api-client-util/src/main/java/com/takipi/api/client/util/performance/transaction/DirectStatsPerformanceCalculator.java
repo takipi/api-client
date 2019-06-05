@@ -7,10 +7,10 @@ import com.takipi.common.util.CollectionUtil;
 
 public class DirectStatsPerformanceCalculator extends BaseGraphPerformanceCalculator<Stats> {
 	private DirectStatsPerformanceCalculator(long activeInvocationsThreshold, long baselineInvocationsThreshold,
-			int minDeltaThreshold, double overAvgSlowingPercentage, double overAvgCriticalPercentage,
-			double stdDevFactor) {
-		super(activeInvocationsThreshold, baselineInvocationsThreshold, minDeltaThreshold, overAvgSlowingPercentage,
-				overAvgCriticalPercentage, stdDevFactor);
+			int minDeltaThreshold, double minDeltaThresholdPercentage, double overAvgSlowingPercentage,
+			double overAvgCriticalPercentage, double stdDevFactor) {
+		super(activeInvocationsThreshold, baselineInvocationsThreshold, minDeltaThreshold, minDeltaThresholdPercentage,
+				overAvgSlowingPercentage, overAvgCriticalPercentage, stdDevFactor);
 	}
 
 	@Override
@@ -23,10 +23,11 @@ public class DirectStatsPerformanceCalculator extends BaseGraphPerformanceCalcul
 	}
 
 	public static DirectStatsPerformanceCalculator of(long activeInvocationsThreshold,
-			long baselineInvocationsThreshold, int minDeltaThreshold, double overAvgSlowingPercentage,
-			double overAvgCriticalPercentage, double stdDevFactor) {
+			long baselineInvocationsThreshold, int minDeltaThreshold, double minDeltaThresholdPercentage,
+			double overAvgSlowingPercentage, double overAvgCriticalPercentage, double stdDevFactor) {
 
 		return new DirectStatsPerformanceCalculator(activeInvocationsThreshold, baselineInvocationsThreshold,
-				minDeltaThreshold, overAvgSlowingPercentage, overAvgCriticalPercentage, stdDevFactor);
+				minDeltaThreshold, minDeltaThresholdPercentage, overAvgSlowingPercentage, overAvgCriticalPercentage,
+				stdDevFactor);
 	}
 }
