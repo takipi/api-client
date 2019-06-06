@@ -21,6 +21,13 @@ public class SlowdownSettings {
 	public int min_delta_threshold;
 
 	/**
+	 * The minimal change (in percentage) between the avg response time within the selected
+	 * time frame and baseline for a transaction's state to be marked as Slowing or
+	 * Critical.
+	 */
+	public double min_delta_threshold_percentage;
+	
+	/**
 	 * The percentage change (between 0 and 1) that the number of calls within the
 	 * active timeframe whose response time exceeds the avg of the baseline + the
 	 * std dev of the baseline * std_dev_factor, for a call to be considered
