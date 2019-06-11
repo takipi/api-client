@@ -19,7 +19,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import com.google.common.collect.Maps;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.data.deployment.SummarizedDeployment;
-import com.takipi.api.client.data.event.Stats;
+import com.takipi.api.client.data.event.BaseStats;
 import com.takipi.api.client.data.metrics.Graph;
 import com.takipi.api.client.data.metrics.Graph.GraphPoint;
 import com.takipi.api.client.data.metrics.Graph.GraphPointContributor;
@@ -48,6 +48,8 @@ public class RegressionUtil {
 		public DateTime activeWindowStart;
 		public int activeTimespan;
 		public boolean deploymentFound;
+
+		public Map<String, Pair<DateTime, DateTime>> deploymentsTimespan;
 	}
 
 	enum RegressionState {
@@ -175,7 +177,7 @@ public class RegressionUtil {
 		return result;
 	}
 
-	private static String ps(Stats stats) {
+	private static String ps(BaseStats stats) {
 		if (stats == null) {
 			return "(null)";
 		}
@@ -488,7 +490,18 @@ public class RegressionUtil {
 		return true;
 	}
 
-	private static DateTime getDeploymentStartTime(ApiClient apiClient, String serviceId,
+	public static DeploymentsTimespan getDeploymentsTimespan(ApiClient apiClient, String serviceId,
+			Collection<String> deployments) {
+		DeploymentsTimespan deploymentsTimespan = getDeploymentsTimespan(apiClient, serviceId, deployments, true);
+
+		if (deploymentsTimespan != null) {
+			return deploymentsTimespan;
+		}
+
+		return getDeploymentsTimespan(apiClient, serviceId, deployments, false);
+	}
+
+	private static DeploymentsTimespan getDeploymentsTimespan(ApiClient apiClient, String serviceId,
 			Collection<String> deployments, boolean active) {
 
 		DeploymentsRequest request = DeploymentsRequest.newBuilder().setServiceId(serviceId).setActive(active).build();
@@ -504,69 +517,114 @@ public class RegressionUtil {
 			return null;
 		}
 
-		for (SummarizedDeployment dep : response.data.deployments) {
-			if ((deployments.contains(dep.name) && (dep.first_seen != null))) {
-				return ISODateTimeFormat.dateTime().withZoneUTC().parseDateTime(dep.first_seen);
+		Collection<SummarizedDeployment> deploymentsData = response.data.deployments;
+
+		Map<String, Pair<DateTime, DateTime>> deploymentLifetime = Maps.newHashMap();
+
+		Map<String, SummarizedDeployment> summarizedDeploymentByName = Maps.newHashMap();
+
+		for (SummarizedDeployment summaryDeployment : deploymentsData) {
+			summarizedDeploymentByName.put(summaryDeployment.name, summaryDeployment);
+		}
+
+		DateTime minDeploymentStart = null;
+		DateTime maxDeploymentEnd = new DateTime(0L);
+
+		for (String deployment : deployments) {
+			SummarizedDeployment summarizedDeployment = summarizedDeploymentByName.get(deployment);
+
+			if ((summarizedDeployment == null) || (summarizedDeployment.first_seen == null)) {
+				return null;
 			}
+
+			DateTime start = dateTimeFormatter.parseDateTime(summarizedDeployment.first_seen);
+			DateTime end = null;
+
+			if (summarizedDeployment.last_seen != null) {
+				end = dateTimeFormatter.parseDateTime(summarizedDeployment.last_seen);
+			}
+
+			if ((minDeploymentStart == null) || (start.isBefore(minDeploymentStart))) {
+
+				minDeploymentStart = start;
+			}
+
+			if ((end == null) || (end.isAfter(maxDeploymentEnd))) {
+
+				maxDeploymentEnd = end;
+			}
+
+			deploymentLifetime.put(summarizedDeployment.name, Pair.of(start, end));
 		}
 
-		return null;
-	}
+		DeploymentsTimespan deploymentsTimespan = new DeploymentsTimespan(deploymentLifetime,
+				Pair.of(minDeploymentStart, maxDeploymentEnd));
 
-	public static DateTime getDeploymentStartTime(ApiClient apiClient, String serviceId,
-			Collection<String> deployments) {
-
-		DateTime result = getDeploymentStartTime(apiClient, serviceId, deployments, true);
-
-		if (result == null) {
-			result = getDeploymentStartTime(apiClient, serviceId, deployments, false);
-		}
-
-		return result;
+		return deploymentsTimespan;
 	}
 
 	public static RegressionWindow getActiveWindow(ApiClient apiClient, RegressionInput input,
 			PrintStream printStream) {
-
 		RegressionWindow result = new RegressionWindow();
+
+		result.activeTimespan = input.activeTimespan;
 
 		if (input.activeWindowStart != null) {
 			result.activeWindowStart = input.activeWindowStart;
-			result.activeTimespan = input.activeTimespan;
-		} else {
 
-			DateTime now = DateTime.now();
-
-			if (!CollectionUtil.safeIsEmpty(input.deployments)) {
-
-				result.activeWindowStart = getDeploymentStartTime(apiClient, input.serviceId, input.deployments);
-
-				if (result.activeWindowStart != null) {
-					result.deploymentFound = true;
-				} else {
-					if (printStream != null) {
-						printStream.println("Could not acquire start time for deployment "
-								+ Arrays.toString(input.deployments.toArray()));
-					}
-				}
-			}
-
-			if (result.activeWindowStart != null) {
-
-				int activeTimespan = (int) TimeUnit.MILLISECONDS
-						.toMinutes(now.minus(result.activeWindowStart.getMillis()).getMillis());
-
-				if (activeTimespan <= 0) {
-					result.activeTimespan = (int) (TimeUnit.DAYS.toMinutes(1));
-					result.activeWindowStart = DateTime.now().minusDays(1);
-				} else {
-					result.activeTimespan = activeTimespan;
-				}
-			} else {
-				result.activeWindowStart = now.minusMinutes(input.activeTimespan);
-				result.activeTimespan = input.activeTimespan;
-			}
+			return result;
 		}
+
+		DateTime now = DateTime.now();
+
+		if (CollectionUtil.safeIsEmpty(input.deployments)) {
+			result.activeWindowStart = now.minusMinutes(input.activeTimespan);
+
+			return result;
+		}
+
+		DeploymentsTimespan deploymentsTimespan = getDeploymentsTimespan(apiClient, input.serviceId, input.deployments);
+
+		if (deploymentsTimespan == null) {
+			printStream.println("Deployments timespan is null for serviceId: " + input.serviceId + "deployments: "
+					+ Arrays.toString(input.deployments.toArray()));
+
+			result.activeWindowStart = now.minusMinutes(input.activeTimespan);
+
+			return result;
+		}
+
+		Pair<DateTime, DateTime> depTimespan = deploymentsTimespan.getActiveWindow();
+
+		result.activeWindowStart = depTimespan.getFirst();
+
+		if (result.activeWindowStart == null) {
+			if (printStream != null) {
+				printStream.println(
+						"Could not acquire start time for deployments " + Arrays.toString(input.deployments.toArray()));
+			}
+
+			return result;
+		}
+
+		DateTime activeWindowEnd;
+
+		if (depTimespan.getSecond() != null) {
+			activeWindowEnd = depTimespan.getSecond();
+		} else {
+			activeWindowEnd = now;
+		}
+
+		result.activeTimespan = (int) TimeUnit.MILLISECONDS
+				.toMinutes(activeWindowEnd.minus(result.activeWindowStart.getMillis()).getMillis());
+
+		if (result.activeTimespan <= 0) {
+			result.activeTimespan = (int) (TimeUnit.DAYS.toMinutes(1));
+			result.activeWindowStart = now.minusDays(1);
+		}
+
+		result.deploymentFound = true;
+		result.deploymentsTimespan = deploymentsTimespan.getDeploymentsLifetimeMap();
 
 		return result;
 	}
@@ -583,7 +641,7 @@ public class RegressionUtil {
 
 			if (pointsWanted > 0) {
 				GraphResult graphResult = ViewUtil.getEventsGraphResult(apiClient, input.serviceId, input.viewId,
-						pointsWanted, VolumeType.all, baselineStart, activeWindowStart, true);
+						pointsWanted, VolumeType.all, baselineStart, activeWindowStart, true, true, true, true);
 
 				if (graphResult != null) {
 					result = validateGraph(apiClient, graphResult, input, printStream);
@@ -638,7 +696,7 @@ public class RegressionUtil {
 			return builder.build();
 		}
 
-		builder.setActiveWndowStart(regressionWindow.activeWindowStart);
+		builder.setActiveWindowStart(regressionWindow.activeWindowStart);
 		DateTime baselineStart = regressionWindow.activeWindowStart.minusMinutes(input.baselineTimespan);
 
 		if (printStream != null) {

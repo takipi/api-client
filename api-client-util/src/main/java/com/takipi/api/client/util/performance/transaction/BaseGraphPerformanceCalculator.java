@@ -11,18 +11,20 @@ import com.takipi.api.client.util.transaction.TransactionUtil;
 public abstract class BaseGraphPerformanceCalculator<S> implements PerformanceCalculator<TransactionGraph, S> {
 	private final long activeInvocationsThreshold;
 	private final long baselineInvocationsThreshold;
+	private final int minDeltaThreshold;
+	private final double minDeltaThresholdPercentage;
 	private final double overAvgSlowingPercentage;
 	private final double overAvgCriticalPercentage;
-	private final int minDeltaThreshold;
 	private final double stdDevFactor;
 
 	protected BaseGraphPerformanceCalculator(long activeInvocationsThreshold, long baselineInvocationsThreshold,
-			int minDeltaThreshold, double overAvgSlowingPercentage, double overAvgCriticalPercentage,
-			double stdDevFactor) {
+			int minDeltaThreshold, double minDeltaThresholdPercentage, double overAvgSlowingPercentage,
+			double overAvgCriticalPercentage, double stdDevFactor) {
 
 		this.activeInvocationsThreshold = activeInvocationsThreshold;
 		this.baselineInvocationsThreshold = baselineInvocationsThreshold;
 		this.minDeltaThreshold = minDeltaThreshold;
+		this.minDeltaThresholdPercentage = minDeltaThresholdPercentage;
 		this.overAvgSlowingPercentage = overAvgSlowingPercentage;
 		this.overAvgCriticalPercentage = overAvgCriticalPercentage;
 		this.stdDevFactor = stdDevFactor;
@@ -55,8 +57,7 @@ public abstract class BaseGraphPerformanceCalculator<S> implements PerformanceCa
 
 		double slowingPercentage = badPointsScore * 100;
 
-		if (activeStats.avg_time - baselineStats.avg_time > minDeltaThreshold) {
-
+		if (passesSlowThreshold(activeStats, baselineStats)) {
 			if (badPointsScore >= this.overAvgCriticalPercentage) {
 				return PerformanceScore.of(PerformanceState.CRITICAL, slowingPercentage);
 			}
@@ -67,5 +68,15 @@ public abstract class BaseGraphPerformanceCalculator<S> implements PerformanceCa
 		}
 
 		return PerformanceScore.of(PerformanceState.OK, slowingPercentage);
+	}
+
+	private boolean passesSlowThreshold(Stats activeStats, Stats baselineStats) {
+		if (activeStats.avg_time - baselineStats.avg_time <= minDeltaThreshold) {
+			return false;
+		}
+
+		double percentageIncrease = ((activeStats.avg_time - baselineStats.avg_time) / baselineStats.avg_time);
+
+		return (percentageIncrease >= minDeltaThresholdPercentage);
 	}
 }

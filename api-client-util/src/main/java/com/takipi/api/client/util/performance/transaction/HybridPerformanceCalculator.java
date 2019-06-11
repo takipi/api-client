@@ -7,10 +7,10 @@ import com.takipi.common.util.CollectionUtil;
 
 public class HybridPerformanceCalculator extends BaseGraphPerformanceCalculator<Transaction> {
 	private HybridPerformanceCalculator(long activeInvocationsThreshold, long baselineInvocationsThreshold,
-			int minDeltaThreshold, double overAvgSlowingPercentage, double overAvgCriticalPercentage,
-			double stdDevFactor) {
-		super(activeInvocationsThreshold, baselineInvocationsThreshold, minDeltaThreshold, overAvgSlowingPercentage,
-				overAvgCriticalPercentage, stdDevFactor);
+			int minDeltaThreshold, double minDeltaThresholdPercentage, double overAvgSlowingPercentage,
+			double overAvgCriticalPercentage, double stdDevFactor) {
+		super(activeInvocationsThreshold, baselineInvocationsThreshold, minDeltaThreshold, minDeltaThresholdPercentage,
+				overAvgSlowingPercentage, overAvgCriticalPercentage, stdDevFactor);
 	}
 
 	@Override
@@ -24,10 +24,11 @@ public class HybridPerformanceCalculator extends BaseGraphPerformanceCalculator<
 	}
 
 	public static HybridPerformanceCalculator of(long activeInvocationsThreshold, long baselineInvocationsThreshold,
-			int minDeltaThreshold, double overAvgSlowingPercentage, double overAvgCriticalPercentage,
-			double stdDevFactor) {
+			int minDeltaThreshold, double minDeltaThresholdPercentage, double overAvgSlowingPercentage,
+			double overAvgCriticalPercentage, double stdDevFactor) {
 
 		return new HybridPerformanceCalculator(activeInvocationsThreshold, baselineInvocationsThreshold,
-				minDeltaThreshold, overAvgSlowingPercentage, overAvgCriticalPercentage, stdDevFactor);
+				minDeltaThreshold, minDeltaThresholdPercentage, overAvgSlowingPercentage, overAvgCriticalPercentage,
+				stdDevFactor);
 	}
 }

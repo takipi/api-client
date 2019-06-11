@@ -2,6 +2,7 @@ package com.takipi.api.client.util.cicd;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -12,10 +13,12 @@ import com.google.gson.Gson;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.util.event.EventUtil;
+import com.takipi.api.client.util.regression.DeploymentsTimespan;
 import com.takipi.api.client.util.regression.RateRegression;
 import com.takipi.api.client.util.regression.RegressionInput;
 import com.takipi.api.client.util.regression.RegressionStringUtil;
 import com.takipi.api.client.util.regression.RegressionUtil;
+import com.takipi.common.util.Pair;
 
 public class ProcessQualityGates {
 
@@ -24,17 +27,23 @@ public class ProcessQualityGates {
 	// process CICD gates based on the inputs sent in
 	public static QualityGateReport processCICDInputs(ApiClient apiClient, RegressionInput input, boolean newEvents,
 			boolean resurfacedEvents, String regexFilter, int topIssuesVolume, boolean countGate,
-			PrintStream printStream, boolean verbose) {
+			PrintStream printStream, @SuppressWarnings("unused") boolean verbose) {
 
 		qualityReport = new QualityGateReport();
-
-		DateTime deploymentStart = RegressionUtil.getDeploymentStartTime(apiClient, input.serviceId, input.deployments);
-
-		if (deploymentStart == null) {
-			throw new IllegalStateException("Deployment name " + input.deployments
+		
+		DeploymentsTimespan deploymentsTimespan = RegressionUtil.getDeploymentsTimespan(apiClient, input.serviceId, input.deployments);
+		
+		if ((deploymentsTimespan == null) ||
+			(deploymentsTimespan.getActiveWindow() == null) ||
+			(deploymentsTimespan.getActiveWindow().getFirst() == null)) {
+			throw new IllegalStateException("Deployments " + Arrays.toString(input.deployments.toArray())
 					+ " not found. Please ensure your collector and Jenkins configuration are pointing to the same enviornment.");
 		}
-
+		
+		Pair<DateTime, DateTime> deploymentsActiveWindow = deploymentsTimespan.getActiveWindow();
+		
+		DateTime deploymentStart = deploymentsActiveWindow.getFirst();
+		
 		Collection<EventResult> events = RegressionUtil.getActiveEventVolume(apiClient, input, deploymentStart,
 				printStream);
 
