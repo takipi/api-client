@@ -74,13 +74,11 @@ public class EventUtil {
 			return null;
 		}
 
-		DateTime now = DateTime.now();
-
 		StringBuilder result = new StringBuilder(link);
 		result.append("&timeframe=custom&from=");
 		result.append(from.toString(formatter));
 		result.append("&to=");
-		result.append(now.toString(formatter));
+		result.append(to.toString(formatter));
 
 		return result.toString();
 	}
