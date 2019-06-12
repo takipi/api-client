@@ -7,16 +7,15 @@ import java.util.List;
 
 public class DeterminantKey implements Comparable<DeterminantKey> {
 	
-	public static final DeterminantKey Empty = new DeterminantKey(null, null, null);
+	public static final DeterminantKey Empty = DeterminantKey.create(null, null, null);
 	
-	public String determinantKey;
+	public final String determinantKey;
 	
-	public String getDeterminantKey() {
-		return determinantKey;
+	private DeterminantKey(String determinantKey) {
+		this.determinantKey = determinantKey;
 	}
 	
-	public DeterminantKey(String machineName, String agentName, String deploymentName) {
-		
+	public static DeterminantKey create(String machineName, String agentName, String deploymentName) {
 		List<String> determinantValues = new ArrayList<String>();
 		
 		if (machineName != null) {
@@ -31,11 +30,13 @@ public class DeterminantKey implements Comparable<DeterminantKey> {
 			determinantValues.add(deploymentName);
 		}
 		
-		this.determinantKey = String.join("_", determinantValues);
+		String determinantKey = String.join("_", determinantValues);
 		
 		if (Strings.isNullOrEmpty(determinantKey)) {
-			this.determinantKey = "ALL";
+			determinantKey = "ALL";
 		}
+		
+		return new DeterminantKey(determinantKey);
 	}
 	
 	@Override
@@ -53,7 +54,7 @@ public class DeterminantKey implements Comparable<DeterminantKey> {
 	}
 	
 	@Override
-	public int compareTo(DeterminantKey o) {
-		return determinantKey.compareTo(o.getDeterminantKey());
+	public int compareTo(DeterminantKey other) {
+		return determinantKey.compareTo(other.determinantKey);
 	}
 }
