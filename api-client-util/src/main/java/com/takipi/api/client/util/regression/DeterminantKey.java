@@ -39,15 +39,15 @@ public class DeterminantKey implements Comparable<DeterminantKey> {
 	public static DeterminantKey create(String machineName, String agentName, String deploymentName) {
 		List<String> determinantValues = new ArrayList<String>();
 
-		if (machineName != null) {
+		if (!Strings.isNullOrEmpty(machineName)) {
 			determinantValues.add(machineName);
 		}
 
-		if (agentName != null) {
+		if (!Strings.isNullOrEmpty(agentName)) {
 			determinantValues.add(agentName);
 		}
 
-		if (deploymentName != null) {
+		if (!Strings.isNullOrEmpty(deploymentName)) {
 			determinantValues.add(deploymentName);
 		}
 
