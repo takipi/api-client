@@ -2,36 +2,28 @@ package com.takipi.api.client.request.event;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
-import java.util.Set;
 
-import com.google.common.collect.Sets;
-import com.takipi.api.client.request.ViewTimeframeRequest;
+import com.takipi.api.client.request.BreakdownViewTimeframeRequest;
 import com.takipi.api.client.result.event.EventsResult;
 import com.takipi.api.core.request.intf.ApiGetRequest;
-import com.takipi.common.util.CollectionUtil;
 
-public abstract class BaseEventsRequest extends ViewTimeframeRequest {
+public abstract class BaseEventsRequest extends BreakdownViewTimeframeRequest
+{
 	public final boolean includeStacktrace;
-	public final boolean breakServers;
-	public final boolean breakApps;
-	public final boolean breakDeployments;
 
 	BaseEventsRequest(String serviceId, String viewId, String from, String to, boolean raw, Collection<String> servers,
 			Collection<String> apps, Collection<String> deployments, boolean includeStacktrace, boolean breakServers,
 			boolean breakApps, boolean breakDeployments) {
-		super(serviceId, viewId, from, to, raw, servers, apps, deployments);
+		super(serviceId, viewId, from, to, raw, servers, apps, deployments, breakServers, breakApps, breakDeployments);
 
 		this.includeStacktrace = includeStacktrace;
-		this.breakServers = breakServers;
-		this.breakApps = breakApps;
-		this.breakDeployments = breakDeployments;
 	}
 
 	@Override
 	protected int paramsCount() {
 		// One slot for the stacktace flag and three for breakdown.
 		//
-		return super.paramsCount() + 4;
+		return super.paramsCount() + 1;
 	}
 
 	@Override
@@ -40,14 +32,10 @@ public abstract class BaseEventsRequest extends ViewTimeframeRequest {
 
 		params[index++] = "stacktrace=" + Boolean.toString(includeStacktrace);
 
-		params[index++] = "breakServers=" + Boolean.toString(breakServers);
-		params[index++] = "breakApps=" + Boolean.toString(breakApps);
-		params[index++] = "breakDeployments=" + Boolean.toString(breakDeployments);
-
 		return index;
 	}
 
-	public static abstract class Builder extends ViewTimeframeRequest.Builder {
+	public static abstract class Builder extends BreakdownViewTimeframeRequest.Builder {
 		protected boolean includeStacktrace;
 		protected boolean breakServers;
 		protected boolean breakApps;
@@ -108,47 +96,29 @@ public abstract class BaseEventsRequest extends ViewTimeframeRequest {
 
 			return this;
 		}
+		
+		public Builder setBreakServers(boolean breakServers) {
+			super.setBreakServers(breakServers);
+			
+			return this;
+		}
+		
+		public Builder setBreakApps(boolean breakApps) {
+			super.setBreakApps(breakApps);
+			
+			return this;
+		}
+		
+		public Builder setBreakDeployments(boolean breakDeployments) {
+			super.setBreakDeployments(breakDeployments);
+			
+			return this;
+		}
 
 		public Builder setIncludeStacktrace(boolean includeStacktrace) {
 			this.includeStacktrace = includeStacktrace;
 
 			return this;
-		}
-
-		public Builder setBreakServers(boolean breakServers) {
-			this.breakServers = breakServers;
-
-			return this;
-		}
-
-		public Builder setBreakApps(boolean breakApps) {
-			this.breakApps = breakApps;
-
-			return this;
-		}
-
-		public Builder setBreakDeployments(boolean breakDeployments) {
-			this.breakDeployments = breakDeployments;
-
-			return this;
-		}
-
-		public Set<BreakdownType> getBreakFilters() {
-			Set<BreakdownType> breakdownTypes = Sets.newHashSet();
-
-			if (!CollectionUtil.safeIsEmpty(servers)) {
-				breakdownTypes.add(BreakdownType.Server);
-			}
-
-			if (!CollectionUtil.safeIsEmpty(apps)) {
-				breakdownTypes.add(BreakdownType.App);
-			}
-
-			if (!CollectionUtil.safeIsEmpty(deployments)) {
-				breakdownTypes.add(BreakdownType.Deployment);
-			}
-
-			return breakdownTypes;
 		}
 
 		public abstract ApiGetRequest<EventsResult> build();

@@ -2,6 +2,7 @@ package com.takipi.api.client.request.event;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
+import java.util.Set;
 
 import com.takipi.api.client.result.event.EventsResult;
 import com.takipi.api.core.request.intf.ApiGetRequest;
@@ -118,6 +119,13 @@ public class EventsRequest extends BaseEventsRequest implements ApiGetRequest<Ev
 		public Builder setBreakDeployments(boolean breakDeployments) {
 			super.setBreakDeployments(breakDeployments);
 
+			return this;
+		}
+		
+		@Override
+		public Builder setBreakFilters(Set<BreakdownType> breakdownTypes) {
+			super.setBreakFilters(breakdownTypes);
+			
 			return this;
 		}
 
