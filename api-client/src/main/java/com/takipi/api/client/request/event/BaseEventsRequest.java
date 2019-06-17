@@ -37,9 +37,6 @@ public abstract class BaseEventsRequest extends BreakdownViewTimeframeRequest
 
 	public static abstract class Builder extends BreakdownViewTimeframeRequest.Builder {
 		protected boolean includeStacktrace;
-		protected boolean breakServers;
-		protected boolean breakApps;
-		protected boolean breakDeployments;
 
 		@Override
 		public Builder setServiceId(String serviceId) {
