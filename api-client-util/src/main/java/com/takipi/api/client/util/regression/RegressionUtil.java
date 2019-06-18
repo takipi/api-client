@@ -508,7 +508,7 @@ public class RegressionUtil {
 		
 		List<SummarizedDeployment> activeSummarizedDeployments = getSummarizedDeployments(apiClient, serviceId, true);
 		
-		DeploymentsTimespan activeDeploymentsTimespan = getDeploymentsTimespan(apiClient, serviceId, deployments, activeSummarizedDeployments);
+		DeploymentsTimespan activeDeploymentsTimespan = getDeploymentsTimespan(deployments, activeSummarizedDeployments);
 		
 		if (activeDeploymentsTimespan != null) {
 			return activeDeploymentsTimespan;
@@ -516,11 +516,10 @@ public class RegressionUtil {
 		
 		List<SummarizedDeployment> nonActiveSummarizedDeployments = getSummarizedDeployments(apiClient, serviceId, false);
 		
-		return getDeploymentsTimespan(apiClient, serviceId, deployments, nonActiveSummarizedDeployments);
+		return getDeploymentsTimespan(deployments, nonActiveSummarizedDeployments);
 	}
 	
-	private static DeploymentsTimespan getDeploymentsTimespan(ApiClient apiClient, String serviceId,
-			Collection<String> deployments, List<SummarizedDeployment> summarizedDeployments) {
+	private static DeploymentsTimespan getDeploymentsTimespan(Collection<String> deployments, List<SummarizedDeployment> summarizedDeployments) {
 
 		Map<String, Pair<DateTime, DateTime>> deploymentLifetime = Maps.newHashMap();
 
@@ -591,13 +590,10 @@ public class RegressionUtil {
 		if (CollectionUtil.safeIsEmpty(summarizedDeployments)) {
 			deploymentsTimespan = getDeploymentsTimespan(apiClient, input.serviceId, input.deployments);
 		} else {
-			deploymentsTimespan = getDeploymentsTimespan(apiClient, input.serviceId, input.deployments, summarizedDeployments);
+			deploymentsTimespan = getDeploymentsTimespan(input.deployments, summarizedDeployments);
 		}
 
 		if (deploymentsTimespan == null) {
-			printStream.println("Deployments timespan is null for serviceId: " + input.serviceId + "deployments: "
-					+ Arrays.toString(input.deployments.toArray()));
-
 			result.activeWindowStart = now.minusMinutes(input.activeTimespan);
 
 			return result;
