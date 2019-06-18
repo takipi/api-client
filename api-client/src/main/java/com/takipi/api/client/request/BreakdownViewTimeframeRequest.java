@@ -6,8 +6,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Set;
 
-public abstract class BreakdownViewTimeframeRequest extends ViewTimeframeRequest
-{
+public abstract class BreakdownViewTimeframeRequest extends ViewTimeframeRequest {
 	private final boolean breakServers;
 	private final boolean breakApps;
 	private final boolean breakDeployments;
@@ -30,8 +29,7 @@ public abstract class BreakdownViewTimeframeRequest extends ViewTimeframeRequest
 	}
 	
 	@Override
-	protected int fillParams(String[] params, int startIndex) throws UnsupportedEncodingException
-	{
+	protected int fillParams(String[] params, int startIndex) throws UnsupportedEncodingException {
 		int index = super.fillParams(params, startIndex);
 		
 		params[index++] = "breakServers=" + Boolean.toString(breakServers);

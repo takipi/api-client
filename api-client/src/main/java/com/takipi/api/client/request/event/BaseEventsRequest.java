@@ -7,8 +7,7 @@ import com.takipi.api.client.request.BreakdownViewTimeframeRequest;
 import com.takipi.api.client.result.event.EventsResult;
 import com.takipi.api.core.request.intf.ApiGetRequest;
 
-public abstract class BaseEventsRequest extends BreakdownViewTimeframeRequest
-{
+public abstract class BaseEventsRequest extends BreakdownViewTimeframeRequest {
 	public final boolean includeStacktrace;
 
 	BaseEventsRequest(String serviceId, String viewId, String from, String to, boolean raw, Collection<String> servers,
