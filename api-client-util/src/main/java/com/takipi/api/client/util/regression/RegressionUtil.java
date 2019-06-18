@@ -497,7 +497,7 @@ public class RegressionUtil {
 	
 	public static DeploymentsTimespan getDeploymentsTimespan(ApiClient apiClient, String serviceId,
 			Collection<String> deployments, List<SummarizedDeployment> deploymentsSummary) {
-		DeploymentsTimespan deploymentsTimespan = getDeploymentsTimespan(apiClient, serviceId, deployments, deploymentsSummary, true);
+		DeploymentsTimespan deploymentsTimespan = getDeploymentsTimespan(apiClient, serviceId, deployments, deploymentsSummary, false);
 
 		if (deploymentsTimespan != null) {
 			return deploymentsTimespan;
