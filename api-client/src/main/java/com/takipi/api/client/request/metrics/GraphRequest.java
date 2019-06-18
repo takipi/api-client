@@ -2,37 +2,32 @@ package com.takipi.api.client.request.metrics;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
+import java.util.Set;
 
-import com.takipi.api.client.request.ViewTimeframeRequest;
+import com.takipi.api.client.request.BreakdownViewTimeframeRequest;
+import com.takipi.api.client.request.event.BreakdownType;
 import com.takipi.api.client.result.metrics.GraphResult;
 import com.takipi.api.client.util.validation.ValidationUtil.GraphResolution;
 import com.takipi.api.client.util.validation.ValidationUtil.GraphType;
 import com.takipi.api.client.util.validation.ValidationUtil.VolumeType;
 import com.takipi.api.core.request.intf.ApiGetRequest;
-import com.takipi.common.util.CollectionUtil;
 
-public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<GraphResult> {
+public class GraphRequest extends BreakdownViewTimeframeRequest implements ApiGetRequest<GraphResult> {
 	public final GraphType graphType;
 	public final VolumeType volumeType;
 	public final int wantedPointCount;
 	public final GraphResolution resolution;
-	public final boolean breakServers;
-	public final boolean breakApps;
-	public final boolean breakDeployments;
 
 	GraphRequest(String serviceId, String viewId, GraphType graphType, VolumeType volumeType, String from, String to,
 			boolean raw, int wantedPointCount, GraphResolution resolution, Collection<String> servers,
 			Collection<String> apps, Collection<String> deployments, boolean breakServers, boolean breakApps,
 			boolean breakDeployments) {
-		super(serviceId, viewId, from, to, raw, servers, apps, deployments);
+		super(serviceId, viewId, from, to, raw, servers, apps, deployments, breakServers, breakApps, breakDeployments);
 
 		this.graphType = graphType;
 		this.volumeType = volumeType;
 		this.wantedPointCount = wantedPointCount;
 		this.resolution = resolution;
-		this.breakServers = breakServers;
-		this.breakApps = breakApps;
-		this.breakDeployments = breakDeployments;
 	}
 
 	@Override
@@ -47,9 +42,9 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 
 	@Override
 	protected int paramsCount() {
-		// One slot for the points count / resolution and three for breakdown.
+		// One slot for the points count / resolution.
 		//
-		return super.paramsCount() + 4 + (volumeType != null ? 1 : 0);
+		return super.paramsCount() + 1 + (volumeType != null ? 1 : 0);
 	}
 
 	@Override
@@ -66,10 +61,6 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 			params[index++] = "stats=" + volumeType.name();
 		}
 
-		params[index++] = "breakServers=" + Boolean.toString(breakServers);
-		params[index++] = "breakApps=" + Boolean.toString(breakApps);
-		params[index++] = "breakDeployments=" + Boolean.toString(breakDeployments);
-
 		return index;
 	}
 
@@ -82,15 +73,12 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 		return new Builder();
 	}
 
-	public static class Builder extends ViewTimeframeRequest.Builder {
+	public static class Builder extends BreakdownViewTimeframeRequest.Builder {
 		private GraphType graphType;
 		private VolumeType volumeType;
 		private int wantedPointCount;
 		private GraphResolution resolution;
-		private boolean breakServers;
-		private boolean breakApps;
-		private boolean breakDeployments;
-
+	
 		@Override
 		public Builder setServiceId(String serviceId) {
 			super.setServiceId(serviceId);
@@ -137,22 +125,25 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 
 			return this;
 		}
-
+		
+		@Override
 		public Builder setBreakServers(boolean breakServers) {
-			this.breakServers = breakServers;
-
+			super.setBreakServers(breakServers);
+			
 			return this;
 		}
-
+		
+		@Override
 		public Builder setBreakApps(boolean breakApps) {
-			this.breakApps = breakApps;
-
+			super.setBreakApps(breakApps);
+			
 			return this;
 		}
-
+		
+		@Override
 		public Builder setBreakDeployments(boolean breakDeployments) {
-			this.breakDeployments = breakDeployments;
-
+			super.setBreakDeployments(breakDeployments);
+			
 			return this;
 		}
 
@@ -188,20 +179,11 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 
 			return this;
 		}
-
-		public Builder breakExistingFilters() {
-			if (!CollectionUtil.safeIsEmpty(servers)) {
-				setBreakServers(true);
-			}
-
-			if (!CollectionUtil.safeIsEmpty(apps)) {
-				setBreakApps(true);
-			}
-
-			if (!CollectionUtil.safeIsEmpty(deployments)) {
-				setBreakDeployments(true);
-			}
-
+		
+		@Override
+		public Builder setBreakFilters(Set<BreakdownType> breakdownTypes) {
+			super.setBreakFilters(breakdownTypes);
+			
 			return this;
 		}
 
