@@ -489,35 +489,44 @@ public class RegressionUtil {
 
 		return true;
 	}
-
+	
+	public static DeploymentsTimespan getDeploymentsTimespan(ApiClient apiClient, String serviceId, Collection<String> deployments) {
+		return getDeploymentsTimespan(apiClient, serviceId, deployments, null);
+	}
+	
+	
 	public static DeploymentsTimespan getDeploymentsTimespan(ApiClient apiClient, String serviceId,
-			Collection<String> deployments) {
-		DeploymentsTimespan deploymentsTimespan = getDeploymentsTimespan(apiClient, serviceId, deployments, true);
+			Collection<String> deployments, List<SummarizedDeployment> deploymentsSummary) {
+		DeploymentsTimespan deploymentsTimespan = getDeploymentsTimespan(apiClient, serviceId, deployments, deploymentsSummary, true);
 
 		if (deploymentsTimespan != null) {
 			return deploymentsTimespan;
 		}
 
-		return getDeploymentsTimespan(apiClient, serviceId, deployments, false);
+		return getDeploymentsTimespan(apiClient, serviceId, deployments, deploymentsSummary, true);
 	}
 
 	private static DeploymentsTimespan getDeploymentsTimespan(ApiClient apiClient, String serviceId,
-			Collection<String> deployments, boolean active) {
+			Collection<String> deployments, List<SummarizedDeployment> deploymentsSummary, boolean active) {
 
-		DeploymentsRequest request = DeploymentsRequest.newBuilder().setServiceId(serviceId).setActive(active).build();
-
-		Response<DeploymentsResult> response = apiClient.get(request);
-
-		if ((response.isBadResponse()) || (response.data == null)) {
-			throw new IllegalStateException(
-					"Could not acquire deployments for service " + serviceId + " . Error " + response.responseCode);
+		Collection<SummarizedDeployment> deploymentsData = deploymentsSummary;
+		
+		if (deploymentsData == null) {
+			DeploymentsRequest request = DeploymentsRequest.newBuilder().setServiceId(serviceId).setActive(active).build();
+			
+			Response<DeploymentsResult> response = apiClient.get(request);
+			
+			if ((response.isBadResponse()) || (response.data == null)) {
+				throw new IllegalStateException(
+						"Could not acquire deployments for service " + serviceId + " . Error " + response.responseCode);
+			}
+			
+			if (response.data.deployments == null) {
+				return null;
+			}
+			
+			deploymentsData = response.data.deployments;
 		}
-
-		if (response.data.deployments == null) {
-			return null;
-		}
-
-		Collection<SummarizedDeployment> deploymentsData = response.data.deployments;
 
 		Map<String, Pair<DateTime, DateTime>> deploymentLifetime = Maps.newHashMap();
 
@@ -564,7 +573,7 @@ public class RegressionUtil {
 	}
 
 	public static RegressionWindow getActiveWindow(ApiClient apiClient, RegressionInput input,
-			PrintStream printStream) {
+			List<SummarizedDeployment> deploymentsSummary, PrintStream printStream) {
 		RegressionWindow result = new RegressionWindow();
 
 		result.activeTimespan = input.activeTimespan;
@@ -583,7 +592,7 @@ public class RegressionUtil {
 			return result;
 		}
 
-		DeploymentsTimespan deploymentsTimespan = getDeploymentsTimespan(apiClient, input.serviceId, input.deployments);
+		DeploymentsTimespan deploymentsTimespan = getDeploymentsTimespan(apiClient, input.serviceId, input.deployments, deploymentsSummary);
 
 		if (deploymentsTimespan == null) {
 			printStream.println("Deployments timespan is null for serviceId: " + input.serviceId + "deployments: "
@@ -676,15 +685,15 @@ public class RegressionUtil {
 	}
 
 	public static RateRegression calculateRateRegressions(ApiClient apiClient, RegressionInput input,
-			PrintStream printStream, boolean verbose) {
+			List<SummarizedDeployment> summarizedDeployments, PrintStream printStream, boolean verbose) {
 
 		if (printStream != null) {
 			printStream.println("Begin regression analysis");
 		}
 
 		RateRegression.Builder builder = new RateRegression.Builder();
-
-		RegressionWindow regressionWindow = getActiveWindow(apiClient, input, printStream);
+		
+		RegressionWindow regressionWindow = getActiveWindow(apiClient, input, summarizedDeployments, printStream);
 
 		if ((regressionWindow.activeTimespan == 0) && (!regressionWindow.deploymentFound)) {
 

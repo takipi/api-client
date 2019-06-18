@@ -3,12 +3,14 @@ package com.takipi.api.client.util.regression;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.joda.time.DateTime;
 import org.ocpsoft.prettytime.PrettyTime;
 
 import com.takipi.api.client.ApiClient;
+import com.takipi.api.client.data.deployment.SummarizedDeployment;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.util.regression.RegressionUtil.RegressionWindow;
 
@@ -153,12 +155,12 @@ public class RegressionStringUtil {
 		return result;
 	}
 
-	public static String getRegressionName(ApiClient apiClient, RegressionInput input) {
+	public static String getRegressionName(ApiClient apiClient, RegressionInput input, List<SummarizedDeployment> summarizedDeployments) {
 
 		String result = null;
 
 		if ((input.deployments != null) && (input.deployments.size() > 0)) {
-			result = getRegressionDeploymentName(apiClient, input);
+			result = getRegressionDeploymentName(apiClient, input, summarizedDeployments);
 		}
 
 		if (result == null) {
@@ -212,9 +214,10 @@ public class RegressionStringUtil {
 		return result;
 	}
 
-	private static String getRegressionDeploymentName(ApiClient apiClient, RegressionInput regressionInput) {
+	private static String getRegressionDeploymentName(ApiClient apiClient, RegressionInput regressionInput,
+			List<SummarizedDeployment> summarizedDeployment) {
 
-		RegressionWindow regressionWindow = RegressionUtil.getActiveWindow(apiClient, regressionInput, System.out);
+		RegressionWindow regressionWindow = RegressionUtil.getActiveWindow(apiClient, regressionInput, summarizedDeployment, System.out);
 
 		return getRegressionDeploymentName(regressionInput, regressionWindow.activeWindowStart);
 	}
