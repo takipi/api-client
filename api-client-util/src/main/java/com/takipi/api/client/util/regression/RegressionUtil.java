@@ -490,49 +490,43 @@ public class RegressionUtil {
 		return true;
 	}
 	
-	public static DeploymentsTimespan getDeploymentsTimespan(ApiClient apiClient, String serviceId, Collection<String> deployments) {
-		return getDeploymentsTimespan(apiClient, serviceId, deployments, null);
-	}
-	
-	
-	public static DeploymentsTimespan getDeploymentsTimespan(ApiClient apiClient, String serviceId,
-			Collection<String> deployments, List<SummarizedDeployment> deploymentsSummary) {
-		DeploymentsTimespan deploymentsTimespan = getDeploymentsTimespan(apiClient, serviceId, deployments, deploymentsSummary, false);
-
-		if (deploymentsTimespan != null) {
-			return deploymentsTimespan;
-		}
-
-		return getDeploymentsTimespan(apiClient, serviceId, deployments, deploymentsSummary, true);
-	}
-
-	private static DeploymentsTimespan getDeploymentsTimespan(ApiClient apiClient, String serviceId,
-			Collection<String> deployments, List<SummarizedDeployment> deploymentsSummary, boolean active) {
-
-		Collection<SummarizedDeployment> deploymentsData = deploymentsSummary;
+	public static List<SummarizedDeployment> getSummarizedDeployments(ApiClient apiClient, String serviceId, boolean active)
+	{
+		DeploymentsRequest request = DeploymentsRequest.newBuilder().setServiceId(serviceId).setActive(active).build();
 		
-		if (deploymentsData == null) {
-			DeploymentsRequest request = DeploymentsRequest.newBuilder().setServiceId(serviceId).setActive(active).build();
-			
-			Response<DeploymentsResult> response = apiClient.get(request);
-			
-			if ((response.isBadResponse()) || (response.data == null)) {
-				throw new IllegalStateException(
-						"Could not acquire deployments for service " + serviceId + " . Error " + response.responseCode);
-			}
-			
-			if (response.data.deployments == null) {
-				return null;
-			}
-			
-			deploymentsData = response.data.deployments;
+		Response<DeploymentsResult> response = apiClient.get(request);
+		
+		if ((response.isBadResponse()) || (response.data == null)) {
+			throw new IllegalStateException(
+					"Could not acquire deployments for service " + serviceId + " . Error " + response.responseCode);
 		}
+		
+		return response.data.deployments;
+	}
+	
+	public static DeploymentsTimespan getDeploymentsTimespan(ApiClient apiClient, String serviceId, Collection<String> deployments) {
+		
+		List<SummarizedDeployment> activeSummarizedDeployments = getSummarizedDeployments(apiClient, serviceId, true);
+		
+		DeploymentsTimespan activeDeploymentsTimespan = getDeploymentsTimespan(apiClient, serviceId, deployments, activeSummarizedDeployments);
+		
+		if (activeDeploymentsTimespan != null) {
+			return activeDeploymentsTimespan;
+		}
+		
+		List<SummarizedDeployment> nonActiveSummarizedDeployments = getSummarizedDeployments(apiClient, serviceId, false);
+		
+		return getDeploymentsTimespan(apiClient, serviceId, deployments, nonActiveSummarizedDeployments);
+	}
+	
+	private static DeploymentsTimespan getDeploymentsTimespan(ApiClient apiClient, String serviceId,
+			Collection<String> deployments, List<SummarizedDeployment> summarizedDeployments) {
 
 		Map<String, Pair<DateTime, DateTime>> deploymentLifetime = Maps.newHashMap();
 
 		Map<String, SummarizedDeployment> summarizedDeploymentByName = Maps.newHashMap();
 
-		for (SummarizedDeployment summaryDeployment : deploymentsData) {
+		for (SummarizedDeployment summaryDeployment : summarizedDeployments) {
 			summarizedDeploymentByName.put(summaryDeployment.name, summaryDeployment);
 		}
 
@@ -573,7 +567,7 @@ public class RegressionUtil {
 	}
 
 	public static RegressionWindow getActiveWindow(ApiClient apiClient, RegressionInput input,
-			List<SummarizedDeployment> deploymentsSummary, PrintStream printStream) {
+			List<SummarizedDeployment> summarizedDeployments, PrintStream printStream) {
 		RegressionWindow result = new RegressionWindow();
 
 		result.activeTimespan = input.activeTimespan;
@@ -591,8 +585,14 @@ public class RegressionUtil {
 
 			return result;
 		}
-
-		DeploymentsTimespan deploymentsTimespan = getDeploymentsTimespan(apiClient, input.serviceId, input.deployments, deploymentsSummary);
+		
+		DeploymentsTimespan deploymentsTimespan;
+		
+		if (CollectionUtil.safeIsEmpty(summarizedDeployments)) {
+			deploymentsTimespan = getDeploymentsTimespan(apiClient, input.serviceId, input.deployments);
+		} else {
+			deploymentsTimespan = getDeploymentsTimespan(apiClient, input.serviceId, input.deployments, summarizedDeployments);
+		}
 
 		if (deploymentsTimespan == null) {
 			printStream.println("Deployments timespan is null for serviceId: " + input.serviceId + "deployments: "
