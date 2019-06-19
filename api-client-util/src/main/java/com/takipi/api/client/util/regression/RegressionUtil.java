@@ -680,7 +680,7 @@ public class RegressionUtil {
 	}
 
 	public static RateRegression calculateRateRegressions(ApiClient apiClient, RegressionInput input,
-			RegressionWindow regressionWindow, PrintStream printStream, boolean verbose) {
+			List<SummarizedDeployment> summarizedDeployments, PrintStream printStream, boolean verbose) {
 
 		if (printStream != null) {
 			printStream.println("Begin regression analysis");
