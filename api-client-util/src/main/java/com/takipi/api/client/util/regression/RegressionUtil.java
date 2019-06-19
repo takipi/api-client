@@ -681,7 +681,7 @@ public class RegressionUtil {
 	}
 
 	public static RateRegression calculateRateRegressions(ApiClient apiClient, RegressionInput input,
-			List<SummarizedDeployment> summarizedDeployments, PrintStream printStream, boolean verbose) {
+			RegressionWindow regressionWindow, PrintStream printStream, boolean verbose) {
 
 		if (printStream != null) {
 			printStream.println("Begin regression analysis");
@@ -689,8 +689,6 @@ public class RegressionUtil {
 
 		RateRegression.Builder builder = new RateRegression.Builder();
 		
-		RegressionWindow regressionWindow = getActiveWindow(apiClient, input, summarizedDeployments, printStream);
-
 		if ((regressionWindow.activeTimespan == 0) && (!regressionWindow.deploymentFound)) {
 
 			if (printStream != null) {
