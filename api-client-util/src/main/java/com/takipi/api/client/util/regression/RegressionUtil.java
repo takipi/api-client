@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -676,6 +677,16 @@ public class RegressionUtil {
 			result = activeEventVolume.events;
 		}
 
+		return result;
+	}
+	
+	public static RateRegression calculateRateRegressions(ApiClient apiClient, RegressionInput input,
+			PrintStream printStream, boolean verbose) {
+		
+		RegressionWindow regressionWindow = getActiveWindow(apiClient, input, Collections.emptyList(), printStream);
+		
+		RateRegression result = calculateRateRegressions(apiClient, input, regressionWindow, printStream, verbose);
+		
 		return result;
 	}
 
