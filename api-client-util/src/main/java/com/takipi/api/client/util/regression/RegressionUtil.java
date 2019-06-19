@@ -688,6 +688,8 @@ public class RegressionUtil {
 
 		RateRegression.Builder builder = new RateRegression.Builder();
 		
+		RegressionWindow regressionWindow = getActiveWindow(apiClient, input, summarizedDeployments, printStream);
+
 		if ((regressionWindow.activeTimespan == 0) && (!regressionWindow.deploymentFound)) {
 
 			if (printStream != null) {
