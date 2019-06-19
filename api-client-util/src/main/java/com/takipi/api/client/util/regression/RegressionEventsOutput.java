@@ -14,14 +14,16 @@ public class RegressionEventsOutput {
 	public Graph activeWindowGraph;
 
 	public Map<String, EventResult> eventResultsMap;
-	public Set<BreakdownType> breakdownTypes;
+	public Set<BreakdownType> queryBreakdownTypes;
+	public Set<BreakdownType> determinantBreakdownTypes;
 	
 	public RegressionEventsOutput(DeterminantKey determinantKey, Graph baselineGraph, Graph activeWindowGraph,
-			Map<String, EventResult> eventResultsMap, Set<BreakdownType> breakdownTypes) {
+			Map<String, EventResult> eventResultsMap, Set<BreakdownType> queryBreakdownTypes, Set<BreakdownType> determinantBreakdownTypes) {
 		this.determinantKey = determinantKey;
 		this.baselineGraph = baselineGraph;
 		this.activeWindowGraph = activeWindowGraph;
 		this.eventResultsMap = eventResultsMap;
-		this.breakdownTypes = breakdownTypes;
+		this.queryBreakdownTypes = queryBreakdownTypes;
+		this.determinantBreakdownTypes = determinantBreakdownTypes;
 	}
 }

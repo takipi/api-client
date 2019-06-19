@@ -687,7 +687,7 @@ public class RegressionUtil {
 		}
 
 		RateRegression.Builder builder = new RateRegression.Builder();
-		
+
 		if ((regressionWindow.activeTimespan == 0) && (!regressionWindow.deploymentFound)) {
 
 			if (printStream != null) {
