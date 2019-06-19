@@ -490,8 +490,7 @@ public class RegressionUtil {
 		return true;
 	}
 	
-	public static List<SummarizedDeployment> getSummarizedDeployments(ApiClient apiClient, String serviceId, boolean active)
-	{
+	public static Collection<SummarizedDeployment> getSummarizedDeployments(ApiClient apiClient, String serviceId, boolean active) {
 		DeploymentsRequest request = DeploymentsRequest.newBuilder().setServiceId(serviceId).setActive(active).build();
 		
 		Response<DeploymentsResult> response = apiClient.get(request);
@@ -506,7 +505,7 @@ public class RegressionUtil {
 	
 	public static DeploymentsTimespan getDeploymentsTimespan(ApiClient apiClient, String serviceId, Collection<String> deployments) {
 		
-		List<SummarizedDeployment> activeSummarizedDeployments = getSummarizedDeployments(apiClient, serviceId, true);
+		Collection<SummarizedDeployment> activeSummarizedDeployments = getSummarizedDeployments(apiClient, serviceId, true);
 		
 		DeploymentsTimespan activeDeploymentsTimespan = getDeploymentsTimespan(deployments, activeSummarizedDeployments);
 		
@@ -514,12 +513,12 @@ public class RegressionUtil {
 			return activeDeploymentsTimespan;
 		}
 		
-		List<SummarizedDeployment> nonActiveSummarizedDeployments = getSummarizedDeployments(apiClient, serviceId, false);
+		Collection<SummarizedDeployment> nonActiveSummarizedDeployments = getSummarizedDeployments(apiClient, serviceId, false);
 		
 		return getDeploymentsTimespan(deployments, nonActiveSummarizedDeployments);
 	}
 	
-	private static DeploymentsTimespan getDeploymentsTimespan(Collection<String> deployments, List<SummarizedDeployment> summarizedDeployments) {
+	private static DeploymentsTimespan getDeploymentsTimespan(Collection<String> deployments, Collection<SummarizedDeployment> summarizedDeployments) {
 
 		Map<String, Pair<DateTime, DateTime>> deploymentLifetime = Maps.newHashMap();
 
@@ -566,7 +565,7 @@ public class RegressionUtil {
 	}
 
 	public static RegressionWindow getActiveWindow(ApiClient apiClient, RegressionInput input,
-			List<SummarizedDeployment> summarizedDeployments, PrintStream printStream) {
+			Collection<SummarizedDeployment> summarizedDeployments, PrintStream printStream) {
 		RegressionWindow result = new RegressionWindow();
 
 		result.activeTimespan = input.activeTimespan;

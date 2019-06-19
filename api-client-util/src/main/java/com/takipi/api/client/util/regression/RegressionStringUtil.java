@@ -2,8 +2,8 @@ package com.takipi.api.client.util.regression;
 
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.regex.Pattern;
 
 import org.joda.time.DateTime;
@@ -155,7 +155,7 @@ public class RegressionStringUtil {
 		return result;
 	}
 
-	public static String getRegressionName(ApiClient apiClient, RegressionInput input, List<SummarizedDeployment> summarizedDeployments) {
+	public static String getRegressionName(ApiClient apiClient, RegressionInput input, Collection<SummarizedDeployment> summarizedDeployments) {
 
 		String result = null;
 
@@ -215,7 +215,7 @@ public class RegressionStringUtil {
 	}
 
 	private static String getRegressionDeploymentName(ApiClient apiClient, RegressionInput regressionInput,
-			List<SummarizedDeployment> summarizedDeployment) {
+			Collection<SummarizedDeployment> summarizedDeployment) {
 
 		RegressionWindow regressionWindow = RegressionUtil.getActiveWindow(apiClient, regressionInput, summarizedDeployment, System.out);
 
