@@ -489,41 +489,42 @@ public class RegressionUtil {
 
 		return true;
 	}
-
-	public static DeploymentsTimespan getDeploymentsTimespan(ApiClient apiClient, String serviceId,
-			Collection<String> deployments) {
-		DeploymentsTimespan deploymentsTimespan = getDeploymentsTimespan(apiClient, serviceId, deployments, true);
-
-		if (deploymentsTimespan != null) {
-			return deploymentsTimespan;
-		}
-
-		return getDeploymentsTimespan(apiClient, serviceId, deployments, false);
-	}
-
-	private static DeploymentsTimespan getDeploymentsTimespan(ApiClient apiClient, String serviceId,
-			Collection<String> deployments, boolean active) {
-
+	
+	public static Collection<SummarizedDeployment> getSummarizedDeployments(ApiClient apiClient, String serviceId, boolean active) {
 		DeploymentsRequest request = DeploymentsRequest.newBuilder().setServiceId(serviceId).setActive(active).build();
-
+		
 		Response<DeploymentsResult> response = apiClient.get(request);
-
+		
 		if ((response.isBadResponse()) || (response.data == null)) {
 			throw new IllegalStateException(
 					"Could not acquire deployments for service " + serviceId + " . Error " + response.responseCode);
 		}
-
-		if (response.data.deployments == null) {
-			return null;
+		
+		return response.data.deployments;
+	}
+	
+	public static DeploymentsTimespan getDeploymentsTimespan(ApiClient apiClient, String serviceId, Collection<String> deployments) {
+		
+		Collection<SummarizedDeployment> activeSummarizedDeployments = getSummarizedDeployments(apiClient, serviceId, true);
+		
+		DeploymentsTimespan activeDeploymentsTimespan = getDeploymentsTimespan(deployments, activeSummarizedDeployments);
+		
+		if (activeDeploymentsTimespan != null) {
+			return activeDeploymentsTimespan;
 		}
-
-		Collection<SummarizedDeployment> deploymentsData = response.data.deployments;
+		
+		Collection<SummarizedDeployment> nonActiveSummarizedDeployments = getSummarizedDeployments(apiClient, serviceId, false);
+		
+		return getDeploymentsTimespan(deployments, nonActiveSummarizedDeployments);
+	}
+	
+	private static DeploymentsTimespan getDeploymentsTimespan(Collection<String> deployments, Collection<SummarizedDeployment> summarizedDeployments) {
 
 		Map<String, Pair<DateTime, DateTime>> deploymentLifetime = Maps.newHashMap();
 
 		Map<String, SummarizedDeployment> summarizedDeploymentByName = Maps.newHashMap();
 
-		for (SummarizedDeployment summaryDeployment : deploymentsData) {
+		for (SummarizedDeployment summaryDeployment : summarizedDeployments) {
 			summarizedDeploymentByName.put(summaryDeployment.name, summaryDeployment);
 		}
 
@@ -564,7 +565,7 @@ public class RegressionUtil {
 	}
 
 	public static RegressionWindow getActiveWindow(ApiClient apiClient, RegressionInput input,
-			PrintStream printStream) {
+			Collection<SummarizedDeployment> summarizedDeployments, PrintStream printStream) {
 		RegressionWindow result = new RegressionWindow();
 
 		result.activeTimespan = input.activeTimespan;
@@ -582,13 +583,16 @@ public class RegressionUtil {
 
 			return result;
 		}
-
-		DeploymentsTimespan deploymentsTimespan = getDeploymentsTimespan(apiClient, input.serviceId, input.deployments);
+		
+		DeploymentsTimespan deploymentsTimespan;
+		
+		if (CollectionUtil.safeIsEmpty(summarizedDeployments)) {
+			deploymentsTimespan = getDeploymentsTimespan(apiClient, input.serviceId, input.deployments);
+		} else {
+			deploymentsTimespan = getDeploymentsTimespan(input.deployments, summarizedDeployments);
+		}
 
 		if (deploymentsTimespan == null) {
-			printStream.println("Deployments timespan is null for serviceId: " + input.serviceId + "deployments: "
-					+ Arrays.toString(input.deployments.toArray()));
-
 			result.activeWindowStart = now.minusMinutes(input.activeTimespan);
 
 			return result;
@@ -676,15 +680,13 @@ public class RegressionUtil {
 	}
 
 	public static RateRegression calculateRateRegressions(ApiClient apiClient, RegressionInput input,
-			PrintStream printStream, boolean verbose) {
+			RegressionWindow regressionWindow, PrintStream printStream, boolean verbose) {
 
 		if (printStream != null) {
 			printStream.println("Begin regression analysis");
 		}
 
 		RateRegression.Builder builder = new RateRegression.Builder();
-
-		RegressionWindow regressionWindow = getActiveWindow(apiClient, input, printStream);
 
 		if ((regressionWindow.activeTimespan == 0) && (!regressionWindow.deploymentFound)) {
 

@@ -2,8 +2,12 @@ package com.takipi.api.client.util.regression;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import com.google.common.base.Strings;
+import com.takipi.common.util.CollectionUtil;
+
+import com.takipi.api.client.request.event.BreakdownType;
 
 public class DeterminantKey implements Comparable<DeterminantKey> {
 
@@ -58,5 +62,18 @@ public class DeterminantKey implements Comparable<DeterminantKey> {
 		}
 
 		return new DeterminantKey(determinantKey);
+	}
+	
+	public static DeterminantKey create(Set<BreakdownType> determinantBreakdownTypes, String machineName, String agentName,
+			String deploymentName) {
+		
+		if (CollectionUtil.safeIsEmpty(determinantBreakdownTypes)) {
+			return create("", "", "");
+		}
+		
+		String determinantAgentName = (determinantBreakdownTypes.contains(BreakdownType.App) ? agentName : "");
+		String determinantDeploymentName = (determinantBreakdownTypes.contains(BreakdownType.Deployment) ? deploymentName : "");
+		
+		return create(machineName, determinantAgentName, determinantDeploymentName);
 	}
 }
