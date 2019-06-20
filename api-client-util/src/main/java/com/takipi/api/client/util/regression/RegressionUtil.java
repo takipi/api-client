@@ -49,8 +49,6 @@ public class RegressionUtil {
 		public DateTime activeWindowStart;
 		public int activeTimespan;
 		public boolean deploymentFound;
-
-		public Map<String, Pair<DateTime, DateTime>> deploymentsTimespan;
 	}
 
 	enum RegressionState {
@@ -504,11 +502,11 @@ public class RegressionUtil {
 		return response.data.deployments;
 	}
 	
-	public static DeploymentsTimespan getDeploymentsTimespan(ApiClient apiClient, String serviceId, Collection<String> deployments) {
+	public static Pair<DateTime, DateTime> getDeploymentsActiveWindow(ApiClient apiClient, String serviceId, Collection<String> deployments) {
 		
 		Collection<SummarizedDeployment> activeSummarizedDeployments = getSummarizedDeployments(apiClient, serviceId, true);
 		
-		DeploymentsTimespan activeDeploymentsTimespan = getDeploymentsTimespan(deployments, activeSummarizedDeployments);
+		Pair<DateTime, DateTime> activeDeploymentsTimespan = getDeploymentsActiveWindow(deployments, activeSummarizedDeployments);
 		
 		if (activeDeploymentsTimespan != null) {
 			return activeDeploymentsTimespan;
@@ -516,12 +514,11 @@ public class RegressionUtil {
 		
 		Collection<SummarizedDeployment> nonActiveSummarizedDeployments = getSummarizedDeployments(apiClient, serviceId, false);
 		
-		return getDeploymentsTimespan(deployments, nonActiveSummarizedDeployments);
+		return getDeploymentsActiveWindow(deployments, nonActiveSummarizedDeployments);
 	}
 	
-	private static DeploymentsTimespan getDeploymentsTimespan(Collection<String> deployments, Collection<SummarizedDeployment> summarizedDeployments) {
-
-		Map<String, Pair<DateTime, DateTime>> deploymentLifetime = Maps.newHashMap();
+	private static Pair<DateTime, DateTime> getDeploymentsActiveWindow(Collection<String> deployments,
+			Collection<SummarizedDeployment> summarizedDeployments) {
 
 		Map<String, SummarizedDeployment> summarizedDeploymentByName = Maps.newHashMap();
 
@@ -555,14 +552,11 @@ public class RegressionUtil {
 
 				maxDeploymentEnd = end;
 			}
-
-			deploymentLifetime.put(summarizedDeployment.name, Pair.of(start, end));
 		}
 
-		DeploymentsTimespan deploymentsTimespan = new DeploymentsTimespan(deploymentLifetime,
-				Pair.of(minDeploymentStart, maxDeploymentEnd));
+		Pair<DateTime, DateTime> deploymentsActiveWindow = Pair.of(minDeploymentStart, maxDeploymentEnd);
 
-		return deploymentsTimespan;
+		return deploymentsActiveWindow;
 	}
 
 	public static RegressionWindow getActiveWindow(ApiClient apiClient, RegressionInput input,
@@ -585,21 +579,21 @@ public class RegressionUtil {
 			return result;
 		}
 		
-		DeploymentsTimespan deploymentsTimespan;
+		Pair<DateTime, DateTime> deploymentsActiveWindow;
 		
 		if (CollectionUtil.safeIsEmpty(summarizedDeployments)) {
-			deploymentsTimespan = getDeploymentsTimespan(apiClient, input.serviceId, input.deployments);
+			deploymentsActiveWindow = getDeploymentsActiveWindow(apiClient, input.serviceId, input.deployments);
 		} else {
-			deploymentsTimespan = getDeploymentsTimespan(input.deployments, summarizedDeployments);
+			deploymentsActiveWindow = getDeploymentsActiveWindow(input.deployments, summarizedDeployments);
 		}
 
-		if (deploymentsTimespan == null) {
+		if (deploymentsActiveWindow == null) {
 			result.activeWindowStart = now.minusMinutes(input.activeTimespan);
 
 			return result;
 		}
 
-		Pair<DateTime, DateTime> depTimespan = deploymentsTimespan.getActiveWindow();
+		Pair<DateTime, DateTime> depTimespan = deploymentsActiveWindow;
 
 		result.activeWindowStart = depTimespan.getFirst();
 
@@ -629,7 +623,6 @@ public class RegressionUtil {
 		}
 
 		result.deploymentFound = true;
-		result.deploymentsTimespan = deploymentsTimespan.getDeploymentsLifetimeMap();
 
 		return result;
 	}
