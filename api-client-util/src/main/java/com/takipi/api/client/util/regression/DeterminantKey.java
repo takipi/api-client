@@ -71,8 +71,8 @@ public class DeterminantKey implements Comparable<DeterminantKey> {
 			return create("", "", "");
 		}
 		
-		String determinantAgentName = (determinantBreakdownTypes.contains(BreakdownType.App) ? agentName : "");
-		String determinantDeploymentName = (determinantBreakdownTypes.contains(BreakdownType.Deployment) ? deploymentName : "");
+		String determinantAgentName = (CollectionUtil.safeContains(determinantBreakdownTypes, BreakdownType.App) ? agentName : "");
+		String determinantDeploymentName = (CollectionUtil.safeContains(determinantBreakdownTypes, BreakdownType.Deployment) ? deploymentName : "");
 		
 		return create(machineName, determinantAgentName, determinantDeploymentName);
 	}
