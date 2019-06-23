@@ -49,6 +49,18 @@ public class RegressionUtil {
 		public DateTime activeWindowStart;
 		public int activeTimespan;
 		public boolean deploymentFound;
+		
+		@Override
+		public RegressionWindow clone() {
+			
+			RegressionWindow result = new RegressionWindow();
+			
+			result.activeWindowStart = this.activeWindowStart;
+			result.activeTimespan = this.activeTimespan;
+			result.deploymentFound = this.deploymentFound;
+			
+			return result;
+		}
 	}
 
 	enum RegressionState {
