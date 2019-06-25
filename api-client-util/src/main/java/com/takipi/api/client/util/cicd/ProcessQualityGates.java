@@ -37,7 +37,7 @@ public class ProcessQualityGates {
 			(deploymentsTimespan.getActiveWindow() == null) ||
 			(deploymentsTimespan.getActiveWindow().getFirst() == null)) {
 			throw new IllegalStateException("Deployments " + Arrays.toString(input.deployments.toArray())
-					+ " not found. Please ensure your collector and Jenkins configuration are pointing to the same enviornment.");
+					+ " not found. Please ensure your collector and Jenkins configuration are pointing to the same environment.");
 		}
 		
 		Pair<DateTime, DateTime> deploymentsActiveWindow = deploymentsTimespan.getActiveWindow();
@@ -85,6 +85,7 @@ public class ProcessQualityGates {
 		for (EventResult event : events) {
 			String arcLink = getArcLink(apiClient, event.id, input, deploymentStart);
 			OOReportEvent newEvent = new OOReportEvent(event, null, arcLink);
+			newEvent.setApplications(getAppNames(input, event));
 			result.add(newEvent);
 
 			if (result.size() == topIssuesVolume) {
@@ -104,6 +105,7 @@ public class ProcessQualityGates {
 			}
 			String arcLink = getArcLink(apiClient, event.id, input, deploymentStart);
 			OOReportEvent newEvent = new OOReportEvent(event, null, arcLink);
+			newEvent.setApplications(getAppNames(input, event));
 			result.add(newEvent);
 		}
 		return result;
@@ -119,6 +121,7 @@ public class ProcessQualityGates {
 			}
 			String arcLink = getArcLink(apiClient, event.id, input, deploymentStart);
 			OOReportEvent newEvent = new OOReportEvent(event, null, arcLink);
+			newEvent.setApplications(getAppNames(input, event));
 			result.add(newEvent);
 		}
 		return result;
@@ -134,9 +137,34 @@ public class ProcessQualityGates {
 			}
 			String arcLink = getArcLink(apiClient, event.id, input, deploymentStart);
 			OOReportEvent newEvent = new OOReportEvent(event, RegressionStringUtil.NEW_ISSUE, arcLink);
+			newEvent.setApplications(getAppNames(input, event));
 			result.add(newEvent);
 		}
 		return result;
+	}
+	
+	private static String getAppNames(RegressionInput input, EventResult event) {
+		String appName = null;
+		
+		if (input.applictations != null && !input.applictations.isEmpty()) {
+			List<String> list = (List<String>)input.applictations;
+			appName = list.get(0);
+		} else {
+			boolean firstEvent = true;
+			List<String> labelList = event.labels;
+			for (String string : labelList) {
+				if (string.contains(".app")) {
+					int endpointPoint = string.indexOf(".app");
+					if (firstEvent) {
+						appName = string.substring(0, endpointPoint);
+					} else {
+						appName = appName + ", " + string.substring(0, endpointPoint);
+					}
+				}
+			}
+		}
+		
+		return appName;
 	}
 
 	// get the arclink for the event

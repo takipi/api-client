@@ -1,6 +1,7 @@
 package com.takipi.api.client.request.event;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import com.takipi.api.client.result.event.EventsResult;
@@ -106,6 +107,12 @@ public class EventsVolumeRequest extends BaseEventsRequest implements ApiGetRequ
 			return this;
 		}
 
+		public Builder clearApp() {
+			super.apps = new ArrayList<String>();
+			
+			return this;
+		}
+		
 		@Override
 		public Builder addApp(String app) {
 			super.addApp(app);
