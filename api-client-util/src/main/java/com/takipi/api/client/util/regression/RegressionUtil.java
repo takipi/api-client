@@ -436,18 +436,17 @@ public class RegressionUtil {
 
 		ApplyFilter(builder, input, true, !ignoreAppsFilter);
 
-		//first check for application name if provided
 		Response<EventsResult> response = apiClient.get(builder.build());
 
 		if (response.isBadResponse()) {
 			throw new IllegalStateException("Error querying volume data with code " + response.responseCode);
 		}
-		
+
 		EventsResult result = response.data;
-		
+
 		return result;
 	}
-	
+
 	private static Graph validateGraph(ApiClient apiClient, GraphResult graphResult, RegressionInput input,
 			PrintStream printStream) {
 

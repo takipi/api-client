@@ -105,7 +105,7 @@ public class EventsVolumeRequest extends BaseEventsRequest implements ApiGetRequ
 
 			return this;
 		}
-		
+
 		@Override
 		public Builder addApp(String app) {
 			super.addApp(app);
