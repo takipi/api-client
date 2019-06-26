@@ -18,6 +18,7 @@ import com.takipi.api.client.util.regression.RateRegression;
 import com.takipi.api.client.util.regression.RegressionInput;
 import com.takipi.api.client.util.regression.RegressionStringUtil;
 import com.takipi.api.client.util.regression.RegressionUtil;
+import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.Pair;
 
 public class ProcessQualityGates {
@@ -44,8 +45,7 @@ public class ProcessQualityGates {
 		
 		DateTime deploymentStart = deploymentsActiveWindow.getFirst();
 		
-		Collection<EventResult> events = RegressionUtil.getActiveEventVolume(apiClient, input, deploymentStart,
-				printStream);
+		Collection<EventResult> events = getEvents(apiClient, input, deploymentStart, printStream);
 
 		// if we find events, process the quality gates
 		if (events != null && events.size() > 0) {
@@ -78,6 +78,48 @@ public class ProcessQualityGates {
 		return qualityReport;
 	}
 
+	private static Collection<EventResult> getEvents(
+			ApiClient apiClient, RegressionInput input, DateTime deploymentStart, PrintStream printStream) {
+		
+		Collection<EventResult> events = RegressionUtil.getActiveEventVolume(apiClient, input, deploymentStart, printStream);
+		
+		if (!CollectionUtil.safeIsEmpty(events)) {
+			return events;
+		}
+		
+		// Try without the app filters.
+		//
+		events = RegressionUtil.getActiveEventVolume(apiClient, input, deploymentStart, printStream, true);
+		
+		if (CollectionUtil.safeIsEmpty(events)) {
+			// Sadly, still no events.
+			//
+			return events;
+		}
+		
+		// Now filter by app name for app tier
+		//
+		return filterByLabel(events, input);
+	}
+	
+	// This is for app tiers.
+	//
+	private static List<EventResult> filterByLabel(Collection<EventResult> inputEvents, RegressionInput input) {
+		//this will only find the first app by design. We may need to find multiple in the future
+		List<String> list = (List<String>)input.applictations;
+		String appName = list.get(0) + ".app";
+		
+		List<EventResult> result = new ArrayList<EventResult>();
+
+		for (EventResult eventResult : inputEvents) {
+			if (eventResult.labels != null && eventResult.labels.contains(appName)) {
+				result.add(eventResult);
+			}
+		}
+		
+		return result;
+	}
+	
 	private static List<OOReportEvent> getTopXEvents(ApiClient apiClient, RegressionInput input,
 			Collection<EventResult> events, int topIssuesVolume, DateTime deploymentStart) {
 		List<OOReportEvent> result = new ArrayList<OOReportEvent>();

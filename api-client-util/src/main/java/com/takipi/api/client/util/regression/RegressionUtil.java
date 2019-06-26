@@ -394,9 +394,9 @@ public class RegressionUtil {
 		return RegressionState.YES;
 	}
 
-	private static void ApplyFilter(ViewTimeframeRequest.Builder builder, RegressionInput input, boolean applyDeps) {
+	private static void ApplyFilter(ViewTimeframeRequest.Builder builder, RegressionInput input, boolean applyDeps, boolean applyApps) {
 
-		if (input.applictations != null) {
+		if ((applyApps) && (input.applictations != null)) {
 			for (String app : input.applictations) {
 
 				if (!app.isEmpty()) {
@@ -423,6 +423,10 @@ public class RegressionUtil {
 	}
 
 	public static EventsResult getEventsVolume(ApiClient apiClient, RegressionInput input, DateTime from, DateTime to) {
+		return getEventsVolume(apiClient, input, from, to, false);
+	}
+	
+	public static EventsResult getEventsVolume(ApiClient apiClient, RegressionInput input, DateTime from, DateTime to, boolean ignoreAppsFilter) {
 
 		String fromStr = from.toString(ISODateTimeFormat.dateTime().withZoneUTC());
 		String toStr = to.toString(ISODateTimeFormat.dateTime().withZoneUTC());
@@ -430,54 +434,20 @@ public class RegressionUtil {
 		EventsVolumeRequest.Builder builder = EventsVolumeRequest.newBuilder().setServiceId(input.serviceId)
 				.setViewId(input.viewId).setFrom(fromStr).setTo(toStr).setVolumeType(VolumeType.all);
 
-		ApplyFilter(builder, input, true);
+		ApplyFilter(builder, input, true, !ignoreAppsFilter);
 
 		//first check for application name if provided
 		Response<EventsResult> response = apiClient.get(builder.build());
-		EventsResult result;
 
 		if (response.isBadResponse()) {
 			throw new IllegalStateException("Error querying volume data with code " + response.responseCode);
-		} else if (response.data.events == null) {
-			//if no data, then check for app tier
-			builder.clearApp();
-			response = apiClient.get(builder.build());
-
-			if (response.isBadResponse()) {
-				throw new IllegalStateException("Error querying volume data with code " + response.responseCode);
-			}
-			//now filter by app name for app tier
-			if (response.data.events != null) {
-				result = filterByLabel(response.data.events, input);
-			} else {
-				result = null;
-			}
-			
-		} else {
-			result = response.data;
 		}
-
+		
+		EventsResult result = response.data;
+		
 		return result;
 	}
 	
-	//this is for app tiers
-	private static EventsResult filterByLabel(Collection<EventResult> inputEvents, RegressionInput input) {
-		//this will only find the first app by design. We may need to find multiple in the future
-		List<String> list = (List<String>)input.applictations;
-		String appName = list.get(0) + ".app";
-		
-		EventsResult result = new EventsResult();
-		result.events = new ArrayList<EventResult>();
-
-		for (EventResult eventResult : inputEvents) {
-			if (eventResult.labels != null && eventResult.labels.contains(appName)) {
-				result.events.add(eventResult);
-			}
-		}
-		
-		return result;
-	}
-
 	private static Graph validateGraph(ApiClient apiClient, GraphResult graphResult, RegressionInput input,
 			PrintStream printStream) {
 
@@ -696,6 +666,11 @@ public class RegressionUtil {
 
 	public static Collection<EventResult> getActiveEventVolume(ApiClient apiClient, RegressionInput input,
 			DateTime activeWindowStart, PrintStream printStream) {
+		return getActiveEventVolume(apiClient, input, activeWindowStart, printStream, false);
+	}
+	
+	public static Collection<EventResult> getActiveEventVolume(ApiClient apiClient, RegressionInput input,
+			DateTime activeWindowStart, PrintStream printStream, boolean ignoreAppsFilter) {
 
 		Collection<EventResult> result;
 
@@ -703,7 +678,7 @@ public class RegressionUtil {
 			result = input.events;
 		} else {
 
-			EventsResult activeEventVolume = getEventsVolume(apiClient, input, activeWindowStart, DateTime.now());
+			EventsResult activeEventVolume = getEventsVolume(apiClient, input, activeWindowStart, DateTime.now(), ignoreAppsFilter);
 
 			if (!validateVolume(apiClient, activeEventVolume, input, printStream)) {
 				return null;
