@@ -516,12 +516,10 @@ public class RegressionUtil {
 		
 		Collection<SummarizedDeployment> activeSummarizedDeployments = getSummarizedDeployments(apiClient, serviceId, true);
 		
-		if (activeSummarizedDeployments != null) {
-			DeploymentsTimespan activeDeploymentsTimespan = getDeploymentsTimespan(deployments, activeSummarizedDeployments);
-			
-			if (activeDeploymentsTimespan != null) {
-				return activeDeploymentsTimespan;
-			}
+		DeploymentsTimespan activeDeploymentsTimespan = getDeploymentsTimespan(deployments, activeSummarizedDeployments);
+		
+		if (activeDeploymentsTimespan != null) {
+			return activeDeploymentsTimespan;
 		}
 		
 		Collection<SummarizedDeployment> nonActiveSummarizedDeployments = getSummarizedDeployments(apiClient, serviceId, false);
