@@ -501,6 +501,10 @@ public class RegressionUtil {
 					"Could not acquire deployments for service " + serviceId + " . Error " + response.responseCode);
 		}
 		
+		if (CollectionUtil.safeIsEmpty(response.data.deployments)) {
+			return Collections.emptySet();
+		}
+		
 		return response.data.deployments;
 	}
 	
@@ -519,7 +523,8 @@ public class RegressionUtil {
 		return getDeploymentsTimespan(deployments, nonActiveSummarizedDeployments);
 	}
 	
-	private static DeploymentsTimespan getDeploymentsTimespan(Collection<String> deployments, Collection<SummarizedDeployment> summarizedDeployments) {
+	private static DeploymentsTimespan getDeploymentsTimespan(Collection<String> deployments,
+			Collection<SummarizedDeployment> summarizedDeployments) {
 
 		Map<String, Pair<DateTime, DateTime>> deploymentLifetime = Maps.newHashMap();
 
