@@ -1,12 +1,21 @@
 package com.takipi.api.client.request.category;
 
+import java.io.UnsupportedEncodingException;
+
+import com.google.common.base.Strings;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.category.CategoriesResult;
 import com.takipi.api.core.request.intf.ApiGetRequest;
 
 public class CategoriesRequest extends ServiceRequest implements ApiGetRequest<CategoriesResult> {
-	CategoriesRequest(String serviceId) {
+	public final String categoryName;
+	public final boolean includeViews;
+
+	CategoriesRequest(String serviceId, String categoryName, boolean includeViews) {
 		super(serviceId);
+
+		this.categoryName = categoryName;
+		this.includeViews = includeViews;
 	}
 
 	@Override
@@ -19,11 +28,29 @@ public class CategoriesRequest extends ServiceRequest implements ApiGetRequest<C
 		return baseUrlPath() + "/categories";
 	}
 
+	@Override
+	public String[] queryParams() throws UnsupportedEncodingException {
+		int size = (Strings.isNullOrEmpty(categoryName) ? 1 : 2);
+
+		String[] params = new String[size];
+
+		params[0] = "views=" + Boolean.toString(includeViews);
+
+		if (!Strings.isNullOrEmpty(categoryName)) {
+			params[1] = "name=" + encode(categoryName);
+		}
+
+		return params;
+	}
+
 	public static Builder newBuilder() {
 		return new Builder();
 	}
 
 	public static class Builder extends ServiceRequest.Builder {
+		private String categoryName;
+		private boolean includeViews;
+
 		Builder() {
 
 		}
@@ -35,10 +62,22 @@ public class CategoriesRequest extends ServiceRequest implements ApiGetRequest<C
 			return this;
 		}
 
+		public Builder setCategoryName(String categoryName) {
+			this.categoryName = categoryName;
+
+			return this;
+		}
+
+		public Builder setIncludeViews(boolean includeViews) {
+			this.includeViews = includeViews;
+
+			return this;
+		}
+
 		public CategoriesRequest build() {
 			validate();
 
-			return new CategoriesRequest(serviceId);
+			return new CategoriesRequest(serviceId, categoryName, includeViews);
 		}
 	}
 }

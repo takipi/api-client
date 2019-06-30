@@ -2,15 +2,17 @@ package com.takipi.api.client.request.metrics;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
+import java.util.Set;
 
-import com.takipi.api.client.request.ViewTimeframeRequest;
+import com.takipi.api.client.request.BreakdownViewTimeframeRequest;
+import com.takipi.api.client.request.event.BreakdownType;
 import com.takipi.api.client.result.metrics.GraphResult;
 import com.takipi.api.client.util.validation.ValidationUtil.GraphResolution;
 import com.takipi.api.client.util.validation.ValidationUtil.GraphType;
 import com.takipi.api.client.util.validation.ValidationUtil.VolumeType;
 import com.takipi.api.core.request.intf.ApiGetRequest;
 
-public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<GraphResult> {
+public class GraphRequest extends BreakdownViewTimeframeRequest implements ApiGetRequest<GraphResult> {
 	public final GraphType graphType;
 	public final VolumeType volumeType;
 	public final int wantedPointCount;
@@ -18,8 +20,9 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 
 	GraphRequest(String serviceId, String viewId, GraphType graphType, VolumeType volumeType, String from, String to,
 			boolean raw, int wantedPointCount, GraphResolution resolution, Collection<String> servers,
-			Collection<String> apps, Collection<String> deployments) {
-		super(serviceId, viewId, from, to, raw, servers, apps, deployments);
+			Collection<String> apps, Collection<String> deployments, boolean breakServers, boolean breakApps,
+			boolean breakDeployments) {
+		super(serviceId, viewId, from, to, raw, servers, apps, deployments, breakServers, breakApps, breakDeployments);
 
 		this.graphType = graphType;
 		this.volumeType = volumeType;
@@ -70,12 +73,12 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 		return new Builder();
 	}
 
-	public static class Builder extends ViewTimeframeRequest.Builder {
+	public static class Builder extends BreakdownViewTimeframeRequest.Builder {
 		private GraphType graphType;
 		private VolumeType volumeType;
 		private int wantedPointCount;
 		private GraphResolution resolution;
-
+	
 		@Override
 		public Builder setServiceId(String serviceId) {
 			super.setServiceId(serviceId);
@@ -122,6 +125,27 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 
 			return this;
 		}
+		
+		@Override
+		public Builder setBreakServers(boolean breakServers) {
+			super.setBreakServers(breakServers);
+			
+			return this;
+		}
+		
+		@Override
+		public Builder setBreakApps(boolean breakApps) {
+			super.setBreakApps(breakApps);
+			
+			return this;
+		}
+		
+		@Override
+		public Builder setBreakDeployments(boolean breakDeployments) {
+			super.setBreakDeployments(breakDeployments);
+			
+			return this;
+		}
 
 		public Builder setWantedPointCount(int wantedPointCount) {
 			this.wantedPointCount = wantedPointCount;
@@ -155,6 +179,13 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 
 			return this;
 		}
+		
+		@Override
+		public Builder setBreakFilters(Set<BreakdownType> breakdownTypes) {
+			super.setBreakFilters(breakdownTypes);
+			
+			return this;
+		}
 
 		@Override
 		protected void validate() {
@@ -174,7 +205,7 @@ public class GraphRequest extends ViewTimeframeRequest implements ApiGetRequest<
 			validate();
 
 			return new GraphRequest(serviceId, viewId, graphType, volumeType, from, to, raw, wantedPointCount,
-					resolution, servers, apps, deployments);
+					resolution, servers, apps, deployments, breakServers, breakApps, breakDeployments);
 		}
 	}
 }

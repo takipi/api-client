@@ -8,6 +8,9 @@ public class TransactionGraph {
 	public String method_name;
 	public String method_desc;
 
+	public String machine_name;
+	public String application_name;
+	public String deployment_name;
 	public List<GraphPoint> points;
 
 	public static class GraphPoint {

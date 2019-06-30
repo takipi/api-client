@@ -2,6 +2,7 @@ package com.takipi.api.client.util.cicd;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -12,10 +13,13 @@ import com.google.gson.Gson;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.util.event.EventUtil;
+import com.takipi.api.client.util.regression.DeploymentsTimespan;
 import com.takipi.api.client.util.regression.RateRegression;
 import com.takipi.api.client.util.regression.RegressionInput;
 import com.takipi.api.client.util.regression.RegressionStringUtil;
 import com.takipi.api.client.util.regression.RegressionUtil;
+import com.takipi.common.util.CollectionUtil;
+import com.takipi.common.util.Pair;
 
 public class ProcessQualityGates {
 
@@ -24,19 +28,24 @@ public class ProcessQualityGates {
 	// process CICD gates based on the inputs sent in
 	public static QualityGateReport processCICDInputs(ApiClient apiClient, RegressionInput input, boolean newEvents,
 			boolean resurfacedEvents, String regexFilter, int topIssuesVolume, boolean countGate,
-			PrintStream printStream, boolean verbose) {
+			PrintStream printStream, @SuppressWarnings("unused") boolean verbose) {
 
 		qualityReport = new QualityGateReport();
-
-		DateTime deploymentStart = RegressionUtil.getDeploymentStartTime(apiClient, input.serviceId, input.deployments);
-
-		if (deploymentStart == null) {
-			throw new IllegalStateException("Deployment name " + input.deployments
-					+ " not found. Please ensure your collector and Jenkins configuration are pointing to the same enviornment.");
+		
+		DeploymentsTimespan deploymentsTimespan = RegressionUtil.getDeploymentsTimespan(apiClient, input.serviceId, input.deployments);
+		
+		if ((deploymentsTimespan == null) ||
+			(deploymentsTimespan.getActiveWindow() == null) ||
+			(deploymentsTimespan.getActiveWindow().getFirst() == null)) {
+			throw new IllegalStateException("Deployments " + Arrays.toString(input.deployments.toArray())
+					+ " not found. Please ensure your collector and Jenkins configuration are pointing to the same environment.");
 		}
-
-		Collection<EventResult> events = RegressionUtil.getActiveEventVolume(apiClient, input, deploymentStart,
-				printStream);
+		
+		Pair<DateTime, DateTime> deploymentsActiveWindow = deploymentsTimespan.getActiveWindow();
+		
+		DateTime deploymentStart = deploymentsActiveWindow.getFirst();
+		
+		Collection<EventResult> events = getEvents(apiClient, input, deploymentStart, printStream);
 
 		// if we find events, process the quality gates
 		if (events != null && events.size() > 0) {
@@ -69,6 +78,48 @@ public class ProcessQualityGates {
 		return qualityReport;
 	}
 
+	private static Collection<EventResult> getEvents(
+			ApiClient apiClient, RegressionInput input, DateTime deploymentStart, PrintStream printStream) {
+		
+		Collection<EventResult> events = RegressionUtil.getActiveEventVolume(apiClient, input, deploymentStart, printStream);
+		
+		if (!CollectionUtil.safeIsEmpty(events)) {
+			return events;
+		}
+		
+		// Try without the app filters.
+		//
+		events = RegressionUtil.getActiveEventVolume(apiClient, input, deploymentStart, printStream, true);
+		
+		if (CollectionUtil.safeIsEmpty(events)) {
+			// Sadly, still no events.
+			//
+			return events;
+		}
+		
+		// Now filter by app name for app tier
+		//
+		return filterByLabel(events, input);
+	}
+	
+	// This is for app tiers.
+	//
+	private static List<EventResult> filterByLabel(Collection<EventResult> inputEvents, RegressionInput input) {
+		//this will only find the first app by design. We may need to find multiple in the future
+		List<String> list = (List<String>)input.applictations;
+		String appName = list.get(0) + ".app";
+		
+		List<EventResult> result = new ArrayList<EventResult>();
+
+		for (EventResult eventResult : inputEvents) {
+			if (eventResult.labels != null && eventResult.labels.contains(appName)) {
+				result.add(eventResult);
+			}
+		}
+		
+		return result;
+	}
+	
 	private static List<OOReportEvent> getTopXEvents(ApiClient apiClient, RegressionInput input,
 			Collection<EventResult> events, int topIssuesVolume, DateTime deploymentStart) {
 		List<OOReportEvent> result = new ArrayList<OOReportEvent>();
@@ -76,6 +127,7 @@ public class ProcessQualityGates {
 		for (EventResult event : events) {
 			String arcLink = getArcLink(apiClient, event.id, input, deploymentStart);
 			OOReportEvent newEvent = new OOReportEvent(event, null, arcLink);
+			newEvent.setApplications(getAppNames(input, event));
 			result.add(newEvent);
 
 			if (result.size() == topIssuesVolume) {
@@ -95,6 +147,7 @@ public class ProcessQualityGates {
 			}
 			String arcLink = getArcLink(apiClient, event.id, input, deploymentStart);
 			OOReportEvent newEvent = new OOReportEvent(event, null, arcLink);
+			newEvent.setApplications(getAppNames(input, event));
 			result.add(newEvent);
 		}
 		return result;
@@ -110,6 +163,7 @@ public class ProcessQualityGates {
 			}
 			String arcLink = getArcLink(apiClient, event.id, input, deploymentStart);
 			OOReportEvent newEvent = new OOReportEvent(event, null, arcLink);
+			newEvent.setApplications(getAppNames(input, event));
 			result.add(newEvent);
 		}
 		return result;
@@ -125,9 +179,34 @@ public class ProcessQualityGates {
 			}
 			String arcLink = getArcLink(apiClient, event.id, input, deploymentStart);
 			OOReportEvent newEvent = new OOReportEvent(event, RegressionStringUtil.NEW_ISSUE, arcLink);
+			newEvent.setApplications(getAppNames(input, event));
 			result.add(newEvent);
 		}
 		return result;
+	}
+	
+	private static String getAppNames(RegressionInput input, EventResult event) {
+		String appName = null;
+		
+		if (input.applictations != null && !input.applictations.isEmpty()) {
+			List<String> list = (List<String>)input.applictations;
+			appName = list.get(0);
+		} else {
+			boolean firstEvent = true;
+			List<String> labelList = event.labels;
+			for (String string : labelList) {
+				if (string.contains(".app")) {
+					int endpointPoint = string.indexOf(".app");
+					if (firstEvent) {
+						appName = string.substring(0, endpointPoint);
+					} else {
+						appName = appName + ", " + string.substring(0, endpointPoint);
+					}
+				}
+			}
+		}
+		
+		return appName;
 	}
 
 	// get the arclink for the event

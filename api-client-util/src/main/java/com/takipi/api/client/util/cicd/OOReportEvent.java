@@ -5,9 +5,10 @@ import com.takipi.api.client.util.regression.RegressionStringUtil;
 
 public class OOReportEvent {
 
-	protected final EventResult event;
-	protected final String arcLink;
-	protected final String type;
+	private EventResult event;
+	private String arcLink;
+	private String type;
+	private String applications;
 
 	public OOReportEvent(EventResult event, String arcLink) {
 		this(event, null, arcLink);
@@ -46,8 +47,24 @@ public class OOReportEvent {
 		return arcLink;
 	}
 
+	public void setArcLink(String arcLink) {
+		this.arcLink = arcLink;
+	}
+
 	public long getHits() {
 		return event.stats.hits;
+	}
+	
+	public void setApplications(String app) {
+		if (applications == null) {
+			applications = app;
+		} else {
+			applications = applications + ", " + app;
+		}
+	}
+	
+	public String getApplications() {
+		return applications;
 	}
 
 	public long getCalls() {
