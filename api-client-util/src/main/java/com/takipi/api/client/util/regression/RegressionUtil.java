@@ -404,9 +404,9 @@ public class RegressionUtil {
 		return RegressionState.YES;
 	}
 
-	private static void ApplyFilter(ViewTimeframeRequest.Builder builder, RegressionInput input, boolean applyDeps) {
+	private static void ApplyFilter(ViewTimeframeRequest.Builder builder, RegressionInput input, boolean applyDeps, boolean applyApps) {
 
-		if (input.applictations != null) {
+		if ((applyApps) && (input.applictations != null)) {
 			for (String app : input.applictations) {
 
 				if (!app.isEmpty()) {
@@ -433,6 +433,10 @@ public class RegressionUtil {
 	}
 
 	public static EventsResult getEventsVolume(ApiClient apiClient, RegressionInput input, DateTime from, DateTime to) {
+		return getEventsVolume(apiClient, input, from, to, false);
+	}
+	
+	public static EventsResult getEventsVolume(ApiClient apiClient, RegressionInput input, DateTime from, DateTime to, boolean ignoreAppsFilter) {
 
 		String fromStr = from.toString(ISODateTimeFormat.dateTime().withZoneUTC());
 		String toStr = to.toString(ISODateTimeFormat.dateTime().withZoneUTC());
@@ -440,7 +444,7 @@ public class RegressionUtil {
 		EventsVolumeRequest.Builder builder = EventsVolumeRequest.newBuilder().setServiceId(input.serviceId)
 				.setViewId(input.viewId).setFrom(fromStr).setTo(toStr).setVolumeType(VolumeType.all);
 
-		ApplyFilter(builder, input, true);
+		ApplyFilter(builder, input, true, !ignoreAppsFilter);
 
 		Response<EventsResult> response = apiClient.get(builder.build());
 
@@ -509,6 +513,10 @@ public class RegressionUtil {
 		if ((response.isBadResponse()) || (response.data == null)) {
 			throw new IllegalStateException(
 					"Could not acquire deployments for service " + serviceId + " . Error " + response.responseCode);
+		}
+		
+		if (CollectionUtil.safeIsEmpty(response.data.deployments)) {
+			return Collections.emptySet();
 		}
 		
 		return response.data.deployments;
@@ -664,6 +672,11 @@ public class RegressionUtil {
 
 	public static Collection<EventResult> getActiveEventVolume(ApiClient apiClient, RegressionInput input,
 			DateTime activeWindowStart, PrintStream printStream) {
+		return getActiveEventVolume(apiClient, input, activeWindowStart, printStream, false);
+	}
+	
+	public static Collection<EventResult> getActiveEventVolume(ApiClient apiClient, RegressionInput input,
+			DateTime activeWindowStart, PrintStream printStream, boolean ignoreAppsFilter) {
 
 		Collection<EventResult> result;
 
@@ -671,9 +684,7 @@ public class RegressionUtil {
 			result = input.events;
 		} else {
 
-			// add one minute in case the date range is not a full minute which causes the
-			// query to fail
-			EventsResult activeEventVolume = getEventsVolume(apiClient, input, activeWindowStart, DateTime.now());
+			EventsResult activeEventVolume = getEventsVolume(apiClient, input, activeWindowStart, DateTime.now(), ignoreAppsFilter);
 
 			if (!validateVolume(apiClient, activeEventVolume, input, printStream)) {
 				return null;
