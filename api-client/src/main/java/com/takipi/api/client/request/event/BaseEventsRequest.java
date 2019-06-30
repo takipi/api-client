@@ -92,22 +92,25 @@ public abstract class BaseEventsRequest extends BreakdownViewTimeframeRequest {
 
 			return this;
 		}
-		
+
+		@Override
 		public Builder setBreakServers(boolean breakServers) {
 			super.setBreakServers(breakServers);
-			
+
 			return this;
 		}
-		
+
+		@Override
 		public Builder setBreakApps(boolean breakApps) {
 			super.setBreakApps(breakApps);
-			
+
 			return this;
 		}
-		
+
+		@Override
 		public Builder setBreakDeployments(boolean breakDeployments) {
 			super.setBreakDeployments(breakDeployments);
-			
+
 			return this;
 		}
 
