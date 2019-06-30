@@ -1,19 +1,19 @@
 package com.takipi.api.client.result.alertssettings;
 
-import com.takipi.api.client.data.alertssetings.DefaultAlertsSettings.AlertsDefaultEmailSettings;
-import com.takipi.api.client.data.alertssetings.DefaultAlertsSettings.AlertsDefaultHipChatSettings;
-import com.takipi.api.client.data.alertssetings.DefaultAlertsSettings.AlertsDefaultPagerDutySettings;
-import com.takipi.api.client.data.alertssetings.DefaultAlertsSettings.AlertsDefaultServiceNowSettings;
-import com.takipi.api.client.data.alertssetings.DefaultAlertsSettings.AlertsDefaultSlackSettings;
-import com.takipi.api.client.data.alertssetings.DefaultAlertsSettings.AlertsDefaultWebhookSettings;
+import com.takipi.api.client.data.alertssetings.AlertsSettings.EmailAlertSettings;
+import com.takipi.api.client.data.alertssetings.AlertsSettings.HipChatAlertSettings;
+import com.takipi.api.client.data.alertssetings.AlertsSettings.PagerDutyAlertSettings;
+import com.takipi.api.client.data.alertssetings.AlertsSettings.ServiceNowAlertSettings;
+import com.takipi.api.client.data.alertssetings.AlertsSettings.SlackAlertSettings;
+import com.takipi.api.client.data.alertssetings.AlertsSettings.WebhookAlertSettings;
 import com.takipi.api.core.result.intf.ApiResult;
 
 public class DefaultAlertsSettingsResult implements ApiResult
 {
-	public AlertsDefaultEmailSettings email;
-	public AlertsDefaultSlackSettings slack;
-	public AlertsDefaultHipChatSettings hip_chat;
-	public AlertsDefaultPagerDutySettings pager_duty;
-	public AlertsDefaultWebhookSettings webhook;
-	public AlertsDefaultServiceNowSettings service_now;
+	public EmailAlertSettings email;
+	public SlackAlertSettings slack;
+	public HipChatAlertSettings hip_chat;
+	public PagerDutyAlertSettings pager_duty;
+	public WebhookAlertSettings webhook;
+	public ServiceNowAlertSettings service_now;
 }
