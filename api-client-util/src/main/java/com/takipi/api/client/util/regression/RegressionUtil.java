@@ -613,9 +613,7 @@ public class RegressionUtil {
 			return result;
 		}
 
-		Pair<DateTime, DateTime> depTimespan = deploymentsActiveWindow;
-
-		result.activeWindowStart = depTimespan.getFirst();
+		result.activeWindowStart = deploymentsActiveWindow.getFirst();
 
 		if (result.activeWindowStart == null) {
 			if (printStream != null) {
@@ -628,8 +626,8 @@ public class RegressionUtil {
 
 		DateTime activeWindowEnd;
 
-		if (depTimespan.getSecond() != null) {
-			activeWindowEnd = depTimespan.getSecond();
+		if (deploymentsActiveWindow.getSecond() != null) {
+			activeWindowEnd = deploymentsActiveWindow.getSecond();
 		} else {
 			activeWindowEnd = now;
 		}
