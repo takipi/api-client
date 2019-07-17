@@ -1,20 +1,20 @@
 package com.takipi.api.client.request;
 
-import com.takipi.api.client.request.event.BreakdownType;
-
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Set;
 
-public abstract class BreakdownViewTimeframeRequest extends ViewTimeframeRequest {
+import com.takipi.api.client.request.event.BreakdownType;
+
+public abstract class BreakdownEventsTimeframeRequest extends EventsTimeframeRequest {
 	public final boolean breakServers;
 	public final boolean breakApps;
 	public final boolean breakDeployments;
 
-	public BreakdownViewTimeframeRequest(String serviceId, String viewId, String from, String to, boolean raw,
+	public BreakdownEventsTimeframeRequest(String serviceId, Collection<String> eventIds, String from, String to,
 			Collection<String> servers, Collection<String> apps, Collection<String> deployments, boolean breakServers,
 			boolean breakApps, boolean breakDeployments) {
-		super(serviceId, viewId, from, to, raw, servers, apps, deployments);
+		super(serviceId, eventIds, from, to, servers, apps, deployments);
 
 		this.breakServers = breakServers;
 		this.breakApps = breakApps;
@@ -39,7 +39,7 @@ public abstract class BreakdownViewTimeframeRequest extends ViewTimeframeRequest
 		return index;
 	}
 
-	public abstract static class Builder extends ViewTimeframeRequest.Builder {
+	public abstract static class Builder extends EventsTimeframeRequest.Builder {
 		protected boolean breakServers;
 		protected boolean breakApps;
 		protected boolean breakDeployments;

@@ -30,7 +30,6 @@ public class RegressionStringUtil {
 	private static final int MAX_MESSAGE_LENGTH = 100;
 
 	public static String getEventSummary(EventResult event) {
-
 		String message;
 
 		if ((event.message != null) && (event.message.trim().length() > 0) && (!event.message.equals(event.name))) {
@@ -44,7 +43,7 @@ public class RegressionStringUtil {
 			}
 
 			message = ": " + messageBody;
-		} else {
+		} else if (event.error_location != null) {
 			String[] parts = event.error_location.class_name.split(Pattern.quote("."));
 
 			String simpleClassName;
@@ -56,6 +55,8 @@ public class RegressionStringUtil {
 			}
 
 			message = " in " + simpleClassName + "." + event.error_location.method_name;
+		} else {
+			message = "";
 		}
 
 		String result = event.name + message;

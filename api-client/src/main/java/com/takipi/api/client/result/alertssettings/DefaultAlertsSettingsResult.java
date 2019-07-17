@@ -1,11 +1,11 @@
 package com.takipi.api.client.result.alertssettings;
 
-import com.takipi.api.client.data.alertssetings.AlertsSettings.EmailAlertSettings;
-import com.takipi.api.client.data.alertssetings.AlertsSettings.HipChatAlertSettings;
-import com.takipi.api.client.data.alertssetings.AlertsSettings.PagerDutyAlertSettings;
-import com.takipi.api.client.data.alertssetings.AlertsSettings.ServiceNowAlertSettings;
-import com.takipi.api.client.data.alertssetings.AlertsSettings.SlackAlertSettings;
-import com.takipi.api.client.data.alertssetings.AlertsSettings.WebhookAlertSettings;
+import com.takipi.api.client.data.settings.AlertChannelsSettings.EmailAlertSettings;
+import com.takipi.api.client.data.settings.AlertChannelsSettings.HipChatAlertSettings;
+import com.takipi.api.client.data.settings.AlertChannelsSettings.PagerDutyAlertSettings;
+import com.takipi.api.client.data.settings.AlertChannelsSettings.ServiceNowAlertSettings;
+import com.takipi.api.client.data.settings.AlertChannelsSettings.SlackAlertSettings;
+import com.takipi.api.client.data.settings.AlertChannelsSettings.WebhookAlertSettings;
 import com.takipi.api.core.result.intf.ApiResult;
 
 public class DefaultAlertsSettingsResult implements ApiResult

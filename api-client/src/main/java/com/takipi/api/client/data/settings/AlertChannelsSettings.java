@@ -1,6 +1,6 @@
-package com.takipi.api.client.data.alertssetings;
+package com.takipi.api.client.data.settings;
 
-public class AlertsSettings
+public class AlertChannelsSettings
 {
 	public EmailAlertSettings email;
 	public SlackAlertSettings slack;
