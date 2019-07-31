@@ -69,6 +69,7 @@ public class RegressionStringUtil {
 	}
 
 	public static String getEventRate(EventResult event, boolean fullText) {
+		
 		if ((event.stats.invocations == 0) || (event.stats.hits == 0)) {
 			return "1";
 		}
@@ -126,6 +127,10 @@ public class RegressionStringUtil {
 	public static String getRegressedEventRate(EventResult event, long baselineHits, long baselineInvocations,
 			boolean fullText) {
 
+		if (baselineInvocations == 0) {
+			return "";
+		}
+		
 		double rate = (double) baselineHits / (double) baselineInvocations * 100;
 
 		StringBuilder result = new StringBuilder();
