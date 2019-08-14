@@ -7,8 +7,8 @@ import com.takipi.api.client.util.validation.ValidationUtil;
 public abstract class EventTimeframeRequest extends TimeframeRequest {
 	public final String eventId;
 
-	protected EventTimeframeRequest(String serviceId, String eventId, String from, String to, Collection<String> servers,
-			Collection<String> apps, Collection<String> deployments) {
+	protected EventTimeframeRequest(String serviceId, String eventId, String from, String to,
+			Collection<String> servers, Collection<String> apps, Collection<String> deployments) {
 		super(serviceId, from, to, servers, apps, deployments);
 
 		this.eventId = eventId;
