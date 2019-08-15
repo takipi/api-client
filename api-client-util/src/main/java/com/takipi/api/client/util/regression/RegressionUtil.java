@@ -49,8 +49,18 @@ public class RegressionUtil {
 		public DateTime activeWindowStart;
 		public int activeTimespan;
 		public boolean deploymentFound;
-
-		public Map<String, Pair<DateTime, DateTime>> deploymentsTimespan;
+		
+		@Override
+		public RegressionWindow clone() {
+			
+			RegressionWindow result = new RegressionWindow();
+			
+			result.activeWindowStart = this.activeWindowStart;
+			result.activeTimespan = this.activeTimespan;
+			result.deploymentFound = this.deploymentFound;
+			
+			return result;
+		}
 	}
 
 	enum RegressionState {
@@ -221,7 +231,7 @@ public class RegressionUtil {
 			}
 		}
 
-		if ((activeEvent.stats == null) || (activeEvent.stats.invocations == 0) || (activeEvent.stats.hits == 0)) {
+		if ((activeEvent.stats == null) || (activeEvent.stats.hits == 0)) {
 
 			if ((verbose) && (printStream != null)) {
 				printStream.println("No stats " + ps(activeEvent.stats) + printEvent(activeEvent));
@@ -231,15 +241,28 @@ public class RegressionUtil {
 
 			return RegressionState.NO_DATA;
 		}
-
-		double activeEventRatio = ((double) activeEvent.stats.hits / (double) activeEvent.stats.invocations);
-
+		
+		double activeEventRatio;
 		double minVolumeThreshold = input.getEventMinThreshold(activeEvent);
-		double minErrorRateThreshold = input.getEventMinErrorRateThreshold(activeEvent);
-
+		
+		boolean rateExceeded;
 		boolean volumeExceeeded = (minVolumeThreshold > 0) && (activeEvent.stats.hits > minVolumeThreshold);
-		boolean rateExceeded = (minErrorRateThreshold > 0) && (activeEventRatio > minErrorRateThreshold);
 
+		if (activeEvent.stats.invocations == 0) {
+
+			if ((verbose) && (printStream != null)) {
+				printStream.println("No inv " + ps(activeEvent.stats) + printEvent(activeEvent));
+			}
+
+			rateExceeded = true;
+			activeEventRatio = 0;
+		} else {
+			activeEventRatio = ((double) activeEvent.stats.hits / (double) activeEvent.stats.invocations);
+			double minErrorRateThreshold = input.getEventMinErrorRateThreshold(activeEvent);
+			
+			rateExceeded = (minErrorRateThreshold > 0) && (activeEventRatio > minErrorRateThreshold);
+		}
+		
 		if ((!volumeExceeeded) || (!rateExceeded)) {
 
 			if ((verbose) && (printStream != null)) {
@@ -248,9 +271,12 @@ public class RegressionUtil {
 						+ "hits" + activeEvent.stats.hits + "ratio: " + activeEventRatio);
 			}
 
-			rateRegression.addNonRegressions(activeEvent);
-
-			return RegressionState.NO_DATA;
+			if (!volumeExceeeded) {
+				rateRegression.addNonRegressions(activeEvent);
+				return RegressionState.NO_DATA;
+			} else {
+				return RegressionState.NO;
+			}	
 		}
 
 		if (isNew) {
@@ -294,12 +320,12 @@ public class RegressionUtil {
 		return SeasonlityResult.create(largerVolumePeriod, halfVolumePeriods, largerVolumePriodIndex);
 	}
 
-	private static RegressionState processVolumeRegression(EventResult activeEvent, RegressionInput input,
+	private static boolean processVolumeRegression(EventResult activeEvent, RegressionInput input,
 			Map<String, RegressionStats> regressionsStats, Map<String, long[]> periodVolumes, int activeTimespan,
 			RateRegression.Builder rateRegression, PrintStream printStream, boolean verbose) {
 
 		if (input.regressionDelta == 0) {
-			return RegressionState.NO;
+			return false;
 		}
 
 		RegressionStats regressionStats = regressionsStats.get(activeEvent.id);
@@ -311,28 +337,74 @@ public class RegressionUtil {
 
 			rateRegression.addNonRegressions(activeEvent);
 
-			return RegressionState.NO_DATA;
+			return false;
 		}
 
-		double normalizedActiveVolume = (double) (activeEvent.stats.hits) / (double) (activeTimespan);
-		double normalizedActiveInv = (double) (activeEvent.stats.invocations) / (double) (activeTimespan);
+		if (activeEvent.stats.hits == 0) {
+			
+			if ((verbose) && (printStream != null)) {
+				printStream.println("No active hit stats " + printEvent(activeEvent));
+			}
 
-		double normalizedBaselineVolume = (double) (regressionStats.hits) / (double) (input.baselineTimespan);
-		double normalizedBaselineInv = (double) (regressionStats.invocations) / (double) (input.baselineTimespan);
+			return false;
+		}
+		
+		if (regressionStats.hits == 0) {
+			
+			if ((verbose) && (printStream != null)) {
+				printStream.println("No baseline hit stats " + printEvent(activeEvent));
+			}
 
-		double volRateDelta = ((normalizedActiveVolume) / (normalizedBaselineVolume)) - 1;
-		double invRateDelta = ((normalizedActiveInv) / (normalizedBaselineInv)) - 1;
+			rateRegression.addNonRegressions(activeEvent);
 
+			return false;
+		}
+		
 		double eventRegressionDelta = input.getEventRegressionDelta(activeEvent);
 		double eventCriticalRegressionDelta = input.getEventCriticalRegressionDelta(activeEvent);
 
+		double normalizedBaselineVolume = (double) (regressionStats.hits) / (double) (input.baselineTimespan);
+		double normalizedActiveVolume = (double) (activeEvent.stats.hits) / (double) (activeTimespan);
+		
+		double normalizedActiveInv;
+		double normalizedBaselineInv;
+		double invRateDelta;
+		
+		double volRateDelta = ((normalizedActiveVolume) / (normalizedBaselineVolume)) - 1;
+			
+		boolean isRegression;
 		boolean isCriticalRegression;
-		boolean isRegression = volRateDelta - Math.max(invRateDelta * 2, 0) > eventRegressionDelta;
-
-		if (eventCriticalRegressionDelta > 0) {
-			isCriticalRegression = volRateDelta - Math.max(invRateDelta * 2, 0) > eventCriticalRegressionDelta;
+		
+		if ((activeEvent.stats.invocations == 0) || (regressionStats.invocations == 0)) {
+			
+			if ((verbose) && (printStream != null)) {
+				printStream.println("No invocations avail, defaulting to hits calc " + printEvent(activeEvent));
+			}
+						
+			isRegression = volRateDelta > eventRegressionDelta;
+	
+			if (eventCriticalRegressionDelta > 0) {
+				isCriticalRegression = volRateDelta > eventCriticalRegressionDelta;
+			} else {
+				isCriticalRegression = false;
+			}
+			
+			normalizedActiveInv = 0;
+			normalizedBaselineInv = 0;
+			invRateDelta = 0;	
 		} else {
-			isCriticalRegression = false;
+		
+			normalizedBaselineInv = (double) (regressionStats.invocations) / (double) (input.baselineTimespan);
+			normalizedActiveInv = (double) (activeEvent.stats.invocations) / (double) (activeTimespan);
+			
+			invRateDelta = ((normalizedActiveInv) / (normalizedBaselineInv)) - 1;
+			isRegression = volRateDelta - Math.max(invRateDelta * 2, 0) > eventRegressionDelta;
+	
+			if (eventCriticalRegressionDelta > 0) {
+				isCriticalRegression = volRateDelta - Math.max(invRateDelta * 2, 0) > eventCriticalRegressionDelta;
+			} else {
+				isCriticalRegression = false;
+			}
 		}
 
 		if (!isRegression) {
@@ -342,7 +414,7 @@ public class RegressionUtil {
 
 			rateRegression.addNonRegressions(activeEvent);
 
-			return RegressionState.NO;
+			return false;
 		}
 
 		if (printStream != null) {
@@ -365,7 +437,7 @@ public class RegressionUtil {
 
 				rateRegression.addNonRegressions(activeEvent);
 
-				return RegressionState.NO;
+				return false;
 			}
 
 			if (seasonlityResult.halfVolumePeriods >= 2) {
@@ -376,7 +448,7 @@ public class RegressionUtil {
 
 				rateRegression.addNonRegressions(activeEvent);
 
-				return RegressionState.NO;
+				return false;
 			}
 		}
 
@@ -391,7 +463,7 @@ public class RegressionUtil {
 			printStream.println("\n");
 		}
 
-		return RegressionState.YES;
+		return true;
 	}
 
 	private static void ApplyFilter(ViewTimeframeRequest.Builder builder, RegressionInput input, boolean applyDeps, boolean applyApps) {
@@ -512,11 +584,11 @@ public class RegressionUtil {
 		return response.data.deployments;
 	}
 	
-	public static DeploymentsTimespan getDeploymentsTimespan(ApiClient apiClient, String serviceId, Collection<String> deployments) {
+	public static Pair<DateTime, DateTime> getDeploymentsActiveWindow(ApiClient apiClient, String serviceId, Collection<String> deployments) {
 		
 		Collection<SummarizedDeployment> activeSummarizedDeployments = getSummarizedDeployments(apiClient, serviceId, true);
 		
-		DeploymentsTimespan activeDeploymentsTimespan = getDeploymentsTimespan(deployments, activeSummarizedDeployments);
+		Pair<DateTime, DateTime> activeDeploymentsTimespan = getDeploymentsActiveWindow(deployments, activeSummarizedDeployments);
 		
 		if (activeDeploymentsTimespan != null) {
 			return activeDeploymentsTimespan;
@@ -524,13 +596,11 @@ public class RegressionUtil {
 		
 		Collection<SummarizedDeployment> nonActiveSummarizedDeployments = getSummarizedDeployments(apiClient, serviceId, false);
 		
-		return getDeploymentsTimespan(deployments, nonActiveSummarizedDeployments);
+		return getDeploymentsActiveWindow(deployments, nonActiveSummarizedDeployments);
 	}
 	
-	private static DeploymentsTimespan getDeploymentsTimespan(Collection<String> deployments,
+	private static Pair<DateTime, DateTime> getDeploymentsActiveWindow(Collection<String> deployments,
 			Collection<SummarizedDeployment> summarizedDeployments) {
-
-		Map<String, Pair<DateTime, DateTime>> deploymentLifetime = Maps.newHashMap();
 
 		Map<String, SummarizedDeployment> summarizedDeploymentByName = Maps.newHashMap();
 
@@ -564,14 +634,11 @@ public class RegressionUtil {
 
 				maxDeploymentEnd = end;
 			}
-
-			deploymentLifetime.put(summarizedDeployment.name, Pair.of(start, end));
 		}
 
-		DeploymentsTimespan deploymentsTimespan = new DeploymentsTimespan(deploymentLifetime,
-				Pair.of(minDeploymentStart, maxDeploymentEnd));
+		Pair<DateTime, DateTime> deploymentsActiveWindow = Pair.of(minDeploymentStart, maxDeploymentEnd);
 
-		return deploymentsTimespan;
+		return deploymentsActiveWindow;
 	}
 
 	public static RegressionWindow getActiveWindow(ApiClient apiClient, RegressionInput input,
@@ -594,23 +661,21 @@ public class RegressionUtil {
 			return result;
 		}
 		
-		DeploymentsTimespan deploymentsTimespan;
+		Pair<DateTime, DateTime> deploymentsActiveWindow;
 		
 		if (CollectionUtil.safeIsEmpty(summarizedDeployments)) {
-			deploymentsTimespan = getDeploymentsTimespan(apiClient, input.serviceId, input.deployments);
+			deploymentsActiveWindow = getDeploymentsActiveWindow(apiClient, input.serviceId, input.deployments);
 		} else {
-			deploymentsTimespan = getDeploymentsTimespan(input.deployments, summarizedDeployments);
+			deploymentsActiveWindow = getDeploymentsActiveWindow(input.deployments, summarizedDeployments);
 		}
 
-		if (deploymentsTimespan == null) {
+		if (deploymentsActiveWindow == null) {
 			result.activeWindowStart = now.minusMinutes(input.activeTimespan);
 
 			return result;
 		}
 
-		Pair<DateTime, DateTime> depTimespan = deploymentsTimespan.getActiveWindow();
-
-		result.activeWindowStart = depTimespan.getFirst();
+		result.activeWindowStart = deploymentsActiveWindow.getFirst();
 
 		if (result.activeWindowStart == null) {
 			if (printStream != null) {
@@ -623,8 +688,8 @@ public class RegressionUtil {
 
 		DateTime activeWindowEnd;
 
-		if (depTimespan.getSecond() != null) {
-			activeWindowEnd = depTimespan.getSecond();
+		if (deploymentsActiveWindow.getSecond() != null) {
+			activeWindowEnd = deploymentsActiveWindow.getSecond();
 		} else {
 			activeWindowEnd = now;
 		}
@@ -638,7 +703,6 @@ public class RegressionUtil {
 		}
 
 		result.deploymentFound = true;
-		result.deploymentsTimespan = deploymentsTimespan.getDeploymentsLifetimeMap();
 
 		return result;
 	}
@@ -774,10 +838,11 @@ public class RegressionUtil {
 				continue;
 			}
 
-			RegressionState newIssueState = processNewsIssueRegression(activeEvent, regressionWindow.activeWindowStart,
+			RegressionState newState = processNewsIssueRegression(activeEvent, regressionWindow.activeWindowStart,
 					input, builder, printStream, verbose);
 
-			if ((newIssueState.equals(RegressionState.YES)) || (newIssueState.equals(RegressionState.NO_DATA))) {
+			if ((newState == RegressionState.YES) 
+			|| (newState == RegressionState.NO_DATA)) {
 				continue;
 			}
 

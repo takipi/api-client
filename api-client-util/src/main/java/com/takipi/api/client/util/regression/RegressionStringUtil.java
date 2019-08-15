@@ -30,7 +30,6 @@ public class RegressionStringUtil {
 	private static final int MAX_MESSAGE_LENGTH = 100;
 
 	public static String getEventSummary(EventResult event) {
-
 		String message;
 
 		if ((event.message != null) && (event.message.trim().length() > 0) && (!event.message.equals(event.name))) {
@@ -44,7 +43,7 @@ public class RegressionStringUtil {
 			}
 
 			message = ": " + messageBody;
-		} else {
+		} else if (event.error_location != null) {
 			String[] parts = event.error_location.class_name.split(Pattern.quote("."));
 
 			String simpleClassName;
@@ -56,6 +55,8 @@ public class RegressionStringUtil {
 			}
 
 			message = " in " + simpleClassName + "." + event.error_location.method_name;
+		} else {
+			message = "";
 		}
 
 		String result = event.name + message;
@@ -68,6 +69,7 @@ public class RegressionStringUtil {
 	}
 
 	public static String getEventRate(EventResult event, boolean fullText) {
+		
 		if ((event.stats.invocations == 0) || (event.stats.hits == 0)) {
 			return "1";
 		}
@@ -125,6 +127,10 @@ public class RegressionStringUtil {
 	public static String getRegressedEventRate(EventResult event, long baselineHits, long baselineInvocations,
 			boolean fullText) {
 
+		if (baselineInvocations == 0) {
+			return "";
+		}
+		
 		double rate = (double) baselineHits / (double) baselineInvocations * 100;
 
 		StringBuilder result = new StringBuilder();

@@ -4,6 +4,7 @@ public class SummarizedView {
 	public String id;
 	public String name;
 	public boolean shared;
+	public boolean immutable;
 
 	@Override
 	public String toString() {
