@@ -1,39 +1,20 @@
 package com.takipi.api.client.request.process;
 
-import java.io.UnsupportedEncodingException;
-
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.process.JvmsResult;
 import com.takipi.api.core.request.intf.ApiGetRequest;
 
-public class JvmsRequest extends ServiceRequest implements ApiGetRequest<JvmsResult> {
-	public final boolean connected;
+public class JvmsRequest extends BaseStatusRequest implements ApiGetRequest<JvmsResult> {
 
 	JvmsRequest(String serviceId, boolean connected) {
-		super(serviceId);
-
-		this.connected = connected;
+		super(serviceId, connected, "jvms");
 	}
-
-	@Override
-	public String urlPath() {
-		return baseUrlPath() + "/overops-status/jvms";
-	}
-
-	@Override
-	public String[] queryParams() throws UnsupportedEncodingException {
-		String[] params = new String[1];
-
-		params[0] = "connected=" + String.valueOf(connected);
-
-		return params;
-	}
-
+	
 	@Override
 	public Class<JvmsResult> resultClass() {
 		return JvmsResult.class;
 	}
-
+	
 	public static Builder newBuilder() {
 		return new Builder();
 	}
