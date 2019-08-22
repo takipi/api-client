@@ -5,6 +5,7 @@ public class Agent {
 	public String application;
 	public String deployment;
 	public String id;
+	public String type;
 	public String start_time;
 	public String version;
 	public String pid;
