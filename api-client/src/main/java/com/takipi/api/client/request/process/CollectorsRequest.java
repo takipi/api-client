@@ -1,6 +1,5 @@
 package com.takipi.api.client.request.process;
 
-import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.process.CollectorsResult;
 import com.takipi.api.core.request.intf.ApiGetRequest;
 
@@ -9,19 +8,17 @@ public class CollectorsRequest extends BaseStatusRequest implements ApiGetReques
 	CollectorsRequest(String serviceId, boolean connected) {
 		super(serviceId, connected, "collectors");
 	}
-	
+
 	@Override
 	public Class<CollectorsResult> resultClass() {
 		return CollectorsResult.class;
 	}
-	
+
 	public static Builder newBuilder() {
 		return new Builder();
 	}
 
-	public static class Builder extends ServiceRequest.Builder {
-		private boolean connected;
-
+	public static class Builder extends BaseStatusRequest.Builder {
 		Builder() {
 
 		}
@@ -33,8 +30,9 @@ public class CollectorsRequest extends BaseStatusRequest implements ApiGetReques
 			return this;
 		}
 
+		@Override
 		public Builder setConnected(boolean connected) {
-			this.connected = connected;
+			super.setConnected(connected);
 
 			return this;
 		}

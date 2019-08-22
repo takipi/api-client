@@ -1,6 +1,5 @@
 package com.takipi.api.client.request.process;
 
-import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.process.AgentsResult;
 import com.takipi.api.core.request.intf.ApiGetRequest;
 
@@ -9,19 +8,17 @@ public class AgentsRequest extends BaseStatusRequest implements ApiGetRequest<Ag
 	AgentsRequest(String serviceId, boolean connected) {
 		super(serviceId, connected, "agents");
 	}
-	
+
 	@Override
 	public Class<AgentsResult> resultClass() {
 		return AgentsResult.class;
 	}
-	
+
 	public static Builder newBuilder() {
 		return new Builder();
 	}
 
-	public static class Builder extends ServiceRequest.Builder {
-		private boolean connected;
-
+	public static class Builder extends BaseStatusRequest.Builder {
 		Builder() {
 
 		}
@@ -33,8 +30,9 @@ public class AgentsRequest extends BaseStatusRequest implements ApiGetRequest<Ag
 			return this;
 		}
 
+		@Override
 		public Builder setConnected(boolean connected) {
-			this.connected = connected;
+			super.setConnected(connected);
 
 			return this;
 		}

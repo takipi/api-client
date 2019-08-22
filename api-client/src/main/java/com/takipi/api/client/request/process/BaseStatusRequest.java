@@ -8,7 +8,7 @@ public abstract class BaseStatusRequest extends ServiceRequest {
 	public final boolean connected;
 
 	private final String type;
-	
+
 	BaseStatusRequest(String serviceId, boolean connected, String type) {
 		super(serviceId);
 
@@ -28,5 +28,26 @@ public abstract class BaseStatusRequest extends ServiceRequest {
 		params[0] = "connected=" + String.valueOf(connected);
 
 		return params;
+	}
+
+	public static class Builder extends ServiceRequest.Builder {
+		protected boolean connected;
+
+		Builder() {
+
+		}
+
+		@Override
+		public Builder setServiceId(String serviceId) {
+			super.setServiceId(serviceId);
+
+			return this;
+		}
+
+		public Builder setConnected(boolean connected) {
+			this.connected = connected;
+
+			return this;
+		}
 	}
 }
