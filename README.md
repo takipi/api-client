@@ -75,7 +75,7 @@ In order to ensure backwards and forwards compatibility with the API, API Client
 
 ```java
 // create a new API Client
-ApiClient client = ApiClient.newBuilder()
+ApiClient client = RemoteApiClient.newBuilder()
     .setHostname("http://localhost:8080") // for SaaS, use https://api.overops.com/
     .setApiKey("xxxxx") // find API token in Account Settings
     .build();
@@ -222,7 +222,7 @@ public class Example {
       .build();
 
     // construct an API client
-    ApiClient apiClient = ApiClient.newBuilder()
+    ApiClient apiClient = RemoteApiClient.newBuilder()
       .setHostname("https://api.overops.com")
       .setApiKey("xxxxx")
       .build();
@@ -281,8 +281,10 @@ public class Example {
 
     String serviceId = "Sxxxxx";
 
-    ApiClient apiClient = ApiClient.newBuilder().setHostname("https://api.overops.com")
-        .setApiKey("xxxxx").build();
+    ApiClient apiClient = RemoteApiClient.newBuilder()
+        .setHostname("https://api.overops.com")
+        .setApiKey("xxxxx")
+        .build();
 
     // get "All Events" view
     SummarizedView view = ViewUtil.getServiceViewByName(apiClient, serviceId, "All Events");
@@ -352,8 +354,10 @@ public class Example {
 
     String serviceId = "Sxxxxx";
 
-    ApiClient apiClient = ApiClient.newBuilder().setHostname("https://api.overops.com")
-        .setApiKey("xxxxx").build();
+    ApiClient apiClient = ApiClient.newBuilder()
+        .setHostname("https://api.overops.com")
+        .setApiKey("xxxxx")
+        .build();
 
     // get "All Events" view
     SummarizedView view = ViewUtil.getServiceViewByName(apiClient, serviceId, "All Events");
@@ -431,8 +435,10 @@ public class Example {
 
     String serviceId = "Sxxxxx";
 
-    ApiClient apiClient = ApiClient.newBuilder().setHostname("https://api.overops.com")
-        .setApiKey("xxxxx").build();
+    ApiClient apiClient = ApiClient.newBuilder()
+        .setHostname("https://api.overops.com")
+        .setApiKey("xxxxx")
+        .build();
 
     // get all views
     ViewsRequest viewsRequest = ViewsRequest.newBuilder().setServiceId(serviceId).build();
