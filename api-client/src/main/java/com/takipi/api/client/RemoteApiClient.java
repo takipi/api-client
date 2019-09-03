@@ -31,6 +31,10 @@ import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.Pair;
 
 public class RemoteApiClient extends UrlClient implements ApiClient {
+	
+	private static final int DEFAULT_API_VERSION = 1;
+	private static final int NO_API_VERSION = -1;
+	
 	private static final Gson GSON = new GsonBuilder()
 			.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
 
@@ -103,6 +107,11 @@ public class RemoteApiClient extends UrlClient implements ApiClient {
 	}
 
 	private String baseApiPath() {
+		
+		if (apiVersion == NO_API_VERSION) {
+			return getHostname();
+		}
+		
 		return getHostname() + "/api/v" + apiVersion;
 	}
 
@@ -281,7 +290,6 @@ public class RemoteApiClient extends UrlClient implements ApiClient {
 	}
 
 	public static class Builder {
-		private static final int API_VERSION = 1;
 		private static final int CONNECT_TIMEOUT = 15000;
 		private static final int READ_TIMEOUT = 60000;
 
@@ -297,7 +305,7 @@ public class RemoteApiClient extends UrlClient implements ApiClient {
 		private Collection<Observer> observers;
 
 		Builder() {
-			this.apiVersion = API_VERSION;
+			this.apiVersion = DEFAULT_API_VERSION;
 			this.connectTimeout = CONNECT_TIMEOUT;
 			this.readTimeout = READ_TIMEOUT;
 
@@ -332,6 +340,12 @@ public class RemoteApiClient extends UrlClient implements ApiClient {
 
 		public Builder setApiVersion(int apiVersion) {
 			this.apiVersion = apiVersion;
+
+			return this;
+		}
+		
+		public Builder setNoApiVersion() {
+			this.apiVersion = NO_API_VERSION;
 
 			return this;
 		}
