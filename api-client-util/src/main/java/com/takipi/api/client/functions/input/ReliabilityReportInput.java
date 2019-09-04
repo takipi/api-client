@@ -86,8 +86,11 @@ public class ReliabilityReportInput extends RegressionsInput {
 		
 		return result;
 	}
+	
+	public static final String RELIABITY_REPORT_SERIES = "reliability_report_series";
 
-	public static final String EVENTS_SERIES = "events";
+	public static final String REGRESSION_SERIES = "regressions";
+	public static final String ERRORS_SERIES = "errors";
 	public static final String FAILURES_SERIES = "failures";
 	public static final String SLOWDOWN_SERIES = "slowdown";
 
@@ -395,7 +398,7 @@ public class ReliabilityReportInput extends RegressionsInput {
 	
 	@Param(type=ParamType.Boolean, advanced=true, literals={},
 			description = "Control whether to output additional series " +
-					EVENTS_SERIES + "," + FAILURES_SERIES + "," + FAILURES_SERIES 
+					ERRORS_SERIES + "," + FAILURES_SERIES + "," + FAILURES_SERIES 
 					+ " detailing the contents of events and slowdowns",
 			defaultValue = "false")
 	public boolean outputDetailSeries;
@@ -454,7 +457,6 @@ public class ReliabilityReportInput extends RegressionsInput {
 	
 	public static final String SERVICE = "Service";
 	public static final String KEY = "Key";
-	public static final String NAME = "Name";
 	public static final String PREV_DEP_NAME = "previousDepName";
 	public static final String PREV_DEP_FROM = "previousDepFrom";			
 	public static final String PREV_DEP_STATE =  "previousDepState";
@@ -670,5 +672,5 @@ public class ReliabilityReportInput extends RegressionsInput {
 				EVENT_TYPE,
 				EVENT_NAME,
 				EVENT_APP
-		});
+		});	
 }

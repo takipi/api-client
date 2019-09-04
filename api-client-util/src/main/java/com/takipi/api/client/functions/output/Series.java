@@ -1,20 +1,34 @@
 package com.takipi.api.client.functions.output;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.takipi.api.client.functions.input.EventsInput;
+import com.takipi.api.client.functions.input.RegressionsInput;
+import com.takipi.api.client.functions.input.ReliabilityReportInput;
+import com.takipi.api.client.functions.input.TransactionsListInput;
 
 /**
  * The output returned by the execution of a function. This can be used to describe
  * a variable, graph, table, single stat,..
  */
-public class Series {
+public class Series  {
 	
 	public static final String SUM_COLUMN = "sum";
 	public static final String TIME_COLUMN = "time";
+	
+	private static Map<String, RowFactory> factories;
 	
 	/**
 	 * Series name
 	 */
 	public String name;
+	
+	/**
+	 * Series type - events, regressions, graph,..
+	 */
+	public String type;
 	
 	/**
 	 * For functions returning grouped results, the group keys
@@ -32,6 +46,10 @@ public class Series {
 	public List<List<Object>> values;
 	
 	public Object getValue(String column, int index) {
+		return getValue(column, index, false);
+	}
+	
+	public Object getValue(String column, int index, boolean mustExist) {
 		
 		if (columns == null) {
 			throw new IllegalStateException("columns null");
@@ -48,12 +66,17 @@ public class Series {
 		int colIndex= columns.indexOf(column);
 
 		if (colIndex == -1) {
+			
+			if (!mustExist) {
+				return null;
+			}
+			
 			throw new IllegalArgumentException(column + " not found in " + String.join(",", columns));
 		}
 		
 		List<Object> row = values.get(index);
 		
-		if (colIndex > values.size()) {
+		if (colIndex > row.size()) {
 			throw new IllegalArgumentException("Bad column index " +
 				String.valueOf(colIndex) + " for row " + index + " with " + row.size());
 		}
@@ -97,4 +120,142 @@ public class Series {
 		return getValue(SUM_COLUMN, 0);
 	}
 	
+	public long getLong(String column, int index) {
+		
+		Object value = getValue(column, index);
+		
+		if (value == null) {
+			return 0;
+		}
+		
+		if (value instanceof Long) {
+			return (Long)value;
+		}
+		
+		if (value instanceof Integer) {
+			return (Long)value;
+		}
+		
+		if (value instanceof Double) {
+			return ((Double)value).intValue();
+		}
+
+		if (value instanceof String) {
+			
+			try {
+				return Long.valueOf(value.toString());
+			} catch (Exception e) {
+				return 0;
+			}
+		}
+		
+		return 0;
+	}
+	
+	public int getInt(String column, int index) {	
+		return (int)getLong(column, index);
+	}
+	
+	public String getString(String column, int index) {
+	
+		Object value = getValue(column, index);
+		
+		if (value == null) {
+			return null;
+		}
+		
+		return value.toString();
+	}
+	
+	public double getDouble(String column, int index) {
+		
+		Object value = getValue(column, index);
+		
+		if (value == null) {
+			return 0;
+		}
+		
+		if (value instanceof Long) {
+			return (Long)value;
+		}
+		
+		if (value instanceof Integer) {
+			return (Long)value;
+		}
+		
+		if (value instanceof Double) {
+			return ((Double)value);
+		}
+
+		if (value instanceof String) {
+			
+			try {
+				return Long.valueOf(value.toString());
+			} catch (Exception e) {
+				return 0;
+			}
+		}
+		
+		return 0;
+	}
+	
+	public boolean getBoolean(String column, int index) {
+		
+		Object value = getValue(column, index);
+		
+		if (value == null) {
+			return false;
+		}
+		
+		if (value instanceof String) {
+			
+			try {
+				return Boolean.valueOf(value.toString());
+			} catch (Exception e) {
+				return false;
+			}
+		}
+		
+		return false;
+	}
+	
+	public SeriesRow readRow(int index) {
+		
+		if (type == null) {
+			return null;
+		}
+		
+		RowFactory factory = factories.get(type);
+		
+		if (factory == null) {
+			return null;
+		}
+		
+		return factory.read(this, index);
+	}
+	
+	public Class<?> getRowType() {
+		
+		if (type == null) {
+			return null;
+		}
+		
+		RowFactory factory = factories.get(type);
+		
+		if (factory == null) {
+			return null;
+		} 
+		
+		return factory.rowType();
+	}
+	
+	static {
+		
+		factories = new HashMap<String, RowFactory>();
+		
+		factories.put(EventsInput.EVENTS_SERIES, new EventRow.Factory());
+		factories.put(TransactionsListInput.TRANSACTION_SERIES, new TransactionRow.Factory());
+		factories.put(RegressionsInput.REGRESSIONS_SERIES, new RegressionRow.Factory());
+		factories.put(ReliabilityReportInput.RELIABITY_REPORT_SERIES, new ReliabilityReportRow.Factory());
+	}
 }

@@ -77,8 +77,10 @@ public class TransactionsListInput extends BaseGraphInput {
 	public static final String BASELINE_CALLS = "baseline_calls";
 	public static final String ACTIVE_CALLS = "active_calls";	
 	
+	public static final String TRANSACTION_SERIES = "transaction_series";
+	
 	public static final List<String> FIELDS = Arrays.asList(new String[] { 
-			LINK, TRANSACTION, TOTAL, AVG_RESPONSE, BASELINE_AVG, BASELINE_CALLS, ACTIVE_CALLS, SLOW_STATE,
+			LINK, TRANSACTION, TOTAL, TIME_COMSUMED, AVG_RESPONSE, BASELINE_AVG, BASELINE_CALLS, ACTIVE_CALLS, SLOW_STATE,
 			DELTA_DESC, ERROR_RATE, ERRORS, ViewInput.TIME_RANGE });
 	
 	@Param(type=ParamType.String, advanced=false, literals={},

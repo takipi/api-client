@@ -71,14 +71,19 @@ public class RegressionsInput extends EventsInput {
 	public static final List<String> SINGLE_STATS = Arrays.asList(new String[] {
 		SINGLE_STAT, SINGLE_STAT_DESC, SINGLE_STAT_COUNT, SINGLE_STAT_VOLUME, SINGLE_STAT_VOLUME_TEXT});
 	
+	public static final String REGRESSIONS_SERIES = "regressions_series";
+
 	/**
 	 * Additional fields supported by this functions
 	 */
 	
+	public static final String REGRESSION_TYPE = "regression_type";
 	public static final String REG_DELTA = "reg_delta";
 	public static final String REGRESSION = "regression";
 	public static final String SEVERITY = "severity";
 	public static final String REG_DESC = "reg_desc";
+	
+	public static final List<String> REGRESSION_FIELDS;
 	
 	@Param(type=ParamType.Enum, advanced=false, 
 			literals={SINGLE_STAT, SINGLE_STAT_DESC, SINGLE_STAT_COUNT, SINGLE_STAT_VOLUME,
@@ -155,5 +160,13 @@ public class RegressionsInput extends EventsInput {
 		
 		return result;
 		
+	}
+	
+	static {
+		REGRESSION_FIELDS =  new ArrayList<String>(EventsInput.FIELDS);
+		
+		REGRESSION_FIELDS.addAll(Arrays.asList(new String[] {
+				REGRESSION_TYPE, SEVERITY, REG_DELTA, REGRESSION, REG_DESC
+		}));
 	}
 }
