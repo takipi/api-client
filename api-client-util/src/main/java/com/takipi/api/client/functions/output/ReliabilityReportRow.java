@@ -21,44 +21,56 @@ public class ReliabilityReportRow implements SeriesRow {
 	public String service;
 	public String key;
 	public String name;
+	
 	public String previousDepName;
 	public String previousDepFrom;			
 	public String previousDepState;
 	public String timelineDiffState;
+	
 	public int newIssues;
 	public int regressions;
 	public int slowdowns; 
+	
 	public String newIssuesDesc;
 	public String regressionsDesc;
 	public String slowdownsDesc;
+	
 	public double score; 
 	public String scoreDesc;
+	
 	public long transactionVolume;
 	public long transactionCount;
 	public double transactionAvgResponse;
 	public double transactionResponseDelta;
+	
 	public long transactionFailures;
 	public String transactionVolumeDesc;
 	public String transactionFailureCountDesc;
 	public long transactionFailureCount;
 	public double transactionFailRate;
 	public String transactionFailRateDelta;
+	
 	public long errorVolume;
 	public String errorCountDesc;
 	public int errorCount;
+	
 	public String reliabilityState;
 	public String failureDesc;
 	public String relabilityDesc;
 	public String statusName;
+	
 	public String alertStatus;
 	public String alertDesc;
+	
 	public int connectedClients;
 	public String connectedClientsDesc;
+	
 	public String eventName;
 	public String eventDesc;
 	public String eventTypeDesc;
 	public String eventType;
 	public String eventApp;
+	
 	public String dashboardId;
 	public String dashboardField;
 	public String dashboardValue;

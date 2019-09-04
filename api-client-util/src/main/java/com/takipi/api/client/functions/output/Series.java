@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.takipi.api.client.functions.input.BaseGraphInput;
 import com.takipi.api.client.functions.input.EventsInput;
 import com.takipi.api.client.functions.input.RegressionsInput;
 import com.takipi.api.client.functions.input.ReliabilityReportInput;
@@ -49,18 +50,33 @@ public class Series  {
 		return getValue(column, index, false);
 	}
 	
-	public Object getValue(String column, int index, boolean mustExist) {
-		
-		if (columns == null) {
-			throw new IllegalStateException("columns null");
-		}
-		
+	public Object getValue(int colIndex, int index) {
+	
 		if (values == null) {
 			throw new IllegalStateException("colIndex null");
 		}
 				
 		if ((index < 0) || (index > values.size())) {
 			throw new IllegalArgumentException("Bad row index " + String.valueOf(index) + " for " + values.size() + " rows");
+		}
+		
+		List<Object> row = values.get(index);
+		
+		if (colIndex >row.size()) {
+			throw new IllegalArgumentException("Bad column index " +
+				String.valueOf(colIndex) + " for row " + index + " with " + row.size());
+		}
+		
+		Object result = row.get(colIndex);
+		
+		return result;
+	}
+
+	
+	public Object getValue(String column, int index, boolean mustExist) {
+		
+		if (columns == null) {
+			throw new IllegalStateException("columns null");
 		}
 		
 		int colIndex= columns.indexOf(column);
@@ -74,16 +90,7 @@ public class Series  {
 			throw new IllegalArgumentException(column + " not found in " + String.join(",", columns));
 		}
 		
-		List<Object> row = values.get(index);
-		
-		if (colIndex > row.size()) {
-			throw new IllegalArgumentException("Bad column index " +
-				String.valueOf(colIndex) + " for row " + index + " with " + row.size());
-		}
-	
-		Object result = row.get(colIndex);
-		
-		return result;
+		return getValue(colIndex, index);
 	}
 	
 	public boolean isSingleStat() {
@@ -257,5 +264,7 @@ public class Series  {
 		factories.put(TransactionsListInput.TRANSACTION_SERIES, new TransactionRow.Factory());
 		factories.put(RegressionsInput.REGRESSIONS_SERIES, new RegressionRow.Factory());
 		factories.put(ReliabilityReportInput.RELIABITY_REPORT_SERIES, new ReliabilityReportRow.Factory());
+		factories.put(BaseGraphInput.GRAPH_SERIES, new GraphRow.Factory());
+
 	}
 }

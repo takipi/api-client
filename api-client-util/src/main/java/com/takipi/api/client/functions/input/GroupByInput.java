@@ -29,6 +29,8 @@ public class GroupByInput extends VolumeInput {
 	public static final String SERVER = "server";
 	public static final String DEPLOYMENT = "deployment";
 
+	public static final String GROUP_BY_SERIES = "group_by";
+	
 	@Param(type=ParamType.Enum, advanced=false, 
 			literals={NAME, LOCATION, ENTRY_POINT, INTRODUCED_BY, LABEL, APPLICATION, SERVER, DEPLOYMENT},
 			defaultValue=APPLICATION,

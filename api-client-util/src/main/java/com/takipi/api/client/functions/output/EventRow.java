@@ -13,38 +13,47 @@ public class EventRow implements SeriesRow {
 
 		@Override
 		public Class<?> rowType() {
-			return SeriesRow.class;
+			return EventRow.class;
 		}	
 	}
 	
 	public String id;
+	public String env_id;
+	public String link;
+	
 	public String summary;
 	public String type;
-	public String typeMessage;
 	public String name;
+	
+	public String typeMessage;
 	public String message;
+	public String description;	
+
 	public double first_seen;
+	public String introduced_by;
+	public double last_seen;
+
 	public String error_location;
 	public String entry_point;
 	public String error_origin;
-	public String introduced_by;
+	public String entry_point_name;
+	
 	public String labels;
 	public String similar_event_ids;
 	public boolean is_rethrow;
+	
 	public long hits;
 	public long invocations;
-	public String jira_issue_url;
-	public String env_id;
-	public String link;
+	
+	public String jira_issue_url;	
 	public String jira_state;	
 	public double rate;	
 	public String rate_desc;
-	public String description;	
+	
 	public String rate_delta;
-	public double last_seen;
 	public String rate_delta_desc;
+	
 	public int rank;
-	public String entry_point_name;
 	
 	public EventRow(Series series, int index) {
 					

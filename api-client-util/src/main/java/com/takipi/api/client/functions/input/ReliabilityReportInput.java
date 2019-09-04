@@ -398,19 +398,24 @@ public class ReliabilityReportInput extends RegressionsInput {
 	
 	@Param(type=ParamType.Boolean, advanced=true, literals={},
 			description = "Control whether to output additional series " +
-					ERRORS_SERIES + "," + FAILURES_SERIES + "," + FAILURES_SERIES 
-					+ " detailing the contents of events and slowdowns",
+					ERRORS_SERIES + "," + FAILURES_SERIES + "," + FAILURES_SERIES + "," + REGRESSION_SERIES
+					+ " detailing the contents of errors and slowdowns",
 			defaultValue = "false")
 	public boolean outputDetailSeries;
 	
 	public static String getFeedEventType(String type) {
 		
 		switch (type) {
-			case NEW_ISSUE_REGRESSIONS: return NEW_ERROR_FEED;
-			case SEVERE_NEW_ISSUE_REGRESSIONS: return NEW_ERROR_FEED;
-			case SEVERE_INC_ERROR_REGRESSIONS: return SEVERE_INCREASING_ERROR_FEED;
-			case INC_ERROR_REGRESSIONS: return INCREASING_ERROR_FEED;
-			default: throw new IllegalStateException(String.valueOf(type));
+			case NEW_ISSUE_REGRESSIONS: 
+				return NEW_ERROR_FEED;
+			case SEVERE_NEW_ISSUE_REGRESSIONS: 
+				return NEW_ERROR_FEED;
+			case SEVERE_INC_ERROR_REGRESSIONS: 
+				return SEVERE_INCREASING_ERROR_FEED;
+			case INC_ERROR_REGRESSIONS: 
+				return INCREASING_ERROR_FEED;
+			default: 
+				throw new IllegalStateException(String.valueOf(type));
 		}
 	}
 		
