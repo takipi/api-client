@@ -602,10 +602,10 @@ public class ReliabilityReportInput extends RegressionsInput {
 			SLOWDOWNS_DESC,
 		 	SCORE_DESC,
 		 	NAME, 
-		 	TIMELINE_DIFF_STATE,
 			NEW_ISSUES, 
 		  	REGRESSIONS, 
-		 	SLOWDOWNS, 		 	
+		 	SLOWDOWNS, 
+		 	TIMELINE_DIFF_STATE,
 		 	SCORE
 		});
 	
@@ -650,6 +650,7 @@ public class ReliabilityReportInput extends RegressionsInput {
 			CONNECTED_CLIENTS
 			
 		});
+
 	
 	/**
 	 * The list of default fields returned for an event feed report
