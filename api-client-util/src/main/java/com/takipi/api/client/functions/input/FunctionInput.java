@@ -38,7 +38,7 @@ import com.takipi.integrations.functions.annotations.Function;
  *  This call is invoked as follows:
  *  		
  *  		deploymentsAnnotation({"graphType":"view","volumeType":"hits","view":"All Events",
- *  		"timeFilter":"time >= now() - 14d","environments":"$environments", 
+ *  		"timeFilter":"time &gt;= now() - 14d","environments":"$environments", 
  *  		"applications":"$applications", "servers":"$servers","deployments":"$deployments",
  *  		"seriesName":"Times","graphCount":3})
  *  
@@ -129,7 +129,7 @@ public abstract class FunctionInput extends BaseRequest implements ApiGetRequest
 	 */
 	public String query;
 	
-	public static List<String> getFunctionNames(Class<?> functionClass) {
+	public static Function getFunctionAnnotation(Class<?> functionClass) {
 		
 		Annotation[] annotations = functionClass.getDeclaredAnnotations();
 		
@@ -139,15 +139,24 @@ public abstract class FunctionInput extends BaseRequest implements ApiGetRequest
 				continue;
 			}
 			
-			Function function = (Function)annotation;
-			String name = function.name();
-			
-			String[] parts = name.split(ServiceSettingsData.ARRAY_SEPERATOR);
-			
-			return Arrays.asList(parts);
+			return (Function)annotation;
 		}
 		
-		throw new IllegalStateException("No function name available for " + functionClass.getClass());
+		return null;
+	}
+	
+	public static List<String> getFunctionNames(Class<?> functionClass) {
+		
+		Function function = getFunctionAnnotation(functionClass);
+		
+		if (function == null) {
+			throw new IllegalStateException("No function name available for " + functionClass.getClass());
+		}
+		
+		String name = function.name();	
+		String[] parts = name.split(ServiceSettingsData.ARRAY_SEPERATOR);
+			
+		return Arrays.asList(parts);
 	}
 	
 	@Override

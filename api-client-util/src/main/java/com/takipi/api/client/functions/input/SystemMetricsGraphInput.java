@@ -18,10 +18,25 @@ description = " This function charts a selected set of system metrics such as CP
 
 public class SystemMetricsGraphInput extends BaseGraphInput {
 	
-	@Param(type=ParamType.String, advanced=false, literals={}, defaultValue="CPU",
+	@Param(type=ParamType.String, advanced=false, literals={}, defaultValue="CPU Usage",
 			description = "A | seperated list of system metrics to chart. " +
 					"This can be any of the values returned by the systemMetricsMetadata function")
 	public String metricNames;
+	
+	public static final String DEFAULT_POSTFIX = "*";
+	
+	@Param(type=ParamType.String, advanced=false, literals={}, defaultValue=DEFAULT_POSTFIX,
+			description = "An optional postfix to be appended to the name of result series")
+	public String metricPostfix;
+	
+	public String getMetricPostfix() {
+		
+		if (metricPostfix == null) {
+			return DEFAULT_POSTFIX;
+		}
+		
+		return metricPostfix;
+	}
 	
 	public Collection<String> getMetricNames() {
 		return getMetricNames(metricNames);

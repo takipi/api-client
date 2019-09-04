@@ -343,7 +343,15 @@ public class TimeUtil {
 				break;
 				
 			default:
-				throw new IllegalStateException(String.valueOf(interval));
+				String range = getTimeRange(interval);
+				
+				if (range== null) {
+					throw new IllegalStateException(String.valueOf(interval));
+				}
+				
+				delta = parseInterval(range);
+				periodFrom = timespan.getSecond().withMillisOfDay(0);
+				break;
 				
 		}
 			
