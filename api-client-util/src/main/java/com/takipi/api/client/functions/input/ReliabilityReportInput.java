@@ -293,8 +293,12 @@ public class ReliabilityReportInput extends RegressionsInput {
 	
 	public String getFailureTypes() {
 		
-		if ((failureTypes == null) || (failureTypes.isEmpty())) {
-			return types;
+		if ((failureTypes == null) || (failureTypes.isEmpty())) {	
+			if ((types != null) && (!types.isEmpty())) {
+				return types;
+			} else {
+				return BaseEventVolumeInput.CRITICAL_EXCEPTIONS;
+			}
 		}
 		
 		return failureTypes;
@@ -401,7 +405,7 @@ public class ReliabilityReportInput extends RegressionsInput {
 					ERRORS_SERIES + "," + FAILURES_SERIES + "," + FAILURES_SERIES + "," + REGRESSION_SERIES
 					+ " detailing the contents of errors and slowdowns",
 			defaultValue = "false")
-	public boolean outputDetailSeries;
+	public boolean outputDrillDownSeries;
 	
 	public static String getFeedEventType(String type) {
 		
@@ -462,6 +466,7 @@ public class ReliabilityReportInput extends RegressionsInput {
 	
 	public static final String SERVICE = "Service";
 	public static final String KEY = "Key";
+	public static final String KEY_NANE= "Name";
 	public static final String PREV_DEP_NAME = "previousDepName";
 	public static final String PREV_DEP_FROM = "previousDepFrom";			
 	public static final String PREV_DEP_STATE =  "previousDepState";
@@ -507,7 +512,7 @@ public class ReliabilityReportInput extends RegressionsInput {
 	public static final String FIELDS_DESC = 
 		SERVICE + ": the env ID for this row\n" +
 		KEY + ": the target app/dep/tier\n" +
-		NAME + ": a human-readable name  of the target app/dep/tier\n" +
+		KEY_NANE + ": a human-readable name  of the target app/dep/tier\n" +
 		PREV_DEP_NAME + ": name of the deployment, the name of the deployment to be diff against\n" +
 		PREV_DEP_FROM + ": name of the deployment, the start of the deployment to be diff against\n" +
 		PREV_DEP_STATE + ": name of the deployment and a diff deployment exists = 1, otherwise 0\n" +
@@ -565,7 +570,7 @@ public class ReliabilityReportInput extends RegressionsInput {
 			SCORE_DESC,
 			PREV_DEP_NAME, 
 			PREV_DEP_FROM,
-			NAME,
+			KEY_NANE,
 			NEW_ISSUES, 
 			REGRESSIONS, 
 			SLOWDOWNS,
@@ -587,7 +592,7 @@ public class ReliabilityReportInput extends RegressionsInput {
 		 	REGRESSIONS_DESC, 
 			SLOWDOWNS_DESC,
 		 	SCORE_DESC,
-		 	NAME, 
+		 	KEY_NANE, 
 			NEW_ISSUES, 
 		  	REGRESSIONS, 
 		 	SLOWDOWNS, 		 	
@@ -608,7 +613,7 @@ public class ReliabilityReportInput extends RegressionsInput {
 		 	REGRESSIONS_DESC, 
 			SLOWDOWNS_DESC,
 		 	SCORE_DESC,
-		 	NAME, 
+		 	KEY_NANE, 
 			NEW_ISSUES, 
 		  	REGRESSIONS, 
 		 	SLOWDOWNS, 
@@ -638,7 +643,7 @@ public class ReliabilityReportInput extends RegressionsInput {
 			ERROR_COUNT_DESC,
 			TRANSACTION_VOLUME_DESC,
 			CONNECTED_CLIENTS_DESC,
-			NAME, 
+			KEY_NANE, 
 			STATUS_NAME,
 		 	ALERT_STATUS,
 			SCORE,
