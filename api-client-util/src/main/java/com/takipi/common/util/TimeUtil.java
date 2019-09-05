@@ -319,28 +319,18 @@ public class TimeUtil {
 		return result;
 	}
 	
-	public static Pair<DateTime, Integer> getPeriodStart(Pair<DateTime, DateTime> timespan,
-		String interval) {
-			
-		DateTime periodFrom;
-		int delta;
-			
+	public static int getIntervalMin(String interval) {
+		
 		switch (interval) {
 				
 			case FunctionInput.Hour:
-				delta = (int)TimeUnit.HOURS.toMinutes(1);
-				periodFrom = timespan.getSecond().withMinuteOfHour(0);
-				break;
+				return (int)TimeUnit.HOURS.toMinutes(1);
 				
 			case FunctionInput.Day:
-				delta = (int)TimeUnit.DAYS.toMinutes(1);
-				periodFrom = timespan.getSecond().withMillisOfDay(0);
-				break;
+				return (int)TimeUnit.DAYS.toMinutes(1);
 				
 			case FunctionInput.Week:
-				delta = (int)TimeUnit.DAYS.toMinutes(7);
-				periodFrom = timespan.getSecond().withMillisOfDay(0);
-				break;
+				return (int)TimeUnit.DAYS.toMinutes(7);
 				
 			default:
 				String range = getTimeRange(interval);
@@ -349,7 +339,31 @@ public class TimeUtil {
 					throw new IllegalStateException(String.valueOf(interval));
 				}
 				
-				delta = parseInterval(range);
+				return parseInterval(range);		
+		}	
+	}
+	
+	public static Pair<DateTime, Integer> getPeriodStart(Pair<DateTime, DateTime> timespan,
+		String interval) {
+			
+		DateTime periodFrom;
+		int delta = getIntervalMin(interval);
+			
+		switch (interval) {
+				
+			case FunctionInput.Hour:
+				periodFrom = timespan.getSecond().withMinuteOfHour(0);
+				break;
+				
+			case FunctionInput.Day:
+				periodFrom = timespan.getSecond().withMillisOfDay(0);
+				break;
+				
+			case FunctionInput.Week:
+				periodFrom = timespan.getSecond().withMillisOfDay(0);
+				break;
+				
+			default:
 				periodFrom = timespan.getSecond().withMillisOfDay(0);
 				break;
 				
