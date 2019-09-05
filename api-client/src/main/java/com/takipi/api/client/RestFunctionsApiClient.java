@@ -6,62 +6,28 @@ import java.util.Map;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.takipi.api.client.observe.Observer;
-import com.takipi.api.core.consts.ApiConstants;
 import com.takipi.common.util.Pair;
 
-public class RemoteApiClient extends BaseApiClient implements ApiClient {
+public class RestFunctionsApiClient extends BaseApiClient {
 
-	private final int apiVersion;
-
-	RemoteApiClient(String hostname, Pair<String, String> auth, int apiVersion, int connectTimeout, int readTimeout,
+	RestFunctionsApiClient(String hostname, Pair<String, String> auth, int connectTimeout, int readTimeout,
 			LogLevel defaultLogLevel, Map<Integer, LogLevel> responseLogLevels, Collection<Observer> observers) {
 		super(hostname, auth, connectTimeout, readTimeout, defaultLogLevel, responseLogLevels, observers);
-
-		this.apiVersion = apiVersion;
-	}
-
-	@Override
-	public int getApiVersion() {
-		return apiVersion;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 
-		if (!(obj instanceof RemoteApiClient)) {
+		if (!(obj instanceof RestFunctionsApiClient)) {
 			return false;
 		}
 
-		if (!super.equals(obj)) {
-			return false;
-		}
-
-		RemoteApiClient other = (RemoteApiClient) obj;
-
-		if (apiVersion != other.apiVersion) {
-			return false;
-		}
-
-		return true;
-	}
-
-	public Response<String> testConnection() {
-		return get(baseApiPath() + "/test", null, ApiConstants.CONTENT_TYPE_JSON);
-	}
-
-	public boolean validateConnection() {
-		try {
-			Response<String> response = testConnection();
-			return ((response != null) && (!response.isBadResponse()));
-		} catch (Exception e) {
-			logger.error("Api url client validate connection to {} failed.", getHostname(), e);
-			return false;
-		}
+		return super.equals(obj);
 	}
 
 	@Override
 	protected String baseApiPath() {
-		return getHostname() + "/api/v" + apiVersion;
+		return getHostname();
 	}
 
 	public static Builder newBuilder() {
@@ -69,14 +35,8 @@ public class RemoteApiClient extends BaseApiClient implements ApiClient {
 	}
 
 	public static class Builder extends BaseApiClient.Builder {
-		private static final int API_VERSION = 1;
-
-		private int apiVersion;
-
 		Builder() {
-			super();
 
-			this.apiVersion = API_VERSION;
 		}
 
 		@Override
@@ -103,12 +63,6 @@ public class RemoteApiClient extends BaseApiClient implements ApiClient {
 		@Override
 		public Builder setApiKey(String apiKey) {
 			super.setApiKey(apiKey);
-
-			return this;
-		}
-
-		public Builder setApiVersion(int apiVersion) {
-			this.apiVersion = apiVersion;
 
 			return this;
 		}
@@ -148,12 +102,12 @@ public class RemoteApiClient extends BaseApiClient implements ApiClient {
 			return this;
 		}
 
-		public ApiClient build() {
+		public RestFunctionsApiClient build() {
 			if (Strings.isNullOrEmpty(hostname)) {
 				throw new IllegalArgumentException("Missing hostname");
 			}
 
-			return new RemoteApiClient(hostname, getAuth(), apiVersion, connectTimeout, readTimeout, defaultLogLevel,
+			return new RestFunctionsApiClient(hostname, getAuth(), connectTimeout, readTimeout, defaultLogLevel,
 					ImmutableMap.copyOf(responseLogLevels), observers);
 		}
 	}
