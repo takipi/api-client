@@ -266,6 +266,10 @@ public class Series  {
 		
 		Class<?> headerClass = factory.HeaderType();
 		
+		if (headerClass == null) {
+			return null;
+		} 
+		
 		return (SeriesHeader)gson.fromJson(header, headerClass);
 	}
 	
