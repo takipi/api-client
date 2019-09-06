@@ -12,8 +12,13 @@ public class EventRow implements SeriesRow {
 		}
 
 		@Override
-		public Class<?> rowType() {
+		public Class<? extends SeriesRow> rowType() {
 			return EventRow.class;
+		}
+
+		@Override
+		public Class<? extends SeriesHeader> HeaderType() {
+			return null;
 		}	
 	}
 	

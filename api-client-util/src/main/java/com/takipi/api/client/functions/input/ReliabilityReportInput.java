@@ -297,7 +297,7 @@ public class ReliabilityReportInput extends RegressionsInput {
 			if ((types != null) && (!types.isEmpty())) {
 				return types;
 			} else {
-				return BaseEventVolumeInput.CRITICAL_EXCEPTIONS;
+				return BaseEventVolumeInput.CRITICAL_EXCEPTIONS_FILTER;
 			}
 		}
 		

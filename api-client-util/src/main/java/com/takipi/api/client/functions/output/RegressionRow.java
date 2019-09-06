@@ -1,6 +1,7 @@
 package com.takipi.api.client.functions.output;
 
 import com.takipi.api.client.functions.input.RegressionsInput;
+import com.takipi.api.client.functions.output.ReliabilityReportRow.Header;
 
 public class RegressionRow extends EventRow {
 
@@ -12,9 +13,14 @@ public class RegressionRow extends EventRow {
 		}
 		
 		@Override
-		public Class<?> rowType() {
+		public Class<? extends SeriesRow> rowType() {
 			return RegressionRow.class;
 		}	
+		
+		@Override
+		public Class<? extends SeriesHeader> HeaderType() {
+			return Header.class;
+		}
 	}
 	
 	public String regression_type;

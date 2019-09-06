@@ -12,9 +12,14 @@ public class TransactionRow implements SeriesRow {
 		}
 		
 		@Override
-		public Class<?> rowType() {
+		public Class<? extends SeriesRow> rowType() {
 			return TransactionRow.class;
-		}	
+		}
+		
+		@Override
+		public Class<? extends SeriesHeader> HeaderType() {
+			return null;
+		}
 	}
 	
 	public String link;

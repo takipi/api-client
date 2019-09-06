@@ -10,11 +10,11 @@ import java.util.List;
  */
 public abstract class BaseEventVolumeInput extends EventFilterInput {
 	
-	public static final String CRITICAL_EXCEPTIONS = "Critical Exceptions";
-	public static final String TRANSACTION_FAILURES = "Transaction Failures";
+	public static final String CRITICAL_EXCEPTIONS_FILTER = "Critical Exceptions";
+	public static final String TRANSACTION_FAILURES_FILTER = "Transaction Failures";
 
 	/**
-	 * These values must match literals of VolumeType for annotations
+	 * These values must match literals of VolumeType for annotations 
 	 */
 	public static final String VOLUME_TYPE_HITS = "hits";
 	public static final String VOLUME_TYPE_INVOCATIONS = "invocations";
@@ -29,7 +29,7 @@ public abstract class BaseEventVolumeInput extends EventFilterInput {
 
 	public static final List<String> TRANSACTION_STATES = Arrays.asList(new String[] {
 		OK, SLOWING, CRITICAL	
-		});
+	});
 	
 	public static final int OK_ORDINAL = TRANSACTION_STATES.indexOf(OK);
 	public static final int SLOWING_ORDINAL = TRANSACTION_STATES.indexOf(SLOWING);

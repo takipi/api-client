@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gson.Gson;
 import com.takipi.api.client.functions.input.BaseGraphInput;
 import com.takipi.api.client.functions.input.EventsInput;
 import com.takipi.api.client.functions.input.RegressionsInput;
@@ -19,6 +20,7 @@ public class Series  {
 	public static final String SUM_COLUMN = "sum";
 	public static final String TIME_COLUMN = "time";
 	
+	private static final Gson gson = new Gson();
 	private static Map<String, RowFactory> factories;
 	
 	/**
@@ -30,6 +32,11 @@ public class Series  {
 	 * Series type - events, regressions, graph,..
 	 */
 	public String type;
+	
+	/**
+	 * Series header - metadata about this series
+	 */
+	public String header;
 	
 	/**
 	 * For functions returning grouped results, the group keys
@@ -241,6 +248,27 @@ public class Series  {
 		return factory.read(this, index);
 	}
 	
+	public SeriesHeader getHeader() {
+		
+		if (type == null) {
+			return null;
+		}
+		
+		if (header == null) {
+			return null;
+		}
+		
+		RowFactory factory = factories.get(type);
+		
+		if (factory == null) {
+			return null;
+		} 
+		
+		Class<?> headerClass = factory.HeaderType();
+		
+		return (SeriesHeader)gson.fromJson(header, headerClass);
+	}
+	
 	public Class<?> getRowType() {
 		
 		if (type == null) {
@@ -265,6 +293,7 @@ public class Series  {
 		factories.put(RegressionsInput.REGRESSIONS_SERIES, new RegressionRow.Factory());
 		factories.put(ReliabilityReportInput.RELIABITY_REPORT_SERIES, new ReliabilityReportRow.Factory());
 		factories.put(BaseGraphInput.GRAPH_SERIES, new GraphRow.Factory());
+
 
 	}
 }

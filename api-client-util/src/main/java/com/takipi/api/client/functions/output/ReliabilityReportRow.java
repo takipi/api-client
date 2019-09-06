@@ -13,9 +13,25 @@ public class ReliabilityReportRow implements SeriesRow {
 		}	
 		
 		@Override
-		public Class<?> rowType() {
+		public Class<? extends SeriesRow> rowType() {
 			return ReliabilityReportRow.class;
 		}	
+		
+		@Override
+		public Class<? extends SeriesHeader> HeaderType() {
+			return Header.class;
+		}
+	}
+	
+	public static class Header implements SeriesHeader {
+		
+		public String serviceId;
+		public String key;
+		
+		public Header(String serviceId, String key) {
+			this.serviceId = serviceId;
+			this.key = key;
+		}
 	}
 	
 	public String service;

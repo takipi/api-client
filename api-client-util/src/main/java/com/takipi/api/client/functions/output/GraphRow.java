@@ -12,8 +12,13 @@ public class GraphRow implements SeriesRow  {
 		}
 
 		@Override
-		public Class<?> rowType() {
+		public Class<? extends SeriesRow> rowType() {
 			return GraphRow.class;
+		}
+
+		@Override
+		public Class<? extends SeriesHeader> HeaderType() {
+			return null;
 		}
 	}
 	
