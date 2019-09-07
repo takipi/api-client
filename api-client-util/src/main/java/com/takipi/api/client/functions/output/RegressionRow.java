@@ -33,5 +33,4 @@ public class RegressionRow extends EventRow {
 		this.severity = series.getInt(RegressionsInput.SEVERITY, index);
 		this.reg_desc = series.getString(RegressionsInput.REG_DESC, index);		
 	}
-
 }

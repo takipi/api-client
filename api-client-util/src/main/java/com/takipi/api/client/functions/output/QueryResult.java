@@ -14,14 +14,13 @@ public class QueryResult implements ApiResult {
 	
 	private static final Gson gson = new Gson();
 
-	
 	public List<ResultContent> results;
 	
 	public void print(PrintStream stream) {
 		stream.println(gson.toJson(this));
 	}
 	
-	public Collection<Series> series() {
+	public Collection<Series> getSeries() {
 		
 		if (CollectionUtil.safeIsEmpty(results)) {
 			return Collections.emptyList();
