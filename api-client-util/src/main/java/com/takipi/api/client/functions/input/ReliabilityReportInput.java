@@ -93,6 +93,10 @@ public class ReliabilityReportInput extends RegressionsInput {
 	public static final String FAILURES_SERIES = "reliability_report_failures";
 	public static final String SLOWDOWN_SERIES = "reliability_reporty_slowdown";
 
+	public static final List<String> SERIES_TYPES = Arrays.asList(new String[] {
+			RELIABITY_REPORT_SERIES, REGRESSION_SERIES, 	ERRORS_SERIES, FAILURES_SERIES, SLOWDOWN_SERIES
+	});
+	
 	@Param(type=ParamType.Boolean, advanced=false, literals={},
 			description = "Control whether to report only on live deployment in Deployment report mode",
 			defaultValue = "false")

@@ -1,6 +1,7 @@
 package com.takipi.api.client.functions.output;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +16,26 @@ import com.takipi.api.client.functions.input.TransactionsListInput;
  * The output returned by the execution of a function. This can be used to describe
  * a variable, graph, table, single stat,..
  */
-public class Series  {
+public class Series  implements Iterable<SeriesRow> {
+	
+	@Override
+	public Iterator<SeriesRow> iterator() {
+		
+		return new Iterator<SeriesRow>() {
+
+			private int index;
+			
+			@Override
+			public boolean hasNext() {
+				return index < values.size();
+			}
+
+			@Override
+			public SeriesRow next() {
+				return readRow(index++);
+			}
+		};
+	}
 	
 	public static final String SUM_COLUMN = "sum";
 	public static final String TIME_COLUMN = "time";
