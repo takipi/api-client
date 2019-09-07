@@ -4,7 +4,7 @@ import com.takipi.api.client.functions.input.EventsInput;
 
 public class EventRow implements SeriesRow {
 	
-	public static class Factory implements RowFactory {
+	public static class Reader extends BaseSeriesReader {
 
 		@Override
 		public SeriesRow read(Series series, int index) {
@@ -14,11 +14,6 @@ public class EventRow implements SeriesRow {
 		@Override
 		public Class<? extends SeriesRow> rowType() {
 			return EventRow.class;
-		}
-
-		@Override
-		public Class<? extends SeriesHeader> HeaderType() {
-			return null;
 		}	
 	}
 	

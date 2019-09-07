@@ -87,12 +87,11 @@ public class ReliabilityReportInput extends RegressionsInput {
 		return result;
 	}
 	
-	public static final String RELIABITY_REPORT_SERIES = "reliability_report_series";
-
-	public static final String REGRESSION_SERIES = "regressions";
-	public static final String ERRORS_SERIES = "errors";
-	public static final String FAILURES_SERIES = "failures";
-	public static final String SLOWDOWN_SERIES = "slowdown";
+	public static final String RELIABITY_REPORT_SERIES = "reliability_report";
+	public static final String REGRESSION_SERIES = "relability_report_regressions";
+	public static final String ERRORS_SERIES = "reliability_report_errors";
+	public static final String FAILURES_SERIES = "reliability_report_failures";
+	public static final String SLOWDOWN_SERIES = "reliability_reporty_slowdown";
 
 	@Param(type=ParamType.Boolean, advanced=false, literals={},
 			description = "Control whether to report only on live deployment in Deployment report mode",

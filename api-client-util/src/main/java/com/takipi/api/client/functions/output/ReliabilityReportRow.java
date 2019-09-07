@@ -5,7 +5,7 @@ import com.takipi.api.client.functions.input.ReliabilityReportInput;
 
 public class ReliabilityReportRow implements SeriesRow {
 	
-	public static class Factory implements RowFactory {
+	public static class Reader extends BaseSeriesReader {
 
 		@Override
 		public SeriesRow read(Series series, int index) {
@@ -16,9 +16,28 @@ public class ReliabilityReportRow implements SeriesRow {
 		public Class<? extends SeriesRow> rowType() {
 			return ReliabilityReportRow.class;
 		}	
-		
+	}
+	
+	public static class EventVolumeReader extends EventRow.Reader {
+
 		@Override
-		public Class<? extends SeriesHeader> HeaderType() {
+		public Class<? extends SeriesHeader> headerType() {
+			return Header.class;
+		}
+	}
+	
+	public static class SlowdownReader extends TransactionRow.Reader {
+
+		@Override
+		public Class<? extends SeriesHeader> headerType() {
+			return Header.class;
+		}
+	}
+	
+	public static class RegressionReader extends RegressionRow.Reader {
+
+		@Override
+		public Class<? extends SeriesHeader> headerType() {
 			return Header.class;
 		}
 	}

@@ -4,7 +4,7 @@ import com.takipi.api.client.functions.input.TransactionsListInput;
 
 public class TransactionRow implements SeriesRow {
 	
-	public static class Factory implements RowFactory {
+	public static class Reader extends BaseSeriesReader {
 
 		@Override
 		public SeriesRow read(Series series, int index) {
@@ -14,11 +14,6 @@ public class TransactionRow implements SeriesRow {
 		@Override
 		public Class<? extends SeriesRow> rowType() {
 			return TransactionRow.class;
-		}
-		
-		@Override
-		public Class<? extends SeriesHeader> HeaderType() {
-			return null;
 		}
 	}
 	

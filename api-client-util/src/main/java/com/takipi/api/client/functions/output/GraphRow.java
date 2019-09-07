@@ -4,7 +4,7 @@ import org.joda.time.DateTime;
 
 public class GraphRow implements SeriesRow  {
 	
-	public static class Factory implements RowFactory {
+	public static class Reader extends BaseSeriesReader {
 
 		@Override
 		public SeriesRow read(Series series, int index) {
@@ -14,11 +14,6 @@ public class GraphRow implements SeriesRow  {
 		@Override
 		public Class<? extends SeriesRow> rowType() {
 			return GraphRow.class;
-		}
-
-		@Override
-		public Class<? extends SeriesHeader> HeaderType() {
-			return null;
 		}
 	}
 	

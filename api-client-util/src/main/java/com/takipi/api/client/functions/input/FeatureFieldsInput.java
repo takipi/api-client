@@ -6,11 +6,12 @@ import java.util.List;
 import com.takipi.integrations.functions.annotations.Function;
 import com.takipi.integrations.functions.annotations.Function.FunctionType;
 
-@Function(name="featureFields", type=FunctionType.Table,
+@Function(name="featureFields", type=FunctionType.Variable,
 description = "", example="", image="", isInternal=true)
-public class FeatureFieldsInput extends FunctionInput{
+public class FeatureFieldsInput extends VariableInput{
 	
 	public String featureName;
+	public String fieldName;
 	
 	public static final String  NAME = "name";
 	public static final String  TITLE = "title";

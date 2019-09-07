@@ -1,11 +1,10 @@
 package com.takipi.api.client.functions.output;
 
 import com.takipi.api.client.functions.input.RegressionsInput;
-import com.takipi.api.client.functions.output.ReliabilityReportRow.Header;
 
 public class RegressionRow extends EventRow {
 
-	public static class Factory implements RowFactory {
+	public static class Reader extends BaseSeriesReader {
 
 		@Override
 		public SeriesRow read(Series series, int index) {
@@ -16,13 +15,8 @@ public class RegressionRow extends EventRow {
 		public Class<? extends SeriesRow> rowType() {
 			return RegressionRow.class;
 		}	
-		
-		@Override
-		public Class<? extends SeriesHeader> HeaderType() {
-			return Header.class;
-		}
 	}
-	
+
 	public String regression_type;
 	public double reg_delta;
 	public String regression;

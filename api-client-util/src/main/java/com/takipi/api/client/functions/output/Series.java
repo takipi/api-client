@@ -21,7 +21,7 @@ public class Series  {
 	public static final String TIME_COLUMN = "time";
 	
 	private static final Gson gson = new Gson();
-	private static Map<String, RowFactory> factories;
+	private static Map<String, SeriesReader> seriesReaders;
 	
 	/**
 	 * Series name
@@ -29,7 +29,7 @@ public class Series  {
 	public String name;
 	
 	/**
-	 * Series type - events, regressions, graph,..
+	 * Series type - volume, events, regressions, graph, relability_report,...
 	 */
 	public String type;
 	
@@ -239,13 +239,13 @@ public class Series  {
 			return null;
 		}
 		
-		RowFactory factory = factories.get(type);
+		SeriesReader reader = seriesReaders.get(type);
 		
-		if (factory == null) {
+		if (reader == null) {
 			return null;
 		}
 		
-		return factory.read(this, index);
+		return reader.read(this, index);
 	}
 	
 	public SeriesHeader getHeader() {
@@ -258,13 +258,13 @@ public class Series  {
 			return null;
 		}
 		
-		RowFactory factory = factories.get(type);
+		SeriesReader reader = seriesReaders.get(type);
 		
-		if (factory == null) {
+		if (reader == null) {
 			return null;
 		} 
 		
-		Class<?> headerClass = factory.HeaderType();
+		Class<?> headerClass = reader.headerType();
 		
 		if (headerClass == null) {
 			return null;
@@ -279,25 +279,29 @@ public class Series  {
 			return null;
 		}
 		
-		RowFactory factory = factories.get(type);
+		SeriesReader reader = seriesReaders.get(type);
 		
-		if (factory == null) {
+		if (reader == null) {
 			return null;
 		} 
 		
-		return factory.rowType();
+		return reader.rowType();
 	}
 	
 	static {
 		
-		factories = new HashMap<String, RowFactory>();
+		seriesReaders = new HashMap<String, SeriesReader>();
 		
-		factories.put(EventsInput.EVENTS_SERIES, new EventRow.Factory());
-		factories.put(TransactionsListInput.TRANSACTION_SERIES, new TransactionRow.Factory());
-		factories.put(RegressionsInput.REGRESSIONS_SERIES, new RegressionRow.Factory());
-		factories.put(ReliabilityReportInput.RELIABITY_REPORT_SERIES, new ReliabilityReportRow.Factory());
-		factories.put(BaseGraphInput.GRAPH_SERIES, new GraphRow.Factory());
+		seriesReaders.put(EventsInput.EVENTS_SERIES, new EventRow.Reader());
+		seriesReaders.put(BaseGraphInput.GRAPH_SERIES, new GraphRow.Reader());
 
-
+		seriesReaders.put(TransactionsListInput.TRANSACTION_SERIES, new TransactionRow.Reader());
+		seriesReaders.put(RegressionsInput.REGRESSIONS_SERIES, new RegressionRow.Reader());
+		
+		seriesReaders.put(ReliabilityReportInput.RELIABITY_REPORT_SERIES, new ReliabilityReportRow.Reader());
+		seriesReaders.put(ReliabilityReportInput.REGRESSION_SERIES, new ReliabilityReportRow.RegressionReader());
+		seriesReaders.put(ReliabilityReportInput.ERRORS_SERIES, new ReliabilityReportRow.EventVolumeReader());
+		seriesReaders.put(ReliabilityReportInput.FAILURES_SERIES, new ReliabilityReportRow.EventVolumeReader());
+		seriesReaders.put(ReliabilityReportInput.SLOWDOWN_SERIES, new ReliabilityReportRow.SlowdownReader());
 	}
 }

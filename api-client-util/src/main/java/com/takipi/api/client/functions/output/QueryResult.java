@@ -1,10 +1,14 @@
 package com.takipi.api.client.functions.output;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import com.google.gson.Gson;
 import com.takipi.api.core.result.intf.ApiResult;
+import com.takipi.common.util.CollectionUtil;
 
 public class QueryResult implements ApiResult {
 	
@@ -13,20 +17,27 @@ public class QueryResult implements ApiResult {
 	
 	public List<ResultContent> results;
 	
-	public ResultContent getResult() {
-		
-		if (results == null) {
-			throw new IllegalStateException("results null");
-		}
-		
-		if (results.size() == 0) {
-			throw new IllegalStateException("results empty");	
-		}
-		
-		return results.get(0);	
-	}
-	
 	public void print(PrintStream stream) {
 		stream.println(gson.toJson(this));
+	}
+	
+	public Collection<Series> series() {
+		
+		if (CollectionUtil.safeIsEmpty(results)) {
+			return Collections.emptyList();
+		}
+		
+		List<Series> result = new ArrayList<Series>();
+		
+		for (ResultContent resultContent : results) {
+			
+			if (CollectionUtil.safeIsEmpty(resultContent.series)) {
+				continue;
+			}
+			
+			result.addAll(resultContent.series);
+		}
+		
+		return result;
 	}
 }
