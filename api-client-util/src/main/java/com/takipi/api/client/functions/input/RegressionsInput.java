@@ -107,8 +107,18 @@ public class RegressionsInput extends EventsInput {
 				GRAPH + ": This mode is only supported if the function is invoked to produce a reliabilty report,\n" + 
 						" where each point depicts a key value from the report\n" +
 				FEED +":")	
+	
 	public String render;
+	
+	public String getRenderMode() {
 		
+		if (render == null) {
+			return GRID;
+		}
+		
+		return render;
+	}
+	
 	public boolean isSingleStat() {
 		return SINGLE_STATS.contains(render);
 	}
