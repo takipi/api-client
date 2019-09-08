@@ -65,9 +65,13 @@ public class ReliabilityReportInput extends RegressionsInput {
 	public static final String SCORE_KPI = "Score";
 	public static final String SCORE_DESC_KPI = "ScoreDesc";
 
-	public static final List<String> KPIS = Arrays.asList(new String[] {NEW_ERRORS_KPI, SEVERE_NEW_ERRORS_KPI,
-		ERROR_INCREASES_KPI, SEVERE_ERROR_INCREASES_KPI, SLOWDOWNS_KPI, SEVERE_SLOWDOWNS_KPI,
-		ERROR_RATE_KPI, FAIL_RATE_DELTA_KPI, FAIL_RATE_DESC_KPI, SCORE_KPI, SCORE_DESC_KPI});
+	public static final List<String> KPIS = Arrays.asList(new String[] {
+		NEW_ERRORS_KPI, SEVERE_NEW_ERRORS_KPI,
+		ERROR_INCREASES_KPI, SEVERE_ERROR_INCREASES_KPI, 
+		SLOWDOWNS_KPI, SEVERE_SLOWDOWNS_KPI,
+		ERROR_RATE_KPI, ERROR_VOLUME_KPI, ERROR_COUNT_KPI,
+		FAIL_RATE_DELTA_KPI, FAIL_RATE_DESC_KPI, 
+		SCORE_KPI, SCORE_DESC_KPI});
 	
 	public static String getKpi(String kpi) {
 		
