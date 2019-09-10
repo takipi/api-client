@@ -97,9 +97,10 @@ public class TransactionsListInput extends BaseGraphInput {
 					ACTIVE_CALLS + ": a value showing the change between the event rate in the selected timeframe and the baseline\n" +
 					TIME_COMSUMED + ": the avg response time * number of calls into the current transaction\n" + 
 							" in in the selected time frame\n" +
-					SLOW_STATE + ": the state of the transaction, either OK, SLOWING, or CRITICAL which describes based\n" + 
-							"on the transaction slowdown algorithm the performance state of the current transaction in\n" + 
-							"comparison to its respective baseline.\n" +
+					SLOW_STATE + ": the state of the transaction, either:" +
+						 "\n\t "+ BaseEventVolumeInput.CRITICAL + " this transaction is slow compared to its baseline" +					
+						 "\n\t "+ BaseEventVolumeInput.SLOWING + " this transaction is in the process of slowing down" +
+						 "\n\t "+  BaseEventVolumeInput.OK + " this transaction avg response is in accordance with ts baseline" +	
 					ERRORS_DESC + ": a text description of the volume of errors of the type defined in the Settings dashboard a \"transaction failure types\".\n" +
 					ERROR_RATE_DELTA + ": the diff in rate between the active and baseline window \n" + 
 					ERROR_RATE_DELTA_STATE + ": an enum state comparing the rate between the active and baseline window \n" + 

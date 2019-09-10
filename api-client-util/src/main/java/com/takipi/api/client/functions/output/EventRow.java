@@ -17,6 +17,10 @@ public class EventRow implements SeriesRow {
 		}	
 	}
 	
+	/**
+	 * Field values documented in matching EventsInput constants
+	 */
+	
 	public String id;
 	public String env_id;
 	public String link;

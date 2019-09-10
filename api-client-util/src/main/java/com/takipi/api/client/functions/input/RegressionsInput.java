@@ -74,14 +74,36 @@ public class RegressionsInput extends EventsInput {
 	public static final String REGRESSIONS_SERIES = "regressions_series";
 
 	/**
-	 * Additional fields supported by this functions
+	 * Additional fields supported by this functions:
 	 */
 	
+	/**
+	 * one of the values in REGRESSION_TYPES
+	 */
 	public static final String REGRESSION_TYPE = "regression_type";
-	public static final String REG_DELTA = "reg_delta";
-	public static final String REGRESSION = "regression";
-	public static final String SEVERITY = "severity";
+	
+	/**
+	 * A long form text description of the regression type: new, increasing, severe,...
+	 */
 	public static final String REG_DESC = "reg_desc";
+	
+	/**
+	 * A long form  text description of a volume regression  rate change
+	 */
+	public static final String REGRESSION = "regression";
+	
+	/**
+	 * A short form  text description of a volume regression rate change
+	 */
+	public static final String REG_DELTA = "reg_delta";
+	
+	/**
+	 * outputs either SEVERITY_P1 or SEVERITY_P2
+	 */
+	public static final String SEVERITY = "severity";
+	
+	public static final int SEVERITY_P1 = 2;
+	public static final int SEVERITY_P2 = 1;
 	
 	public static final List<String> REGRESSION_FIELDS;
 	
@@ -101,8 +123,8 @@ public class RegressionsInput extends EventsInput {
 						"\t" + REGRESSION + ": description of the regression rate" +
 						"\t" + REGRESSION + ": description of the regression" +
 						"\t" + REG_DESC + ": Text value for the severity of the regression.\n" + 
-								"\t\tIf the issue is severe = 2\n" + 
-								"\t\tIf the issue is non-severe = 1;\n" + 
+								"\t\tIf the issue is severe = " + SEVERITY_P1 + "\n" + 
+								"\t\tIf the issue is non-severe = " + SEVERITY_P2 + "\n" + 
 								"\t\tIf the issue is not new or regressed = 0;" +
 				GRAPH + ": This mode is only supported if the function is invoked to produce a reliabilty report,\n" + 
 						" where each point depicts a key value from the report\n" +

@@ -1,5 +1,6 @@
 package com.takipi.api.client.functions.output;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -11,31 +12,13 @@ import com.takipi.api.client.functions.input.EventsInput;
 import com.takipi.api.client.functions.input.RegressionsInput;
 import com.takipi.api.client.functions.input.ReliabilityReportInput;
 import com.takipi.api.client.functions.input.TransactionsListInput;
+import com.takipi.common.util.CollectionUtil;
 
 /**
  * The output returned by the execution of a function. This can be used to describe
  * a variable, graph, table, single stat,..
  */
 public class Series  implements Iterable<SeriesRow> {
-	
-	@Override
-	public Iterator<SeriesRow> iterator() {
-		
-		return new Iterator<SeriesRow>() {
-
-			private int index;
-			
-			@Override
-			public boolean hasNext() {
-				return index < values.size();
-			}
-
-			@Override
-			public SeriesRow next() {
-				return readRow(index++);
-			}
-		};
-	}
 	
 	public static final String SUM_COLUMN = "sum";
 	public static final String TIME_COLUMN = "time";
@@ -167,7 +150,7 @@ public class Series  implements Iterable<SeriesRow> {
 		}
 		
 		if (value instanceof Integer) {
-			return (Long)value;
+			return (Integer)value;
 		}
 		
 		if (value instanceof Double) {
@@ -253,6 +236,23 @@ public class Series  implements Iterable<SeriesRow> {
 		return false;
 	}
 	
+	public List<SeriesRow> readRows() {
+				
+		int size = this.size();
+		
+		List<SeriesRow> result = new ArrayList<SeriesRow>(size);
+		
+		if (size == 0) {
+			return result;
+		}
+		
+		for (SeriesRow row : this) {
+			result.add(row);
+		}
+		
+		return result;
+	}
+	
 	public SeriesRow readRow(int index) {
 		
 		if (type == null) {
@@ -306,6 +306,35 @@ public class Series  implements Iterable<SeriesRow> {
 		} 
 		
 		return reader.rowType();
+	}
+	
+	@Override
+	public Iterator<SeriesRow> iterator() {
+		
+		return new Iterator<SeriesRow>() {
+
+			private int index;
+			
+			@Override
+			public boolean hasNext() {
+				return index < values.size();
+			}
+
+			@Override
+			public SeriesRow next() {
+				return readRow(index++);
+			}
+		};
+	}
+	
+	public int size() {
+		
+		if (CollectionUtil.safeIsEmpty(values)) {
+			return 0;
+		}
+		
+		return values.size();
+		
 	}
 	
 	static {

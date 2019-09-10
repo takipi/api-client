@@ -53,7 +53,13 @@ public class ReliabilityReportRow implements SeriesRow {
 		}
 	}
 	
+	/**
+	 * Field values documented in matching ReliabilityReportInput constants
+	 */
+	
 	public String service;
+	public String serviceId;
+
 	public String key;
 	public String name;
 	
@@ -96,7 +102,8 @@ public class ReliabilityReportRow implements SeriesRow {
 	
 	public String alertStatus;
 	public String alertDesc;
-	
+	public String alertViewId;
+
 	public int connectedClients;
 	public String connectedClientsDesc;
 	
@@ -113,6 +120,8 @@ public class ReliabilityReportRow implements SeriesRow {
 	public ReliabilityReportRow(Series series, int index) {
 				
 		this.service = series.getString(ReliabilityReportInput.SERVICE, index);
+		this.serviceId = series.getString(ReliabilityReportInput.SERVICE_ID, index);
+
 		this.key = series.getString(ReliabilityReportInput.KEY, index);
 		this.name = series.getString(EventsInput.NAME, index);
 		
@@ -149,11 +158,12 @@ public class ReliabilityReportRow implements SeriesRow {
 		
 		this.reliabilityState = series.getString(ReliabilityReportInput.RELIABILITY_STATE, index);
 		this.failureDesc = series.getString(ReliabilityReportInput.TRANSACTION_FAIL_DESC, index);
-		this.relabilityDesc = series.getString(ReliabilityReportInput.RELIABILITY_DESC, index);
-		
+		this.relabilityDesc = series.getString(ReliabilityReportInput.RELIABILITY_DESC, index);	
 		this.statusName = series.getString(ReliabilityReportInput.STATUS_NAME, index);
+		
 		this.alertStatus = series.getString(ReliabilityReportInput.ALERT_STATUS, index);
 		this.alertDesc = series.getString(ReliabilityReportInput.ALERT_DESC, index);
+		this.alertViewId = series.getString(ReliabilityReportInput.ALERT_VIEW_ID, index);
 		
 		this.connectedClients = series.getInt(ReliabilityReportInput.CONNECTED_CLIENTS, index);
 		this.connectedClientsDesc = series.getString(ReliabilityReportInput.CONNECTED_CLIENTS_DESC, index);

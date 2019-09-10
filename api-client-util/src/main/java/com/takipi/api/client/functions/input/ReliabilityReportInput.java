@@ -336,12 +336,6 @@ public class ReliabilityReportInput extends RegressionsInput {
 	public String failRatePrefixes;
 		
 	@Param(type=ParamType.String, advanced=true, literals={},
-			description = "A comma delimited array used to visually annotate the alert status of the key\n" + 
-					"with values for: no alerts (add), new error, anomaly",
-			defaultValue = "\\xE2\\x9E\\x95,\\xF0\\x9F\\x86\\x95\\xEF\\xB8\\x8F,\\xF0\\x9F\\x93\\x88")
-	public String alertStatusPrefixes;
-	
-	@Param(type=ParamType.String, advanced=true, literals={},
 			description = "A string postfix to be added to an app / tier name to denote it having alerts set",
 			defaultValue = "")
 	public String alertNamePostfix;
@@ -471,42 +465,89 @@ public class ReliabilityReportInput extends RegressionsInput {
 	 * report modes
 	 */
 	
+	/**
+	 * Row header fields
+	 */
 	public static final String SERVICE = "Service";
+	public static final String SERVICE_ID = "ServiceId";
 	public static final String KEY = "Key";
 	public static final String KEY_NANE= "Name";
+	
+	/**
+	 * Diff fields
+	 */
 	public static final String PREV_DEP_NAME = "previousDepName";
 	public static final String PREV_DEP_FROM = "previousDepFrom";			
 	public static final String PREV_DEP_STATE =  "previousDepState";
 	public static final String TIMELINE_DIFF_STATE =  "TimelineDiffState";
+	
+	/**
+	 * Anomaly fields
+	 */
 	public static final String NEW_ISSUES = "NewIssues";
 	public static final String REGRESSIONS = "Regressions";
 	public static final String SLOWDOWNS = "Slowdowns"; 
+	
 	public static final String NEW_ISSUES_DESC = "NewIssuesDesc";
 	public static final String REGRESSIONS_DESC = "RegressionsDesc";
 	public static final String SLOWDOWNS_DESC = "SlowdownsDesc";
+	
+	/**
+	 * Score fields
+	 */
 	public static final String SCORE = "Score"; 
 	public static final String SCORE_DESC = "ScoreDesc";
+	
+	/**
+	 * Transaction volume / response fields
+	 */
 	public static final String TRANSACTION_VOLUME = "TransactionVolume";
 	public static final String TRANSACTION_COUNT = "TransactionCount";
 	public static final String TRANSACTION_AVG_RESPONSE = "TransactionAvgResponse";
 	public static final String TRANSACTION_RESPONSE_DELTA = "TransactionResponseDelta";
+	
+
+	/**
+	 * Failure fields (e.g. "Critical Exceptions")
+	 */
 	public static final String TRANSACTION_FAILURES = "TransactionFailures";
 	public static final String TRANSACTION_VOLUME_DESC = "TransactionVolumeDesc";
 	public static final String TRANSACTION_FAIL_COUNT_DESC = "TransactionFailureCountDesc";
 	public static final String TRANSACTION_FAILURES_COUNT = "TransactionFailureCount";
 	public static final String TRANSACTION_FAIL_RATE = "TransactionFailRate";
-	public static final String TRANSACTION_FAIL_RATE_DELTA = "TransactionFailRateDelta";
+	public static final String TRANSACTION_FAIL_RATE_DELTA = "TransactionFailRateDelta";	
+
+	/**
+	 * Error volume fields
+	 */
 	public static final String ERROR_VOLUME = "ErrorVolume";
 	public static final String ERROR_COUNT_DESC = "ErrorCountDesc";
 	public static final String ERROR_COUNT = "ErrorCount";
+	
+	/**
+	 * High-level status fields
+	 */
 	public static final String RELIABILITY_STATE = "ReliabilityState";
 	public static final String TRANSACTION_FAIL_DESC = "FailureDesc";
 	public static final String RELIABILITY_DESC = "RelabilityDesc";
 	public static final String STATUS_NAME = "StatusName";
+
+	/**
+	 * Alert fields
+	 */
 	public static final String ALERT_STATUS = "AlertStatus";
 	public static final String ALERT_DESC = "AlertDesc";
+	public static final String ALERT_VIEW_ID = "AlertViewId";
+
+	/**
+	 * Connected VMs fields
+	 */
 	public static final String CONNECTED_CLIENTS = "ConnectedClients";
 	public static final String CONNECTED_CLIENTS_DESC = "ConnectedClientsDesc";
+	
+	/**
+	 * Feed fields
+	 */
 	public static final String EVENT_NAME = "EventName";
 	public static final String EVENT_DESC = "EventDesc";
 	public static final String EVENT_TYPE_DESC = "EventTypeDesc";
@@ -516,9 +557,10 @@ public class ReliabilityReportInput extends RegressionsInput {
 	public static final String DASHBOARD_FIELD = "DashboardField";
 	public static final String DASHBOARD_VALUE = "DashboardValue";
 	
+	
 	public static final String FIELDS_DESC = 
-		SERVICE + ": the env ID for this row\n" +
-		KEY + ": the target app/dep/tier\n" +
+		SERVICE + ": the env name for this row\n" +
+		SERVICE_ID + ": the env ID for this row\n" +
 		KEY_NANE + ": a human-readable name  of the target app/dep/tier\n" +
 		PREV_DEP_NAME + ": name of the deployment, the name of the deployment to be diff against\n" +
 		PREV_DEP_FROM + ": name of the deployment, the start of the deployment to be diff against\n" +
@@ -550,6 +592,7 @@ public class ReliabilityReportInput extends RegressionsInput {
 		STATUS_NAME + ": an app name + reliability state\n" +
 		ALERT_STATUS + ": an app / tier alert status\n" +
 		ALERT_DESC + ": app / tier alert description\n" +
+		ALERT_VIEW_ID + ": ID of view on which aler relating to this key have been set\n" +
 		CONNECTED_CLIENTS + ": number of connected clients of app\n" +
 		CONNECTED_CLIENTS_DESC + ": number of description of connected clients of app\n" +
 		EVENT_NAME + ": name of the message of a feed event\n" +
@@ -650,6 +693,8 @@ public class ReliabilityReportInput extends RegressionsInput {
 			ERROR_COUNT_DESC,
 			TRANSACTION_VOLUME_DESC,
 			CONNECTED_CLIENTS_DESC,
+			SERVICE_ID,
+			ALERT_VIEW_ID,
 			KEY_NANE, 
 			STATUS_NAME,
 		 	ALERT_STATUS,

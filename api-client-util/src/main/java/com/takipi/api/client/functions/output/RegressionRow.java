@@ -17,6 +17,10 @@ public class RegressionRow extends EventRow {
 		}	
 	}
 
+	/**
+	 * Field values documented in matching RegressionsInput constants
+	 */
+	
 	public String regression_type;
 	public double reg_delta;
 	public String regression;

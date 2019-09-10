@@ -17,6 +17,11 @@ public class TransactionRow implements SeriesRow {
 		}
 	}
 	
+	
+	/**
+	 * Field values documented in matching TransactionsListInput constants
+	 */
+	
 	public String link;
 	public String transaction;	
 	
