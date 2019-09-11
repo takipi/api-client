@@ -255,13 +255,13 @@ public class Series  implements Iterable<SeriesRow> {
 	public void sort(String columnName, boolean ascending, boolean numerically) {
 		
 		if (numerically) {
-			sortNumbers(columnName, ascending);
+			sortNumerically(columnName, ascending);
 		} else {
 			sortComparabales(columnName, ascending);
 		}
 	}
 
-	public void sortNumbers(String columnName, boolean ascending) {
+	private void sortNumerically(String columnName, boolean ascending) {
 		
 		if (CollectionUtil.safeIsEmpty(values)) {
 			return;
@@ -294,10 +294,8 @@ public class Series  implements Iterable<SeriesRow> {
 			}
 		});
 	}
-
-		
-		
-	public void sortComparabales(String columnName, boolean ascending) {
+	
+	private void sortComparabales(String columnName, boolean ascending) {
 		
 		if (CollectionUtil.safeIsEmpty(values)) {
 			return;
