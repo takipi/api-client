@@ -1,6 +1,7 @@
 package com.takipi.api.client.functions.output;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -82,22 +83,32 @@ public class Series  implements Iterable<SeriesRow> {
 		return result;
 	}
 
-	
-	public Object getValue(String column, int index, boolean mustExist) {
+	private int getColumnIndex(String column, boolean mustExist) {
 		
 		if (columns == null) {
 			throw new IllegalStateException("columns null");
 		}
 		
-		int colIndex= columns.indexOf(column);
+		int result = columns.indexOf(column);
 
-		if (colIndex == -1) {
+		if (result == -1) {
 			
 			if (!mustExist) {
-				return null;
+				return -1;
 			}
 			
 			throw new IllegalArgumentException(column + " not found in " + String.join(",", columns));
+		}
+		
+		return result;
+	}
+	
+	public Object getValue(String column, int index, boolean mustExist) {
+		
+		int colIndex = getColumnIndex(column, mustExist);
+		
+		if (colIndex == -1) {
+			return null;
 		}
 		
 		return getValue(colIndex, index);
@@ -184,9 +195,7 @@ public class Series  implements Iterable<SeriesRow> {
 		return value.toString();
 	}
 	
-	public double getDouble(String column, int index) {
-		
-		Object value = getValue(column, index);
+	private double getDouble(Object value) {
 		
 		if (value == null) {
 			return 0;
@@ -216,6 +225,13 @@ public class Series  implements Iterable<SeriesRow> {
 		return 0;
 	}
 	
+	public double getDouble(String column, int index) {
+		
+		Object value = getValue(column, index);
+		return getDouble(value);
+		
+	}
+	
 	public boolean getBoolean(String column, int index) {
 		
 		Object value = getValue(column, index);
@@ -234,6 +250,98 @@ public class Series  implements Iterable<SeriesRow> {
 		}
 		
 		return false;
+	}
+	
+	public void sort(String columnName, boolean ascending, boolean numerically) {
+		
+		if (numerically) {
+			sortNumbers(columnName, ascending);
+		} else {
+			sortComparabales(columnName, ascending);
+		}
+	}
+
+	public void sortNumbers(String columnName, boolean ascending) {
+		
+		if (CollectionUtil.safeIsEmpty(values)) {
+			return;
+		}
+		
+		int colIndex = getColumnIndex(columnName, true);
+		
+		values.sort(new Comparator<List<Object>>() {
+
+			@Override
+			public int compare(List<Object> o1, List<Object> o2) {
+				
+				Object v1 = o1.get(colIndex);
+				Object v2 = o2.get(colIndex);
+				
+				double c1;
+				double c2;
+				
+				if (ascending) {
+					
+					c1 = getDouble(v1);
+					c2 = getDouble(v2);
+				} else {
+					
+					c1 = getDouble(v2);
+					c2 = getDouble(v1);
+				}
+				
+				return Double.compare(c1, c2);
+			}
+		});
+	}
+
+		
+		
+	public void sortComparabales(String columnName, boolean ascending) {
+		
+		if (CollectionUtil.safeIsEmpty(values)) {
+			return;
+		}
+		
+		int colIndex = getColumnIndex(columnName, true);
+		
+		values.sort(new Comparator<List<Object>>() {
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public int compare(List<Object> o1, List<Object> o2) {
+				
+				Object v1 = o1.get(colIndex);
+				Object v2 = o2.get(colIndex);
+				
+				Comparable<Object> c1;
+				Object c2;
+				
+				if (ascending) {
+					
+					if (v1 instanceof Comparable<?>) {
+						c1 = (Comparable<Object>)v1;
+					} else {
+						c1 = null;
+					}
+					c2 = v2;
+				} else {
+					
+					if (v2 instanceof Comparable<?>) {
+						c1 = (Comparable<Object>)v2;
+					} else {
+						c1 = null;
+					}
+					c2 = v1;
+				}
+				
+				if (c1 == null) {
+					return 0;
+				}
+				
+				return c1.compareTo(c2);
+			}
+		});
 	}
 	
 	public List<SeriesRow> readRows() {
