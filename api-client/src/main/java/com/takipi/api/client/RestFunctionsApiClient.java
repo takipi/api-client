@@ -1,5 +1,6 @@
 package com.takipi.api.client;
 
+import java.net.HttpURLConnection;
 import java.util.Collection;
 import java.util.Map;
 
@@ -13,6 +14,19 @@ public class RestFunctionsApiClient extends BaseApiClient {
 	RestFunctionsApiClient(String hostname, Pair<String, String> auth, int connectTimeout, int readTimeout,
 			LogLevel defaultLogLevel, Map<Integer, LogLevel> responseLogLevels, Collection<Observer> observers) {
 		super(hostname, auth, connectTimeout, readTimeout, defaultLogLevel, responseLogLevels, observers);
+	}
+
+	@Override
+	protected HttpURLConnection getConnection(String targetUrl, String contentType, String[] params) throws Exception {
+		HttpURLConnection connection = super.getConnection(targetUrl, contentType, params);
+
+		if (connection == null) {
+			return null;
+		}
+
+		connection.setRequestProperty("X-OO-API", getHostname());
+
+		return connection;
 	}
 
 	@Override
