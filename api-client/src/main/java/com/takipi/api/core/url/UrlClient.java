@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 import com.takipi.api.core.consts.ApiConstants;
-import com.takipi.common.util.Pair;
 
 public abstract class UrlClient {
 
@@ -47,75 +46,6 @@ public abstract class UrlClient {
 		return hostname;
 	}
 
-	public Response<String> get(String targetUrl, Pair<String, String> auth, String contentType, String... params) {
-		HttpURLConnection connection = null;
-
-		try {
-			URL url = new URL(appendQueryParams(targetUrl, params));
-
-			connection = (HttpURLConnection) url.openConnection();
-
-			if (auth != null) {
-				connection.setRequestProperty(auth.getFirst(), auth.getSecond());
-			}
-
-			connection.setRequestProperty("Content-Type", contentType);
-			connection.setConnectTimeout(connectTimeout);
-			connection.setReadTimeout(readTimeout);
-			connection.setRequestMethod("GET");
-
-			Response<String> result = getResponse(targetUrl, connection);
-
-			return result;
-		} catch (Exception ex) {
-			logger.error("Url client GET {} failed.", targetUrl, ex);
-
-			return BAD_RESPONSE;
-		} finally {
-			closeQuietly(connection);
-		}
-	}
-
-	public Response<String> put(String targetUrl, Pair<String, String> auth, byte[] data, String contentType,
-			String... params) {
-		HttpURLConnection connection = null;
-
-		try {
-			URL url = new URL(appendQueryParams(targetUrl, params));
-
-			connection = (HttpURLConnection) url.openConnection();
-
-			if (auth != null) {
-				connection.setRequestProperty(auth.getFirst(), auth.getSecond());
-			}
-
-			connection.setRequestProperty("Content-Type", contentType);
-			connection.setRequestProperty("Accept", ApiConstants.CONTENT_TYPE_JSON);
-			connection.setConnectTimeout(connectTimeout);
-			connection.setReadTimeout(readTimeout);
-			connection.setDoOutput(true);
-			connection.setRequestMethod("PUT");
-
-			if ((data != null) && (data.length > 0)) {
-				OutputStream out = connection.getOutputStream();
-				out.write(data);
-				out.flush();
-				out.close();
-			}
-
-			Response<String> result = getResponse(targetUrl, connection);
-
-			return result;
-
-		} catch (Exception ex) {
-			logger.error("Url client POST {} failed.", targetUrl, ex);
-
-			return BAD_RESPONSE;
-		} finally {
-			closeQuietly(connection);
-		}
-	}
-
 	protected String appendQueryParams(String url, String[] params) {
 		if ((params == null) || (params.length == 0)) {
 			return url;
@@ -143,23 +73,75 @@ public abstract class UrlClient {
 		return sb.toString();
 	}
 
-	public Response<String> post(String targetUrl, Pair<String, String> auth, byte[] data, String contentType,
-			String... params) {
+	protected HttpURLConnection getConnection(String targetUrl, String contentType, String[] params) throws Exception {
+		URL url = new URL(appendQueryParams(targetUrl, params));
+
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+		connection.setRequestProperty("Content-Type", contentType);
+		connection.setConnectTimeout(connectTimeout);
+		connection.setReadTimeout(readTimeout);
+
+		return connection;
+	}
+
+	public Response<String> get(String targetUrl, String contentType, String... params) {
 		HttpURLConnection connection = null;
 
 		try {
-			URL url = new URL(appendQueryParams(targetUrl, params));
+			connection = getConnection(targetUrl, contentType, params);
 
-			connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestMethod("GET");
 
-			if (auth != null) {
-				connection.setRequestProperty(auth.getFirst(), auth.getSecond());
+			Response<String> result = getResponse(targetUrl, connection);
+
+			return result;
+		} catch (Exception ex) {
+			logger.error("Url client GET {} failed.", targetUrl, ex);
+
+			return BAD_RESPONSE;
+		} finally {
+			closeQuietly(connection);
+		}
+	}
+
+	public Response<String> put(String targetUrl, byte[] data, String contentType, String... params) {
+		HttpURLConnection connection = null;
+
+		try {
+			connection = getConnection(targetUrl, contentType, params);
+
+			connection.setRequestProperty("Accept", ApiConstants.CONTENT_TYPE_JSON);
+			connection.setDoOutput(true);
+			connection.setRequestMethod("PUT");
+
+			if ((data != null) && (data.length > 0)) {
+				OutputStream out = connection.getOutputStream();
+				out.write(data);
+				out.flush();
+				out.close();
 			}
 
-			connection.setRequestProperty("Content-Type", contentType);
+			Response<String> result = getResponse(targetUrl, connection);
+
+			return result;
+
+		} catch (Exception ex) {
+			logger.error("Url client POST {} failed.", targetUrl, ex);
+
+			return BAD_RESPONSE;
+		} finally {
+			closeQuietly(connection);
+		}
+	}
+
+	public Response<String> post(String targetUrl, byte[] data, String contentType, String... params) {
+		HttpURLConnection connection = null;
+
+		try {
+			connection = getConnection(targetUrl, contentType, params);
+
 			connection.setRequestProperty("Accept", ApiConstants.CONTENT_TYPE_JSON);
-			connection.setConnectTimeout(connectTimeout);
-			connection.setReadTimeout(readTimeout);
 			connection.setDoOutput(true);
 			connection.setRequestMethod("POST");
 
@@ -183,22 +165,12 @@ public abstract class UrlClient {
 		}
 	}
 
-	public Response<String> delete(String targetUrl, Pair<String, String> auth, byte[] data, String contentType,
-			String... params) {
+	public Response<String> delete(String targetUrl, byte[] data, String contentType, String... params) {
 		HttpURLConnection connection = null;
 
 		try {
-			URL url = new URL(appendQueryParams(targetUrl, params));
+			connection = getConnection(targetUrl, contentType, params);
 
-			connection = (HttpURLConnection) url.openConnection();
-
-			if (auth != null) {
-				connection.setRequestProperty(auth.getFirst(), auth.getSecond());
-			}
-
-			connection.setRequestProperty("Content-Type", contentType);
-			connection.setConnectTimeout(connectTimeout);
-			connection.setReadTimeout(readTimeout);
 			connection.setDoOutput(true);
 			connection.setRequestMethod("DELETE");
 

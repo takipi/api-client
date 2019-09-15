@@ -83,11 +83,25 @@ public abstract class BaseApiClient extends UrlClient {
 		return baseApiPath() + apiRequest.urlPath();
 	}
 
+	@Override
+	protected HttpURLConnection getConnection(String targetUrl, String contentType, String[] params) throws Exception {
+		HttpURLConnection connection = super.getConnection(targetUrl, contentType, params);
+
+		if (connection == null) {
+			return null;
+		}
+
+		if (auth != null) {
+			connection.setRequestProperty(auth.getFirst(), auth.getSecond());
+		}
+
+		return connection;
+	}
+
 	public <T extends ApiResult> Response<T> get(ApiGetRequest<T> request) {
 		try {
 			long t1 = System.currentTimeMillis();
-			Response<String> response = get(buildTargetUrl(request), auth, request.contentType(),
-					request.queryParams());
+			Response<String> response = get(buildTargetUrl(request), request.contentType(), request.queryParams());
 			long t2 = System.currentTimeMillis();
 
 			observe(Operation.GET, appendQueryParams(request.urlPath(), request.queryParams()), null, response.data,
@@ -103,7 +117,7 @@ public abstract class BaseApiClient extends UrlClient {
 	public <T extends ApiResult> Response<T> put(ApiPutRequest<T> request) {
 		try {
 			long t1 = System.currentTimeMillis();
-			Response<String> response = put(buildTargetUrl(request), auth, request.putData(), request.contentType(),
+			Response<String> response = put(buildTargetUrl(request), request.putData(), request.contentType(),
 					request.queryParams());
 			long t2 = System.currentTimeMillis();
 
@@ -123,7 +137,7 @@ public abstract class BaseApiClient extends UrlClient {
 			byte[] data = (Strings.isNullOrEmpty(postData) ? null : postData.getBytes(ApiConstants.UTF8_ENCODING));
 
 			long t1 = System.currentTimeMillis();
-			Response<String> response = post(buildTargetUrl(request), auth, data, request.contentType(),
+			Response<String> response = post(buildTargetUrl(request), data, request.contentType(),
 					request.queryParams());
 			long t2 = System.currentTimeMillis();
 
@@ -140,7 +154,7 @@ public abstract class BaseApiClient extends UrlClient {
 	public <T extends ApiResult> Response<T> post(ApiPostBytesRequest<T> request) {
 		try {
 			long t1 = System.currentTimeMillis();
-			Response<String> response = post(buildTargetUrl(request), auth, request.postData(), request.contentType(),
+			Response<String> response = post(buildTargetUrl(request), request.postData(), request.contentType(),
 					request.queryParams());
 			long t2 = System.currentTimeMillis();
 
@@ -160,7 +174,7 @@ public abstract class BaseApiClient extends UrlClient {
 			byte[] data = (Strings.isNullOrEmpty(postData) ? null : postData.getBytes(ApiConstants.UTF8_ENCODING));
 
 			long t1 = System.currentTimeMillis();
-			Response<String> response = delete(buildTargetUrl(request), auth, data, request.contentType(),
+			Response<String> response = delete(buildTargetUrl(request), data, request.contentType(),
 					request.queryParams());
 			long t2 = System.currentTimeMillis();
 
