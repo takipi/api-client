@@ -68,9 +68,9 @@ public class ReliabilityReportRow implements SeriesRow {
 	public String previousDepState;
 	public String timelineDiffState;
 	
-	public int newIssues;
-	public int regressions;
-	public int slowdowns; 
+	public String newIssues;
+	public String regressions;
+	public String slowdowns; 
 	
 	public String newIssuesDesc;
 	public String regressionsDesc;
@@ -81,24 +81,25 @@ public class ReliabilityReportRow implements SeriesRow {
 	
 	public long transactionVolume;
 	public long transactionCount;
+	public String transactionVolumeDesc;
 	public double transactionAvgResponse;
 	public double transactionResponseDelta;
 	
-	public long transactionFailures;
-	public String transactionVolumeDesc;
-	public String transactionFailureCountDesc;
-	public long transactionFailureCount;
-	public double transactionFailRate;
-	public String transactionFailRateDelta;
+	public long failureVolume;
+	public long failureCount;
+	public String failureCountDesc;
+	public double failureRate;
+	public String failureRateDelta;
 	
 	public long errorVolume;
 	public String errorCountDesc;
 	public int errorCount;
 	
 	public String reliabilityState;
+	public String statusName;
+
 	public String failureDesc;
 	public String relabilityDesc;
-	public String statusName;
 	
 	public String alertStatus;
 	public String alertDesc;
@@ -129,9 +130,9 @@ public class ReliabilityReportRow implements SeriesRow {
 		this.previousDepFrom = series.getString(ReliabilityReportInput.PREV_DEP_FROM, index);			
 		this.previousDepState = series.getString(ReliabilityReportInput.PREV_DEP_STATE, index);
 		
-		this.newIssues = series.getInt(ReliabilityReportInput.NEW_ISSUES, index);
-		this.regressions = series.getInt(ReliabilityReportInput.REGRESSIONS, index);
-		this.slowdowns = series.getInt(ReliabilityReportInput.SLOWDOWNS, index); 
+		this.newIssues = series.getString(ReliabilityReportInput.NEW_ISSUES, index);
+		this.regressions = series.getString(ReliabilityReportInput.REGRESSIONS, index);
+		this.slowdowns = series.getString(ReliabilityReportInput.SLOWDOWNS, index); 
 		
 		this.newIssuesDesc = series.getString(ReliabilityReportInput.NEW_ISSUES_DESC, index);
 		this.regressionsDesc = series.getString(ReliabilityReportInput.REGRESSIONS_DESC, index);
@@ -145,12 +146,12 @@ public class ReliabilityReportRow implements SeriesRow {
 		this.transactionAvgResponse = series.getLong(ReliabilityReportInput.TRANSACTION_AVG_RESPONSE, index);
 		this.transactionResponseDelta = series.getDouble(ReliabilityReportInput.TRANSACTION_RESPONSE_DELTA, index);
 		
-		this.transactionFailures = series.getInt(ReliabilityReportInput.TRANSACTION_FAILURES, index);
+		this.failureVolume = series.getInt(ReliabilityReportInput.TRANSACTION_FAILURES, index);
 		this.transactionVolumeDesc = series.getString(ReliabilityReportInput.TRANSACTION_VOLUME_DESC, index);
-		this.transactionFailureCountDesc = series.getString(ReliabilityReportInput.TRANSACTION_FAIL_COUNT_DESC, index);
-		this.transactionFailureCount = series.getLong(ReliabilityReportInput.TRANSACTION_FAILURES_COUNT, index);
-		this.transactionFailRate = series.getDouble(ReliabilityReportInput.TRANSACTION_FAIL_RATE, index);
-		this.transactionFailRateDelta = series.getString(ReliabilityReportInput.TRANSACTION_FAIL_RATE_DELTA, index);
+		this.failureCountDesc = series.getString(ReliabilityReportInput.TRANSACTION_FAIL_COUNT_DESC, index);
+		this.failureCount = series.getLong(ReliabilityReportInput.TRANSACTION_FAILURES_COUNT, index);
+		this.failureRate = series.getDouble(ReliabilityReportInput.TRANSACTION_FAIL_RATE, index);
+		this.failureRateDelta = series.getString(ReliabilityReportInput.TRANSACTION_FAIL_RATE_DELTA, index);
 		
 		this.errorVolume = series.getLong(ReliabilityReportInput.ERROR_VOLUME, index);
 		this.errorCountDesc = series.getString(ReliabilityReportInput.ERROR_COUNT_DESC, index);
