@@ -39,7 +39,7 @@ public abstract class BaseApiClient extends UrlClient {
 	private final Object observerLock;
 	private volatile List<Observer> observers;
 
-	BaseApiClient(String hostname, Pair<String, String> auth, int connectTimeout, int readTimeout,
+	protected BaseApiClient(String hostname, Pair<String, String> auth, int connectTimeout, int readTimeout,
 			LogLevel defaultLogLevel, Map<Integer, LogLevel> responseLogLevels, Collection<Observer> observers) {
 		super(hostname, connectTimeout, readTimeout, defaultLogLevel, responseLogLevels);
 
@@ -79,7 +79,7 @@ public abstract class BaseApiClient extends UrlClient {
 
 	protected abstract String baseApiPath();
 
-	private String buildTargetUrl(ApiRequest apiRequest) {
+	protected String buildTargetUrl(ApiRequest apiRequest) {
 		return baseApiPath() + apiRequest.urlPath();
 	}
 
@@ -271,7 +271,7 @@ public abstract class BaseApiClient extends UrlClient {
 		protected Map<Integer, LogLevel> responseLogLevels;
 		protected Collection<Observer> observers;
 
-		Builder() {
+		protected Builder() {
 			this.connectTimeout = CONNECT_TIMEOUT;
 			this.readTimeout = READ_TIMEOUT;
 
