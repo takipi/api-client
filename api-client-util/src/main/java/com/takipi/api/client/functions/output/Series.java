@@ -195,7 +195,7 @@ public class Series  implements Iterable<SeriesRow> {
 		return value.toString();
 	}
 	
-	private double getDouble(Object value) {
+	protected double parseDouble(Object value) {
 		
 		if (value == null) {
 			return 0;
@@ -228,7 +228,7 @@ public class Series  implements Iterable<SeriesRow> {
 	public double getDouble(String column, int index) {
 		
 		Object value = getValue(column, index);
-		return getDouble(value);
+		return parseDouble(value);
 		
 	}
 	
@@ -282,12 +282,12 @@ public class Series  implements Iterable<SeriesRow> {
 				
 				if (ascending) {
 					
-					c1 = getDouble(v1);
-					c2 = getDouble(v2);
+					c1 = parseDouble(v1);
+					c2 = parseDouble(v2);
 				} else {
 					
-					c1 = getDouble(v2);
-					c2 = getDouble(v1);
+					c1 = parseDouble(v2);
+					c2 = parseDouble(v1);
 				}
 				
 				return Double.compare(c1, c2);
