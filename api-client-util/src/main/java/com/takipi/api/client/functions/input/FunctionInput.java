@@ -161,7 +161,7 @@ public abstract class FunctionInput extends BaseRequest implements ApiGetRequest
 	
 	@Override
 	public String urlPath() {
-		return "/query";
+		return "/oo-as-influx/query";
 	}
 	
 	@Override
