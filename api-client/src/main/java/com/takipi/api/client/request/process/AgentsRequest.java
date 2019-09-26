@@ -1,17 +1,17 @@
 package com.takipi.api.client.request.process;
 
-import com.takipi.api.client.result.process.JvmsResult;
+import com.takipi.api.client.result.process.AgentsResult;
 import com.takipi.api.core.request.intf.ApiGetRequest;
 
-public class JvmsRequest extends BaseStatusRequest implements ApiGetRequest<JvmsResult> {
+public class AgentsRequest extends BaseStatusRequest implements ApiGetRequest<AgentsResult> {
 
-	JvmsRequest(String serviceId, boolean connected) {
-		super(serviceId, connected, "jvms");
+	AgentsRequest(String serviceId, boolean connected) {
+		super(serviceId, connected, "agents");
 	}
 
 	@Override
-	public Class<JvmsResult> resultClass() {
-		return JvmsResult.class;
+	public Class<AgentsResult> resultClass() {
+		return AgentsResult.class;
 	}
 
 	public static Builder newBuilder() {
@@ -37,10 +37,10 @@ public class JvmsRequest extends BaseStatusRequest implements ApiGetRequest<Jvms
 			return this;
 		}
 
-		public JvmsRequest build() {
+		public AgentsRequest build() {
 			validate();
 
-			return new JvmsRequest(serviceId, connected);
+			return new AgentsRequest(serviceId, connected);
 		}
 	}
 }
