@@ -9,6 +9,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.takipi.api.client.ApiClient;
@@ -22,12 +23,14 @@ import com.takipi.api.client.request.event.EventsVolumeRequest;
 import com.takipi.api.client.request.metrics.GraphRequest;
 import com.takipi.api.client.request.view.CreateViewRequest;
 import com.takipi.api.client.request.view.DeleteViewRequest;
+import com.takipi.api.client.request.view.ViewRequest;
 import com.takipi.api.client.request.view.ViewsRequest;
 import com.takipi.api.client.result.EmptyResult;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.result.event.EventsResult;
 import com.takipi.api.client.result.metrics.GraphResult;
 import com.takipi.api.client.result.view.CreateViewResult;
+import com.takipi.api.client.result.view.ViewResult;
 import com.takipi.api.client.result.view.ViewsResult;
 import com.takipi.api.client.util.validation.ValidationUtil.GraphType;
 import com.takipi.api.client.util.validation.ValidationUtil.VolumeType;
@@ -132,6 +135,19 @@ public class ViewUtil {
 		}
 
 		return result;
+	}
+
+	public static ViewResult getServiceView(ApiClient apiClient, String serviceId, String viewId) {
+		ViewRequest viewRequest = ViewRequest.newBuilder().setServiceId(serviceId).setViewId(viewId).build();
+
+		Response<ViewResult> viewsResponse = apiClient.get(viewRequest);
+
+		if ((viewsResponse.isBadResponse()) || (viewsResponse.data == null)
+				|| (Strings.isNullOrEmpty(viewsResponse.data.id)) || (Strings.isNullOrEmpty(viewsResponse.data.name))) {
+			return null;
+		}
+
+		return viewsResponse.data;
 	}
 
 	public static SummarizedView getServiceViewByName(ApiClient apiClient, String serviceId, String viewName) {

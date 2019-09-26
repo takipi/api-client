@@ -1,5 +1,6 @@
 package com.takipi.api.client;
 
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.util.Collection;
 import java.util.List;
@@ -79,7 +80,7 @@ public abstract class BaseApiClient extends UrlClient {
 
 	protected abstract String baseApiPath();
 
-	protected String buildTargetUrl(ApiRequest apiRequest) {
+	protected String buildTargetUrl(ApiRequest apiRequest) throws UnsupportedEncodingException {
 		return baseApiPath() + apiRequest.urlPath();
 	}
 
