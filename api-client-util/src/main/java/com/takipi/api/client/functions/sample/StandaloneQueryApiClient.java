@@ -1,5 +1,6 @@
 package com.takipi.api.client.functions.sample;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Map;
 
@@ -25,7 +26,12 @@ public class StandaloneQueryApiClient extends BaseApiClient {
 
 	@Override
 	protected String buildTargetUrl(ApiRequest apiRequest) {
-		return super.buildTargetUrl(apiRequest).replace(OO_AS_INFLUX_PATH, "");
+		
+		try {
+			return super.buildTargetUrl(apiRequest).replace(OO_AS_INFLUX_PATH, "");
+		} catch (UnsupportedEncodingException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 
 	@Override
