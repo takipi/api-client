@@ -87,13 +87,16 @@ public class ReliabilityReportRow implements SeriesRow {
 	
 	public long failureVolume;
 	public long failureCount;
+	
 	public String failureCountDesc;
 	public double failureRate;
 	public String failureRateDelta;
 	
 	public long errorVolume;
-	public String errorCountDesc;
 	public int errorCount;
+	
+	public String errorCountDesc;
+
 	
 	public String reliabilityState;
 	public String statusName;
