@@ -25,13 +25,8 @@ public class StandaloneQueryApiClient extends BaseApiClient {
 	}
 
 	@Override
-	protected String buildTargetUrl(ApiRequest apiRequest) {
-		
-		try {
-			return super.buildTargetUrl(apiRequest).replace(OO_AS_INFLUX_PATH, "");
-		} catch (UnsupportedEncodingException e) {
-			throw new IllegalStateException(e);
-		}
+	protected String buildTargetUrl(ApiRequest apiRequest) throws UnsupportedEncodingException {
+		return super.buildTargetUrl(apiRequest).replace(OO_AS_INFLUX_PATH, "");
 	}
 
 	@Override
