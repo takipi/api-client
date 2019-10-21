@@ -1,5 +1,7 @@
 package com.takipi.api.client.functions.sample;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import com.takipi.api.client.functions.input.BaseEventVolumeInput;
@@ -12,9 +14,10 @@ import com.takipi.api.client.functions.output.EventRow;
 import com.takipi.api.client.functions.output.GraphRow;
 import com.takipi.api.client.functions.output.QueryResult;
 import com.takipi.api.client.functions.output.RegressionRow;
+import com.takipi.api.client.functions.output.ReliabilityReport;
+import com.takipi.api.client.functions.output.ReliabilityReport.ReliabilityReportItem;
 import com.takipi.api.client.functions.output.ReliabilityReportRow;
 import com.takipi.api.client.functions.output.Series;
-import com.takipi.api.client.functions.output.SeriesHeader;
 import com.takipi.api.client.functions.output.SeriesRow;
 import com.takipi.api.client.functions.output.TransactionRow;
 import com.takipi.api.client.util.validation.ValidationUtil.VolumeType;
@@ -23,6 +26,9 @@ import com.takipi.common.util.TimeUtil;
 
 public class OverOpsFunctionsSample {
 	
+	private static final String TAB = "\t";
+	private static final String TAB2 = "\t\t";
+
 	public static void main(String[] args) {
 		
 		String apiServer = args[0]; // api REST endpoint (api.overops.cpm)
@@ -62,7 +68,7 @@ public class OverOpsFunctionsSample {
 			throw new IllegalStateException("volume failed");
 		}
 		
-		for (Series series : response.data.getSeries()) {
+		for (Series<SeriesRow> series : response.data.getSeries()) {
 			System.out.println("volume = " + series.getSingleStat());
 		}
 	}
@@ -85,7 +91,7 @@ public class OverOpsFunctionsSample {
 			throw new IllegalStateException("graph failed");
 		}
 		
-		for (Series series : response.data.getSeries()) {
+		for (Series<SeriesRow> series : response.data.getSeries()) {
 			
 			System.out.println(series.name);
 			
@@ -104,88 +110,8 @@ public class OverOpsFunctionsSample {
 	 * Each series' reader returns a matching row object which can be used to easily query 
 	 * its values (e.g. score, slowdown state, ..) 
 	 * This report feeds dashboards Home, cicd plugins (jenkins etc..), alerting UDFs
-	 */
-	public static void runReliabilityReport(StandaloneQueryApiClient apiClient, String serviceId) {
-			
-		ReliabilityReportInput input = new ReliabilityReportInput();
-		
-		input.environments = serviceId;
-		input.timeFilter = TimeUtil.getLastWindowTimeFilter(TimeUnit.DAYS.toMillis(1)); //last day
-		input.mode = ReliabilityReportInput.DEFAULT_REPORT; //each row to report an app
-		input.limit = 5; //top 5 apps
-		input.outputDrillDownSeries = true; //also return the drilldowns for new/inc/unique/vol/slow series for each app
-		input.view = "sqs-general";
-		
-		Response<QueryResult> response = apiClient.get(input);
-		
-		if (response.isBadResponse()) {
-			throw new IllegalStateException("Reliability report failed");
-		}
-			
-		/*
-		 * We can now iterate over the diff series returned by the reliability report:
-		 * the main reliability_report series which is what you would see in the Home dashboard,
-		 * and then for each of the 5 apps its drilldown quality gates as well:
-		 * regressions (new/inc), event_volume, failure_volume (critical exceptions), slowdowns
-		 * These are the exact data you would see in the drill down dashboards for each app:
-		 * increasing errors, slowdowns, critical exceptions, etc..
-		 */
-		
-		for (Series series : response.data.getSeries()) {
-			
-			System.out.println(series.name);
-			
-			printSeriesHeader(series);
-			
-			switch (series.type) {
-				
-				case ReliabilityReportInput.RELIABITY_REPORT_SERIES: {
-					
-					printReportScores(series);
-					break;
-				}
-				
-				case ReliabilityReportInput.REGRESSION_SERIES: {
-					
-					printRegressions(series);
-					break;
-				}
-	
-				case ReliabilityReportInput.FAILURES_SERIES: {
-					printTopRankFailures(series, 5);
-					break;
-				}
-				
-				case ReliabilityReportInput.ERRORS_SERIES: {
-					printTopEventsByVolume(series, 5);
-					break;
-				}
-				
-				case ReliabilityReportInput.SLOWDOWN_SERIES: {	
-					printSlodowns(series);
-					break;
-				}
-			}
-		}
-	}
-	
-	/*
-	 * A series header describes which report key (e.g. app/dep/tier) this series
-	 * describes. For example a "regressions" series for servideId: "S1234", key: "myApp"
-	 * when reporting mode is set to "Applications" will describe any new / inc errors
-	 * found in the "myApp" app in the "S1234" env.
-	 */
-	private static void printSeriesHeader(Series series) {
-		
-		SeriesHeader header = series.getHeader();
-		
-		if (header instanceof ReliabilityReportRow.Header) {
-			ReliabilityReportRow.Header rrHeader = (ReliabilityReportRow.Header)header;
-			System.out.println(rrHeader.serviceId + ", app = " + rrHeader.key);
-		}
-	}
-	
-	/*
+	 
+	 /*
 	 * Each row in this series provides the reliability output for a target
 	 * report key (e.g. app, dep) based on the "reportMode" field of the function input.
 	 * For each row, an associated set of 4 drill down series is also returned if
@@ -198,24 +124,77 @@ public class OverOpsFunctionsSample {
 	 * Each drilldown series has a header which describes which the serviceId and key (e.g. app/dep/tier)
 	 * it relates to
 	 */
-	private static void printReportScores(Series series) {
+	
+	public static void runReliabilityReport(StandaloneQueryApiClient apiClient, String serviceId) {
+			
+		ReliabilityReportInput input = new ReliabilityReportInput();
 		
-		for (SeriesRow row : series) {
-			ReliabilityReportRow rrRow = (ReliabilityReportRow)row;
-			System.out.println("\t" +rrRow.key + "  score = " + rrRow.score);
+		input.environments = serviceId;
+		input.timeFilter = TimeUtil.getLastWindowTimeFilter(TimeUnit.DAYS.toMillis(4)); //last day
+		input.mode = ReliabilityReportInput.APPS_EXTENDED_REPORT; //each row to report an app
+		input.limit = 5; //top 5 apps
+		input.outputDrillDownSeries = true; //also return the drilldowns for new/inc/unique/vol/slow series for each app
+		
+		ReliabilityReport reliabilityReport = ReliabilityReport.execute(apiClient, input);
+		
+		if (reliabilityReport == null) {
+			throw new IllegalStateException("Reliability report failed");
+		}
+			
+		for (Map.Entry<ReliabilityReportRow.Header, ReliabilityReportItem> entry : reliabilityReport.items.entrySet()) {
+			
+			ReliabilityReportRow.Header rrHeader = entry.getKey();
+			ReliabilityReportItem rrItem = entry.getValue();
+			
+			printReportItemScore(rrHeader, rrItem);
+			
+			printReportNewErrors(rrItem);
+			printReportIncErrors(rrItem);
+			
+			printReportItemFailures(rrItem, 5);
+			printReportItemTopEventsByVolume(rrItem, 5);
+			
+			printReportItemSlowdowns(rrItem, true);
+			printReportItemSlowdowns(rrItem, false);
 		}
 	}
 	
 	/*
-	 * This series provides the information for the  the new / increasing quality gates
- 	 * for a target row (e.g. app, dep) in the reliability report. Each row
- 	 * describes either: new, sev new, inc, sev inc  issue
+	 * A series header describes which report key (e.g. app/dep/tier) this series
+	 * describes. For example a "regressions" series for servideId: "S1234", key: "myApp"
+	 * when reporting mode is set to "Applications" will describe any new / inc errors
+	 * found in the "myApp" app in the "S1234" env.
 	 */
-	private static void printRegressions(Series series) {
+	private static void printReportItemScore(ReliabilityReportRow.Header rrHeader, ReliabilityReportItem rrItem) {
+		System.out.println(rrHeader.serviceId + ", app = " + rrHeader.key + " = " + rrItem.row.score);
+
+	}
+	
+	/*
+	 * This series provides the information for the  the "new errors" quality gates
+ 	 * for a target row (e.g. app, dep) in the reliability report. Each row
+ 	 * describes either: new, sev new issue
+	 */
+	private static void printReportNewErrors(ReliabilityReportItem rrItem) {
+				
+		System.out.println(TAB + "New Errors: ");
 		
-		for (SeriesRow row : series) {
-			RegressionRow rgRow = (RegressionRow)row;
-			System.out.println("\t" + rgRow.summary + "= " + rgRow.regression_type);
+		for (RegressionRow row : rrItem.getNewErrors(false)) {
+			System.out.println(TAB2 + row.summary + "= " + row.regression_type);
+		}
+	}
+	
+	/*
+	 * This series provides the information for the  the "inc errors" quality gates
+ 	 * for a target row (e.g. app, dep) in the reliability report. Each row
+ 	 * describes either: inc, sev inc issue
+	 */
+	private static void printReportIncErrors(ReliabilityReportItem rrItem) {
+		
+		System.out.println(TAB + "Inc Errors: ");
+		
+		for (RegressionRow row : rrItem.geIncErrors(false)) {
+			System.out.println(TAB2 + row.summary + "= " + row.regression_type);
 		}
 	}
 	
@@ -225,13 +204,15 @@ public class OverOpsFunctionsSample {
 	 * By default this would be "Critical Exceptions" which will read that list
 	 * from the environment's settings. 
 	 */
-	private static void printTopRankFailures(Series series, int top) {
+	private static void printReportItemFailures(ReliabilityReportItem rrItem, int top) {
 		
-		int size = Math.min(series.size(), top);
+		System.out.println(TAB + "Top rank failures: ");
+		
+		int size = Math.min(rrItem.failures.size(), top);
 		
 		for (int i = 0; i < size; i++) {		
-			EventRow evRow = (EventRow)series.readRow(i);
-			System.out.println("\t" + evRow.summary + " rank  = " + evRow.rank);
+			EventRow evRow = rrItem.failures.readRow(i);
+			System.out.println(TAB2 + evRow.summary);
 		}
 	}
 	
@@ -239,15 +220,17 @@ public class OverOpsFunctionsSample {
 	 * This series provides the information for the event volume and unique event count
 	 * quality gates within a target report key (e.g. app, dep) 
 	 */
-	private static void printTopEventsByVolume(Series series, int top) {
+	private static void printReportItemTopEventsByVolume(ReliabilityReportItem rrItem, int top) {
 		
-		series.sort(EventsInput.HITS, false, true);
+		System.out.println(TAB + "Top volume errors: ");
+
+		rrItem.errors.sort(EventsInput.HITS, false, true);
 		
-		int size = Math.min(series.size(), top);
+		int size = Math.min(rrItem.errors.size(), top);
 		
 		for (int i = 0; i < size; i++) {		
-			EventRow evRow = (EventRow)series.readRow(i);
-			System.out.println("\t" + evRow.summary + " volume  = " + evRow.hits);
+			EventRow row = rrItem.errors.readRow(i);
+			System.out.println(TAB2 + row.summary + " volume  = " + row.hits);
 		}
 	}
 	
@@ -255,17 +238,21 @@ public class OverOpsFunctionsSample {
 	 * Each row in this series provides information for the slowdown quality gate
 	 * for a target report key (e.g. app, dep) as well as all of its information: code location, slow state, avg response
 	 */
-	private static void printSlodowns(Series series) {
+	private static void printReportItemSlowdowns(ReliabilityReportItem rrItem, boolean severe) {
 		
-		for (SeriesRow row : series) {
-			
-			TransactionRow txRow = (TransactionRow)row;
-			
-			if ((txRow.slow_state == BaseEventVolumeInput.SLOWING_ORDINAL)
-			|| (txRow.slow_state == BaseEventVolumeInput.CRITICAL_ORDINAL)) {
-				String desc = BaseEventVolumeInput.TRANSACTION_STATES.get(txRow.slow_state);
-				System.out.println("\t" +txRow.transaction + " slowdown state = " + desc);
-			}
+		Collection<TransactionRow> rows;
+		
+		if (severe) {
+			System.out.println(TAB + "Severe slowdowns: ");
+			rows = rrItem.getSevereSlowdowns(); 
+		} else {
+			System.out.println(TAB + "Non severe slowdowns: ");
+			rows = rrItem.getNonSevereSlowdowns();
+		}
+		
+		for (TransactionRow row : rows) {
+			String desc = BaseEventVolumeInput.TRANSACTION_STATES.get(row.slow_state);
+			System.out.println(TAB2 +row.transaction + " slowdown state = " + desc);
 		}
 	}
 }

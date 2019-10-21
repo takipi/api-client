@@ -20,13 +20,13 @@ public class QueryResult implements ApiResult {
 		stream.println(gson.toJson(this));
 	}
 	
-	public Collection<Series> getSeries() {
+	public Collection<Series<SeriesRow>> getSeries() {
 		
 		if (CollectionUtil.safeIsEmpty(results)) {
 			return Collections.emptyList();
 		}
 		
-		List<Series> result = new ArrayList<Series>();
+		List<Series<SeriesRow>> result = new ArrayList<Series<SeriesRow>>();
 		
 		for (ResultContent resultContent : results) {
 			

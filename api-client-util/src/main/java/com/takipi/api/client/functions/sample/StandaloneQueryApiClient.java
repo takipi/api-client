@@ -6,12 +6,13 @@ import java.util.Map;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
+import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.BaseApiClient;
 import com.takipi.api.client.observe.Observer;
 import com.takipi.api.core.request.intf.ApiRequest;
 import com.takipi.common.util.Pair;
 
-public class StandaloneQueryApiClient extends BaseApiClient {
+public class StandaloneQueryApiClient extends BaseApiClient  implements ApiClient {
 	private static final String OO_AS_INFLUX_PATH = "/oo-as-influx";
 
 	StandaloneQueryApiClient(String hostname, Pair<String, String> auth, int connectTimeout, int readTimeout,
@@ -119,5 +120,10 @@ public class StandaloneQueryApiClient extends BaseApiClient {
 			return new StandaloneQueryApiClient(hostname, getAuth(), connectTimeout, readTimeout, defaultLogLevel,
 					ImmutableMap.copyOf(responseLogLevels), observers);
 		}
+	}
+
+	@Override
+	public int getApiVersion() {
+		return 0;
 	}
 }

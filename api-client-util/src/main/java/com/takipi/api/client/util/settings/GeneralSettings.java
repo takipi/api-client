@@ -19,19 +19,7 @@ public class GeneralSettings {
 	 * volume functions.
 	 */
 	public String event_types;
-
-	/**
-	 * The default number of points to use when querying the OO REST api for event
-	 * volume graphs.
-	 */
-	public int points_wanted;
-
-	/**
-	 * The default number of points to use when querying the OO REST api for
-	 * transaction call graphs.
-	 */
-	public int transaction_points_wanted;
-
+	
 	/**
 	 * A list of event types that each if found within the context of an entry point
 	 * (transaction) call will mark that transaction as failed.Note that more than
@@ -40,11 +28,6 @@ public class GeneralSettings {
 	 * single entry point call)
 	 */
 	public String transaction_failures;
-
-	/**
-	 * for internal use.
-	 */
-	public String proxy_link_prefix;
 
 	public Collection<String> getDefaultTypes() {
 		if (Strings.isNullOrEmpty(event_types)) {

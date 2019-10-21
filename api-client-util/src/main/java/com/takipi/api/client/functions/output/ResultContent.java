@@ -10,15 +10,15 @@ import com.google.common.base.Objects;
 public class ResultContent {
 	
 	public int statement_id;
-	public List<Series> series;
+	public List<Series<SeriesRow>> series;
 	
-	public Series getSeries(String name) {
+	public Series<?> getSeries(String name) {
 		
 		if (series == null) {
 			return null;
 		}
 		
-		for (Series item : series) {
+		for (Series<?> item : series) {
 			
 			if (Objects.equal(item.name, name)) {
 				return item;
@@ -28,15 +28,15 @@ public class ResultContent {
 		return null;
 	}
 	
-	public Map<String, Series> getSeriesMap() {
+	public Map<String, Series<?>> getSeriesMap() {
 		
 		if (series == null) {
 			Collections.emptyMap();
 		}
 		
-		Map<String, Series> result = new HashMap<String, Series>(series.size());
+		Map<String, Series<?>> result = new HashMap<String, Series<?>>(series.size());
 		
-		for (Series s : series) {
+		for (Series<?> s : series) {
 			result.put(s.name, s);
 		}
 		

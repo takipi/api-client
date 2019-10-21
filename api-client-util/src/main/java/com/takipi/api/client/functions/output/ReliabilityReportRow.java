@@ -1,20 +1,26 @@
 package com.takipi.api.client.functions.output;
 
+import com.google.common.base.Objects;
 import com.takipi.api.client.functions.input.EventsInput;
 import com.takipi.api.client.functions.input.ReliabilityReportInput;
 
 public class ReliabilityReportRow implements SeriesRow {
 	
-	public static class Reader extends BaseSeriesReader {
+	public static class Reader implements SeriesReader<ReliabilityReportRow> {
 
 		@Override
-		public SeriesRow read(Series series, int index) {
+		public ReliabilityReportRow read(Series<ReliabilityReportRow> series, int index) {
 			return new ReliabilityReportRow(series, index);
 		}	
 		
 		@Override
 		public Class<? extends SeriesRow> rowType() {
 			return ReliabilityReportRow.class;
+		}
+
+		@Override
+		public Class<? extends SeriesHeader> headerType() {
+			return null;
 		}	
 	}
 	
@@ -50,6 +56,36 @@ public class ReliabilityReportRow implements SeriesRow {
 		public Header(String serviceId, String key) {
 			this.serviceId = serviceId;
 			this.key = key;
+		}
+		
+		@Override
+		public int hashCode() {
+			return serviceId.hashCode() ^ key.hashCode();
+		}
+		
+		@Override
+		public boolean equals(Object obj) {
+			
+			if (!(obj instanceof ReliabilityReportRow.Header)) {
+				return false;
+			}
+			
+			ReliabilityReportRow.Header other = (ReliabilityReportRow.Header)obj;
+			
+			if (!Objects.equal(serviceId, other.serviceId)) {
+				return false;
+			}
+			
+			if (!Objects.equal(key, other.key)) {
+				return false;
+			}
+			
+			return true;
+		}
+		
+		@Override
+		public String toString() {
+			return key;
 		}
 	}
 	
@@ -121,7 +157,7 @@ public class ReliabilityReportRow implements SeriesRow {
 	public String dashboardField;
 	public String dashboardValue;
 	
-	public ReliabilityReportRow(Series series, int index) {
+	public ReliabilityReportRow(Series<ReliabilityReportRow> series, int index) {
 				
 		this.service = series.getString(ReliabilityReportInput.SERVICE, index);
 		this.serviceId = series.getString(ReliabilityReportInput.SERVICE_ID, index);

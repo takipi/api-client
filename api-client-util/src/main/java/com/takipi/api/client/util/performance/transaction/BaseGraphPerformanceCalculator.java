@@ -16,10 +16,11 @@ public abstract class BaseGraphPerformanceCalculator<S> implements PerformanceCa
 	private final double overAvgSlowingPercentage;
 	private final double overAvgCriticalPercentage;
 	private final double stdDevFactor;
+	private final long  maxAvgTimeThreshold; 
 
 	protected BaseGraphPerformanceCalculator(long activeInvocationsThreshold, long baselineInvocationsThreshold,
 			int minDeltaThreshold, double minDeltaThresholdPercentage, double overAvgSlowingPercentage,
-			double overAvgCriticalPercentage, double stdDevFactor) {
+			double overAvgCriticalPercentage, double stdDevFactor, long maxAvgTimeThreshold) {
 
 		this.activeInvocationsThreshold = activeInvocationsThreshold;
 		this.baselineInvocationsThreshold = baselineInvocationsThreshold;
@@ -28,16 +29,19 @@ public abstract class BaseGraphPerformanceCalculator<S> implements PerformanceCa
 		this.overAvgSlowingPercentage = overAvgSlowingPercentage;
 		this.overAvgCriticalPercentage = overAvgCriticalPercentage;
 		this.stdDevFactor = stdDevFactor;
+		this.maxAvgTimeThreshold = maxAvgTimeThreshold;
 	}
 
 	protected PerformanceScore doCalc(TransactionGraph active, Stats baselineStats) {
 		Stats activeStats = TransactionUtil.aggregateGraph(active);
 
 		if ((activeStats.invocations < this.activeInvocationsThreshold)
-				|| (baselineStats.invocations < this.baselineInvocationsThreshold) || (baselineStats.avg_time <= 0.0)) {
+			|| (baselineStats.invocations < this.baselineInvocationsThreshold) 
+			|| (baselineStats.avg_time <= 0.0) 
+			|| (activeStats.avg_time > maxAvgTimeThreshold)) {
 			return PerformanceScore.NO_DATA;
 		}
-
+	
 		double badPointsScore = 0.0;
 		double threshold = baselineStats.avg_time + (baselineStats.avg_time_std_deviation * this.stdDevFactor);
 

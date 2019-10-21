@@ -4,16 +4,21 @@ import com.takipi.api.client.functions.input.TransactionsListInput;
 
 public class TransactionRow implements SeriesRow {
 	
-	public static class Reader extends BaseSeriesReader {
+	public static class Reader implements SeriesReader<TransactionRow> {
 
 		@Override
-		public SeriesRow read(Series series, int index) {
+		public TransactionRow read(Series<TransactionRow> series, int index) {
 			return new TransactionRow(series, index);
 		}
 		
 		@Override
 		public Class<? extends SeriesRow> rowType() {
 			return TransactionRow.class;
+		}
+
+		@Override
+		public Class<? extends SeriesHeader> headerType() {
+			return null;
 		}
 	}
 	
@@ -43,7 +48,7 @@ public class TransactionRow implements SeriesRow {
 	public String baseline_calls;
 	public String active_calls;	
 	
-	public TransactionRow(Series series, int index) {
+	public TransactionRow(Series<TransactionRow> series, int index) {
 				
 		this.link = series.getString(TransactionsListInput.LINK, index);
 		this.transaction = series.getString(TransactionsListInput.TRANSACTION, index);

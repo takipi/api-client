@@ -19,13 +19,15 @@ import com.takipi.common.util.CollectionUtil;
  * The output returned by the execution of a function. This can be used to describe
  * a variable, graph, table, single stat,..
  */
-public class Series  implements Iterable<SeriesRow> {
+public class Series<T extends SeriesRow> implements Iterable<T> {
 	
 	public static final String SUM_COLUMN = "sum";
 	public static final String TIME_COLUMN = "time";
 	
 	private static final Gson gson = new Gson();
-	private static Map<String, SeriesReader> seriesReaders;
+	private static Map<String, SeriesReader<?>> seriesReaders;
+	
+	private SeriesReader<T> reader;
 	
 	/**
 	 * Series name
@@ -359,19 +361,31 @@ public class Series  implements Iterable<SeriesRow> {
 		return result;
 	}
 	
-	public SeriesRow readRow(int index) {
+	public T readRow(int index) {
 		
 		if (type == null) {
 			return null;
 		}
 		
-		SeriesReader reader = seriesReaders.get(type);
-		
+		SeriesReader<T> reader = getReader();
+	
 		if (reader == null) {
 			return null;
 		}
 		
 		return reader.read(this, index);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private SeriesReader<T> getReader() {
+		
+		if (reader != null) {
+			return reader;
+		}
+		
+		this.reader = (SeriesReader<T>)seriesReaders.get(type);
+		
+		return reader;
 	}
 	
 	public SeriesHeader getHeader() {
@@ -384,7 +398,7 @@ public class Series  implements Iterable<SeriesRow> {
 			return null;
 		}
 		
-		SeriesReader reader = seriesReaders.get(type);
+		SeriesReader<T> reader = getReader();
 		
 		if (reader == null) {
 			return null;
@@ -405,7 +419,7 @@ public class Series  implements Iterable<SeriesRow> {
 			return null;
 		}
 		
-		SeriesReader reader = seriesReaders.get(type);
+		SeriesReader<T> reader = getReader();
 		
 		if (reader == null) {
 			return null;
@@ -415,9 +429,9 @@ public class Series  implements Iterable<SeriesRow> {
 	}
 	
 	@Override
-	public Iterator<SeriesRow> iterator() {
+	public Iterator<T> iterator() {
 		
-		return new Iterator<SeriesRow>() {
+		return new Iterator<T>() {
 
 			private int index;
 			
@@ -427,7 +441,7 @@ public class Series  implements Iterable<SeriesRow> {
 			}
 
 			@Override
-			public SeriesRow next() {
+			public T next() {
 				return readRow(index++);
 			}
 		};
@@ -445,7 +459,7 @@ public class Series  implements Iterable<SeriesRow> {
 	
 	static {
 		
-		seriesReaders = new HashMap<String, SeriesReader>();
+		seriesReaders = new HashMap<String, SeriesReader<?>>();
 		
 		seriesReaders.put(EventsInput.EVENTS_SERIES, new EventRow.Reader());
 		seriesReaders.put(BaseGraphInput.GRAPH_SERIES, new GraphRow.Reader());
