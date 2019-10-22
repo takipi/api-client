@@ -23,6 +23,8 @@ public class EventResult implements ApiResult, Cloneable {
 	public List<Location> stack_frames;
 
 	public String introduced_by;
+	public String introduced_by_application;
+	public String introduced_by_server;
 	public List<String> labels;
 
 	public List<String> similar_event_ids;
