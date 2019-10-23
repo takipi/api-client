@@ -30,7 +30,7 @@ public class ReliabilityReport {
 			this.row = row;
 		}
 		
-		public Collection<RegressionRow> getNewErrors(boolean severeOnly) {
+		public Collection<RegressionRow> getNewErrors(boolean includeNonSev, boolean includeSev) {
 			
 			if (regressions == null) {
 				return Collections.emptyList();
@@ -40,11 +40,11 @@ public class ReliabilityReport {
 			
 			for (RegressionRow row : regressions) {
 				
-				if ((!severeOnly) && (row.regression_type.equals(RegressionsInput.NEW_ISSUE_REGRESSIONS))) {
+				if ((includeNonSev) && (row.regression_type.equals(RegressionsInput.NEW_ISSUE_REGRESSIONS))) {
 					result.add(row);
 				}
 				
-				if (row.regression_type.equals(RegressionsInput.SEVERE_NEW_ISSUE_REGRESSIONS)) {
+				if ((includeSev) && (row.regression_type.equals(RegressionsInput.SEVERE_NEW_ISSUE_REGRESSIONS))) {
 					result.add(row);
 				}
 			}
@@ -52,7 +52,7 @@ public class ReliabilityReport {
 			return result;	
 		}
 		
-		public Collection<RegressionRow> geIncErrors(boolean severeOnly) {
+		public Collection<RegressionRow> geIncErrors(boolean includeNonSev, boolean includeSev) {
 			
 			if (regressions == null) {
 				return Collections.emptyList();
@@ -62,11 +62,11 @@ public class ReliabilityReport {
 			
 			for (RegressionRow row : regressions) {
 				
-				if ((!severeOnly) && (row.regression_type.equals(RegressionsInput.INC_ERROR_REGRESSIONS))) {
+				if ((includeNonSev) && (row.regression_type.equals(RegressionsInput.INC_ERROR_REGRESSIONS))) {
 					result.add(row);
 				}
 				
-				if (row.regression_type.equals(RegressionsInput.SEVERE_INC_ERROR_REGRESSIONS)) {
+				if ((includeSev) && (row.regression_type.equals(RegressionsInput.SEVERE_INC_ERROR_REGRESSIONS))) {
 					result.add(row);
 				}
 			}
@@ -74,7 +74,7 @@ public class ReliabilityReport {
 			return result;	
 		}
 		
-		public Collection<TransactionRow> getNonSevereSlowdowns() {
+		public Collection<TransactionRow> getSlowdowns(boolean includeNonSev, boolean includeSev) {
 			
 			if (transactions == null) {
 				return Collections.emptyList();
@@ -84,25 +84,11 @@ public class ReliabilityReport {
 			
 			for (TransactionRow row : transactions) {
 				
-				if (row.slow_state == BaseEventVolumeInput.SLOWING_ORDINAL) {
+				if ((includeNonSev) &&  (row.slow_state == BaseEventVolumeInput.SLOWING_ORDINAL)) {
 					result.add(row);
 				}
-			}
-			
-			return result;	
-		}
-		
-		public Collection<TransactionRow> getSevereSlowdowns() {
-			
-			if (transactions == null) {
-				return Collections.emptyList();
-			}
-			
-			List<TransactionRow> result = new ArrayList<TransactionRow>(transactions.size());
-			
-			for (TransactionRow row : transactions) {
 				
-				if (row.slow_state == BaseEventVolumeInput.CRITICAL_ORDINAL) {
+				if ((includeSev) &&  (row.slow_state == BaseEventVolumeInput.CRITICAL_ORDINAL)) {
 					result.add(row);
 				}
 			}
@@ -126,10 +112,6 @@ public class ReliabilityReport {
 		
 		ReliabilityReport result = new ReliabilityReport();
 				
-		if (response.isBadResponse()) {
-			throw new IllegalStateException("graph failed");
-		}
-		
 		for (Series<SeriesRow> series : response.data.getSeries()) {
 			
 			if (!series.type.equals(ReliabilityReportInput.RELIABITY_REPORT_SERIES)) {

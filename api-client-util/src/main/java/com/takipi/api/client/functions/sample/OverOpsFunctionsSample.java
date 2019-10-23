@@ -154,8 +154,7 @@ public class OverOpsFunctionsSample {
 			printReportItemFailures(rrItem, 5);
 			printReportItemTopEventsByVolume(rrItem, 5);
 			
-			printReportItemSlowdowns(rrItem, true);
-			printReportItemSlowdowns(rrItem, false);
+			printReportItemSlowdowns(rrItem);
 		}
 	}
 	
@@ -179,7 +178,7 @@ public class OverOpsFunctionsSample {
 				
 		System.out.println(TAB + "New Errors: ");
 		
-		for (RegressionRow row : rrItem.getNewErrors(false)) {
+		for (RegressionRow row : rrItem.getNewErrors(true, true)) {
 			System.out.println(TAB2 + row.summary + "= " + row.regression_type);
 		}
 	}
@@ -193,7 +192,7 @@ public class OverOpsFunctionsSample {
 		
 		System.out.println(TAB + "Inc Errors: ");
 		
-		for (RegressionRow row : rrItem.geIncErrors(false)) {
+		for (RegressionRow row : rrItem.geIncErrors(true, true)) {
 			System.out.println(TAB2 + row.summary + "= " + row.regression_type);
 		}
 	}
@@ -238,17 +237,10 @@ public class OverOpsFunctionsSample {
 	 * Each row in this series provides information for the slowdown quality gate
 	 * for a target report key (e.g. app, dep) as well as all of its information: code location, slow state, avg response
 	 */
-	private static void printReportItemSlowdowns(ReliabilityReportItem rrItem, boolean severe) {
-		
-		Collection<TransactionRow> rows;
-		
-		if (severe) {
-			System.out.println(TAB + "Severe slowdowns: ");
-			rows = rrItem.getSevereSlowdowns(); 
-		} else {
-			System.out.println(TAB + "Non severe slowdowns: ");
-			rows = rrItem.getNonSevereSlowdowns();
-		}
+	private static void printReportItemSlowdowns(ReliabilityReportItem rrItem) {
+				
+		System.out.println(TAB + "Slowdowns: ");
+		Collection<TransactionRow> rows = rrItem.getSlowdowns(true, true); 
 		
 		for (TransactionRow row : rows) {
 			String desc = BaseEventVolumeInput.TRANSACTION_STATES.get(row.slow_state);
