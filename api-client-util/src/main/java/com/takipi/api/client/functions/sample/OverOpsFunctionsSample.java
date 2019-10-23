@@ -130,7 +130,7 @@ public class OverOpsFunctionsSample {
 		ReliabilityReportInput input = new ReliabilityReportInput();
 		
 		input.environments = serviceId;
-		input.timeFilter = TimeUtil.getLastWindowTimeFilter(TimeUnit.DAYS.toMillis(4)); //last day
+		input.timeFilter = TimeUtil.getLastWindowTimeFilter(TimeUnit.DAYS.toMillis(1)); //last day
 		input.mode = ReliabilityReportInput.APPS_EXTENDED_REPORT; //each row to report an app
 		input.limit = 5; //top 5 apps
 		input.outputDrillDownSeries = true; //also return the drilldowns for new/inc/unique/vol/slow series for each app
