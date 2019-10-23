@@ -7,6 +7,7 @@ public class Location {
 	public String class_name;
 	public String method_name;
 	public String method_desc;
+	public int original_line_number = -1;
 	public int method_position = -1;
 	public boolean in_filter;
 
