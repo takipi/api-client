@@ -19,7 +19,7 @@ public class GeneralSettings {
 	 * volume functions.
 	 */
 	public String event_types;
-	
+
 	/**
 	 * A list of event types that each if found within the context of an entry point
 	 * (transaction) call will mark that transaction as failed.Note that more than
@@ -37,4 +37,12 @@ public class GeneralSettings {
 		String[] types = event_types.split(ServiceSettingsData.ARRAY_SEPERATOR);
 		return Arrays.asList(types);
 	}
+
+	// Deprecated fields are only here to support settings deserialization without
+	// crashes.
+	@Deprecated
+	public int points_wanted;
+
+	@Deprecated
+	public int transaction_points_wanted;
 }
