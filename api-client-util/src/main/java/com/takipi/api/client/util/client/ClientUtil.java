@@ -116,4 +116,18 @@ public class ClientUtil {
 
 		return response.data.services;
 	}
+
+	public static SummarizedService getEnvironment(ApiClient apiClient, String serviceId) {
+		ServicesRequest request = ServicesRequest.newBuilder().setServiceId(serviceId).build();
+
+		Response<ServicesResult> response = apiClient.get(request);
+
+		if ((response.isBadResponse()) || (response.data == null) || (response.data.services == null)
+				|| (response.data.services.isEmpty())) {
+			System.err.println("Could not acquire service. Error " + response.responseCode);
+			return null;
+		}
+
+		return response.data.services.get(0);
+	}
 }
