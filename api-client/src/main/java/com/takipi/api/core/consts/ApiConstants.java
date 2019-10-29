@@ -3,6 +3,7 @@ package com.takipi.api.core.consts;
 import java.nio.charset.Charset;
 
 public class ApiConstants {
+	
 	public static final String UTF8_ENCODING				= "UTF-8";
 	public static final String UTF16LE_ENCODING				= "UTF-16LE";
 	public static final String US_ASCII_ENCODING			= "US-ASCII";

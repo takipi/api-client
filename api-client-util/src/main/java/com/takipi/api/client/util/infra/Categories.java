@@ -29,23 +29,18 @@ public class Categories {
 		if (instance == null) {
 			synchronized (Categories.class) {
 				if (instance == null) {
-					Categories result;
+					Categories result = null;
 
 					InputStream stream = null;
 
 					try {
-						ClassLoader classLoader = Categories.class.getClassLoader();
+						stream = Categories.class.getResourceAsStream(DEFAULT_CATEGORIES);
 
-						stream = classLoader.getResourceAsStream(DEFAULT_CATEGORIES);
-
-						if (stream == null) {
-							return null;
-						}
-
-						result = (new Gson()).fromJson(IOUtils.toString(stream, Charset.defaultCharset()),
+						if (stream != null) {
+							result = (new Gson()).fromJson(IOUtils.toString(stream, Charset.defaultCharset()),
 								Categories.class);
+						}
 					} catch (Exception e) {
-						result = EMPTY_CATEGORIES;
 					} finally {
 						IOUtils.closeQuietly(stream);
 					}
