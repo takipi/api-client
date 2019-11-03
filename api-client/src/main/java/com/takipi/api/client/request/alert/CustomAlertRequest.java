@@ -105,7 +105,11 @@ public class CustomAlertRequest extends AlertRequest {
 				throw new IllegalArgumentException("Empty link");
 			}
 
-			this.links.add(AlertLink.create(preLinkText, linkText, postLinkText, link));
+			return addLink(AlertLink.create(preLinkText, linkText, postLinkText, link));
+		}
+
+		public Builder addLink(AlertLink alertLink) {
+			this.links.add(alertLink);
 
 			return this;
 		}
@@ -126,7 +130,7 @@ public class CustomAlertRequest extends AlertRequest {
 		}
 	}
 
-	static class AlertLink {
+	public static class AlertLink {
 		final String pre_link_text;
 		final String link_text;
 		final String post_link_text;
@@ -143,7 +147,7 @@ public class CustomAlertRequest extends AlertRequest {
 			return (new Gson()).toJson(this);
 		}
 
-		static AlertLink create(String preLinkText, String linkText, String postLinkText, String link) {
+		public static AlertLink create(String preLinkText, String linkText, String postLinkText, String link) {
 			return new AlertLink(preLinkText, linkText, postLinkText, link);
 		}
 	}

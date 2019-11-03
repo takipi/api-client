@@ -41,6 +41,9 @@ public class RegressionUtil {
 
 	public static final int POINT_FACTOR = 60;
 	private static final int MAX_BASELINE_POINTS = 100;
+	
+	private static final double MAJOR_SPIKE_FACTOR = 0.7;
+	private static final double MINOR_SPIKE_FACTOR = 0.35;
 
 	private static final DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTime().withZoneUTC();
 
@@ -304,19 +307,19 @@ public class RegressionUtil {
 
 				long periodVolume = eventPeriodVolumes[index];
 
-				if (periodVolume > activeEvent.stats.hits) {
+				if (periodVolume > activeEvent.stats.hits * MAJOR_SPIKE_FACTOR) {
 					largerVolumePriodIndex = index;
 					largerVolumePeriod = periodVolume;
 					break;
 				}
 
-				if (periodVolume > activeEvent.stats.hits / 2) {
+				if (periodVolume > activeEvent.stats.hits * MINOR_SPIKE_FACTOR) {
 					halfVolumePeriods++;
 				}
 			}
 		}
 
-		return SeasonlityResult.create(largerVolumePeriod, halfVolumePeriods, largerVolumePriodIndex);
+		return new SeasonlityResult(largerVolumePeriod, halfVolumePeriods, largerVolumePriodIndex);
 	}
 
 	private static boolean processVolumeRegression(EventResult activeEvent, RegressionInput input,
@@ -428,10 +431,10 @@ public class RegressionUtil {
 
 			SeasonlityResult seasonlityResult = calculateSeasonality(activeEvent, periodVolumes);
 
-			if (seasonlityResult.largerVolumePeriod >= 0) {
+			if (seasonlityResult.majorSpike >= 0) {
 				if (printStream != null) {
-					printStream.println("Period " + seasonlityResult.largerVolumePriodIndex + " = "
-							+ seasonlityResult.largerVolumePeriod + " > active volume. Aborting regression\n");
+					printStream.println("Period " + seasonlityResult.makorSpikeIndex + " = "
+							+ seasonlityResult.majorSpike + " > active volume. Aborting regression\n");
 				}
 
 				rateRegression.addNonRegressions(activeEvent);
@@ -439,9 +442,9 @@ public class RegressionUtil {
 				return false;
 			}
 
-			if (seasonlityResult.halfVolumePeriods >= 2) {
+			if (seasonlityResult.minorSpikes >= 2) {
 				if (printStream != null) {
-					printStream.println(seasonlityResult.halfVolumePeriods
+					printStream.println(seasonlityResult.minorSpikes
 							+ " periods > 50% active volume detected. Aborting regression\n");
 				}
 
