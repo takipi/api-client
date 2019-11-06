@@ -1,6 +1,5 @@
 package com.takipi.api.client.util.infra;
 
-import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Collection;
