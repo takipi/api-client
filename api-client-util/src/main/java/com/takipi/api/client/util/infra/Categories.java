@@ -18,7 +18,7 @@ import com.takipi.common.util.CollectionUtil;
 
 public class Categories {
 	
-	private static final String DEFAULT_CATEGORIES = File.separator + "infra" + File.separator + "categories.json";
+	private static final String DEFAULT_CATEGORIES = "/" + "infra/categories.json";
 	private static final Categories EMPTY_CATEGORIES = new Categories();
 
 	private static volatile Categories instance = null;
