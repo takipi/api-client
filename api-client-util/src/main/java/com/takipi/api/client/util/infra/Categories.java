@@ -16,7 +16,7 @@ import com.google.gson.Gson;
 import com.takipi.common.util.CollectionUtil;
 
 public class Categories {
-	
+
 	private static final String DEFAULT_CATEGORIES = "/" + "infra/categories.json";
 	private static final Categories EMPTY_CATEGORIES = new Categories();
 
@@ -39,7 +39,7 @@ public class Categories {
 
 						if (stream != null) {
 							result = (new Gson()).fromJson(IOUtils.toString(stream, Charset.defaultCharset()),
-								Categories.class);
+									Categories.class);
 						}
 					} catch (Exception e) {
 					} finally {
@@ -139,9 +139,9 @@ public class Categories {
 		Categories result = new Categories();
 
 		result.categories = Lists.newArrayList(categories);
-		
+
 		List<Category> defaultCategories = defaultCategories().categories;
-		
+
 		if (defaultCategories != null) {
 			result.categories.addAll(defaultCategories);
 		}
