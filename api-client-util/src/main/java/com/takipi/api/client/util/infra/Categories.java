@@ -1,5 +1,6 @@
 package com.takipi.api.client.util.infra;
 
+import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Collection;
@@ -16,7 +17,8 @@ import com.google.gson.Gson;
 import com.takipi.common.util.CollectionUtil;
 
 public class Categories {
-	private static final String DEFAULT_CATEGORIES = "infra/categories.json";
+	
+	private static final String DEFAULT_CATEGORIES = File.separator + "infra" + File.separator + "categories.json";
 	private static final Categories EMPTY_CATEGORIES = new Categories();
 
 	private static volatile Categories instance = null;
