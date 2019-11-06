@@ -138,7 +138,12 @@ public class Categories {
 		Categories result = new Categories();
 
 		result.categories = Lists.newArrayList(categories);
-		result.categories.addAll(defaultCategories().categories);
+		
+		List<Category> defaultCategories = defaultCategories().categories;
+		
+		if (defaultCategories != null) {
+			result.categories.addAll(defaultCategories);
+		}
 
 		return result;
 	}
