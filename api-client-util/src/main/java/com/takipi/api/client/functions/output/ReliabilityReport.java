@@ -11,6 +11,7 @@ import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.functions.input.BaseEventVolumeInput;
 import com.takipi.api.client.functions.input.RegressionsInput;
 import com.takipi.api.client.functions.input.ReliabilityReportInput;
+import com.takipi.api.client.functions.input.ViewInput;
 import com.takipi.api.client.functions.output.ReliabilityReportRow.Header;
 import com.takipi.api.core.url.UrlClient.Response;
 
@@ -115,6 +116,10 @@ public class ReliabilityReport {
 		for (Series<SeriesRow> series : response.data.getSeries()) {
 			
 			if (!series.type.equals(ReliabilityReportInput.RELIABITY_REPORT_SERIES)) {
+				continue;
+			}
+			
+			if (series.type.equals(ViewInput.NO_DATA_SERIES)) {
 				continue;
 			}
 			
