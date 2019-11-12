@@ -34,6 +34,10 @@ public abstract class ViewInput extends EnvironmentsFilterInput {
 			description = "A value indicating whether this timeFilter is passed from within a template variable")
 	public boolean varTimeFilter;
 
+	/**
+	 * A series type name for an empty results set
+	 */
+	public static final String NO_DATA_SERIES = "no_data_series";
 	
 	/**
 	 * A field name for the start of the active window for the report row
