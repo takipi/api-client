@@ -1,5 +1,7 @@
 package com.takipi.common.util;
 
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
 import java.util.Map;
 
 import com.google.gson.Gson;
@@ -94,5 +96,73 @@ public class JsonUtil {
 		} catch (JsonSyntaxException e) {
 			return false;
 		}
+	}
+
+	public static String escapeText(String input) {
+		StringBuilder builder = new StringBuilder(input.length());
+		CharacterIterator iter = new StringCharacterIterator(input);
+
+		for (char c = iter.first(); c != CharacterIterator.DONE; c = iter.next()) {
+			switch (c) {
+			case '\b':
+				builder.append("\\b");
+				break;
+			case '\f':
+				builder.append("\\f");
+				break;
+			case '\n':
+				builder.append("\\n");
+				break;
+			case '\r':
+				builder.append("\\r");
+				break;
+			case '\t':
+				builder.append("\\t");
+				break;
+			case '\\':
+				builder.append("\\\\");
+				break;
+			case '"':
+				builder.append("\\\"");
+				break;
+			default:
+				// Check for other control characters
+				//
+				if (c >= 0x0000 && c <= 0x001F) {
+					appendEscapedUnicode(builder, c);
+				} else if (Character.isHighSurrogate(c)) {
+					// Encode the surrogate pair using 2 six-character sequence (\\uXXXX\\uXXXX)
+					//
+					appendEscapedUnicode(builder, c);
+					c = iter.next();
+
+					if (c == CharacterIterator.DONE)
+						throw new IllegalArgumentException(
+								"invalid unicode string: unexpected high surrogate pair value without corresponding low value.");
+
+					appendEscapedUnicode(builder, c);
+				} else {
+					// Anything else can be printed as-is
+					//
+					builder.append(c);
+				}
+				break;
+			}
+		}
+		return builder.toString();
+	}
+
+	private static void appendEscapedUnicode(StringBuilder builder, char ch) {
+		String prefix = "\\u";
+
+		if (ch < 0x10) {
+			prefix = "\\u000";
+		} else if (ch < 0x100) {
+			prefix = "\\u00";
+		} else if (ch < 0x1000) {
+			prefix = "\\u0";
+		}
+
+		builder.append(prefix).append(Integer.toHexString(ch));
 	}
 }
