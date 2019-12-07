@@ -51,7 +51,11 @@ public class RegressionUtil {
 	public static class RegressionWindow {
 		public DateTime activeWindowStart;
 		public int activeTimespan;
-		public boolean deploymentFound;
+		public boolean deploymentNotFound;
+		
+		public RegressionWindow() {
+			
+		}
 		
 		@Override
 		public RegressionWindow clone() {
@@ -60,7 +64,7 @@ public class RegressionUtil {
 			
 			result.activeWindowStart = this.activeWindowStart;
 			result.activeTimespan = this.activeTimespan;
-			result.deploymentFound = this.deploymentFound;
+			result.deploymentNotFound = this.deploymentNotFound;
 			
 			return result;
 		}
@@ -674,13 +678,16 @@ public class RegressionUtil {
 
 		if (deploymentsActiveWindow == null) {
 			result.activeWindowStart = now.minusMinutes(input.activeTimespan);
-
+			result.deploymentNotFound = true;
 			return result;
 		}
 
 		result.activeWindowStart = deploymentsActiveWindow.getFirst();
 
 		if (result.activeWindowStart == null) {
+			
+			result.deploymentNotFound = true;
+			
 			if (printStream != null) {
 				printStream.println(
 						"Could not acquire start time for deployments " + Arrays.toString(input.deployments.toArray()));
@@ -704,8 +711,6 @@ public class RegressionUtil {
 			result.activeTimespan = (int) (TimeUnit.DAYS.toMinutes(1));
 			result.activeWindowStart = now.minusDays(1);
 		}
-
-		result.deploymentFound = true;
 
 		return result;
 	}
@@ -778,7 +783,7 @@ public class RegressionUtil {
 
 		RateRegression.Builder builder = new RateRegression.Builder();
 
-		if ((regressionWindow.activeTimespan == 0) && (!regressionWindow.deploymentFound)) {
+		if ((regressionWindow.activeTimespan == 0) && (regressionWindow.deploymentNotFound)) {
 
 			if (printStream != null) {
 				printStream.println(
