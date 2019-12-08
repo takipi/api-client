@@ -16,7 +16,8 @@ import com.google.gson.Gson;
 import com.takipi.common.util.CollectionUtil;
 
 public class Categories {
-	private static final String DEFAULT_CATEGORIES = "infra/categories.json";
+
+	private static final String DEFAULT_CATEGORIES = "/" + "infra/categories.json";
 	private static final Categories EMPTY_CATEGORIES = new Categories();
 
 	private static volatile Categories instance = null;
@@ -29,23 +30,18 @@ public class Categories {
 		if (instance == null) {
 			synchronized (Categories.class) {
 				if (instance == null) {
-					Categories result;
+					Categories result = null;
 
 					InputStream stream = null;
 
 					try {
-						ClassLoader classLoader = Categories.class.getClassLoader();
+						stream = Categories.class.getResourceAsStream(DEFAULT_CATEGORIES);
 
-						stream = classLoader.getResourceAsStream(DEFAULT_CATEGORIES);
-
-						if (stream == null) {
-							return null;
+						if (stream != null) {
+							result = (new Gson()).fromJson(IOUtils.toString(stream, Charset.defaultCharset()),
+									Categories.class);
 						}
-
-						result = (new Gson()).fromJson(IOUtils.toString(stream, Charset.defaultCharset()),
-								Categories.class);
 					} catch (Exception e) {
-						result = EMPTY_CATEGORIES;
 					} finally {
 						IOUtils.closeQuietly(stream);
 					}
@@ -143,7 +139,12 @@ public class Categories {
 		Categories result = new Categories();
 
 		result.categories = Lists.newArrayList(categories);
-		result.categories.addAll(defaultCategories().categories);
+
+		List<Category> defaultCategories = defaultCategories().categories;
+
+		if (defaultCategories != null) {
+			result.categories.addAll(defaultCategories);
+		}
 
 		return result;
 	}

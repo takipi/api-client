@@ -44,12 +44,12 @@ Maven:
 <dependency>
     <groupId>com.takipi</groupId>
     <artifactId>api-client</artifactId>
-    <version>2.11.0</version>
+    <version>2.30.0</version>
 </dependency>
 <dependency>
     <groupId>com.takipi</groupId>
     <artifactId>api-client-util</artifactId>
-    <version>2.11.0</version>
+    <version>2.30.0</version>
 </dependency>
 ```
 
@@ -58,8 +58,8 @@ Gradle:
 ```gradle
 dependencies {
   compile (
-    "com.takipi:api-client:2.11.0",
-    "com.takipi:api-client-util:2.11.0",
+    "com.takipi:api-client:2.30.0",
+    "com.takipi:api-client-util:2.30.0",
   )
 }
 ```

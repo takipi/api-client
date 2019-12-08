@@ -1,6 +1,11 @@
 package com.takipi.api.client.util.settings;
 
+import java.util.concurrent.TimeUnit;
+
 public class SlowdownSettings {
+	
+	public static final long DRFAULT_MAX_AVGTIME_THRESHOLD = TimeUnit.MINUTES.toMillis(15);
+	
 	/**
 	 * The minimal number of calls into a target entry point within the selected
 	 * time frame for it to be considered for slowdown analysis,
@@ -56,4 +61,18 @@ public class SlowdownSettings {
 	 * or slowing.
 	 */
 	public double std_dev_factor;
+	
+	/**
+	 * The max avg time of a transaction in milii above which it is not considered for slowdown analysis
+	 */
+	public long max_avgTime_threshold;
+	
+	public long getMaxAvgTimeThreshold() {
+		
+		if (max_avgTime_threshold == 0) {
+			return DRFAULT_MAX_AVGTIME_THRESHOLD;
+		}
+		
+		return max_avgTime_threshold;
+	}
 }
