@@ -40,7 +40,8 @@ public abstract class EnvironmentsFilterInput extends BaseEnvironmentsInput {
 	public String timeFilterMode;
 	
 	public boolean adjustToDepTimespan() {
-		return Objects.equal(timeFilterMode, TIME_FILTER_DEPLOYMENT_TIMESPAN);
+		return (timeFilterMode == null) 
+			|| (Objects.equal(timeFilterMode, TIME_FILTER_DEPLOYMENT_TIMESPAN));
 	}
 	
 	public boolean hasApplications() {
