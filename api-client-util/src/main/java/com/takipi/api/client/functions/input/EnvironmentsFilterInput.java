@@ -33,7 +33,7 @@ public abstract class EnvironmentsFilterInput extends BaseEnvironmentsInput {
 	
 	@Param(type=ParamType.Enum, advanced=false, 
 		literals= {TIME_FILTER_SELECTION, TIME_FILTER_DEPLOYMENT_TIMESPAN},
-		defaultValue=TIME_FILTER_SELECTION,
+		defaultValue=TIME_FILTER_DEPLOYMENT_TIMESPAN,
 		description = "Control which timeframe is used by this function for querying data:\n" +
 				TIME_FILTER_SELECTION + ": use the provided timeFilter when querying data\n" + 
 				TIME_FILTER_DEPLOYMENT_TIMESPAN +": if deployment filters are provided use their timespan when quering data\n") 
