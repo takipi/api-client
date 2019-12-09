@@ -408,6 +408,11 @@ public class ReliabilityReportInput extends RegressionsInput {
 			defaultValue = "false")
 	public boolean outputDrillDownSeries;
 	
+	@Param(type=ParamType.Boolean, advanced=true, literals={},
+			description = "Control whether to request stack frames for new and increasing events",
+			defaultValue = "false")
+	public boolean requestStackframes;
+	
 	public static String getFeedEventType(String type) {
 		
 		switch (type) {
