@@ -4,12 +4,14 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import com.takipi.api.client.data.event.Location;
 import com.takipi.api.client.functions.input.BaseEventVolumeInput;
 import com.takipi.api.client.functions.input.BaseVolumeInput;
 import com.takipi.api.client.functions.input.EventsInput;
 import com.takipi.api.client.functions.input.GraphInput;
 import com.takipi.api.client.functions.input.ReliabilityReportInput;
 import com.takipi.api.client.functions.input.VolumeInput;
+import com.takipi.api.client.functions.output.BaseEventRow;
 import com.takipi.api.client.functions.output.EventRow;
 import com.takipi.api.client.functions.output.GraphRow;
 import com.takipi.api.client.functions.output.QueryResult;
@@ -22,6 +24,7 @@ import com.takipi.api.client.functions.output.SeriesRow;
 import com.takipi.api.client.functions.output.TransactionRow;
 import com.takipi.api.client.util.validation.ValidationUtil.VolumeType;
 import com.takipi.api.core.url.UrlClient.Response;
+import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.TimeUtil;
 
 public class OverOpsFunctionsSample {
@@ -169,6 +172,17 @@ public class OverOpsFunctionsSample {
 
 	}
 	
+	private static String printLocation(BaseEventRow row) {
+		
+		if (CollectionUtil.safeIsEmpty(row.stack_frames)) {
+			return "";
+		}
+		
+		Location loc = row.stack_frames.get(0);
+		
+		return "in " + loc.class_name + "." + loc.method_name;
+	}
+	
 	/*
 	 * This series provides the information for the  the "new errors" quality gates
  	 * for a target row (e.g. app, dep) in the reliability report. Each row
@@ -179,7 +193,7 @@ public class OverOpsFunctionsSample {
 		System.out.println(TAB + "New Errors: ");
 		
 		for (RegressionRow row : rrItem.getNewErrors(true, true)) {
-			System.out.println(TAB2 + row.summary + "= " + row.regression_type);
+			System.out.println(TAB2 + row.summary + "= " + row.regression_type + " " + printLocation(row));
 		}
 	}
 	
@@ -193,7 +207,7 @@ public class OverOpsFunctionsSample {
 		System.out.println(TAB + "Inc Errors: ");
 		
 		for (RegressionRow row : rrItem.geIncErrors(true, true)) {
-			System.out.println(TAB2 + row.summary + "= " + row.regression_type);
+			System.out.println(TAB2 + row.summary + "= " + row.regression_type + " " + printLocation(row));
 		}
 	}
 	
