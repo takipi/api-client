@@ -21,7 +21,7 @@ public class PutFunctionSettingRequest extends FunctionSettingRequest implements
 
 	@Override
 	public byte[] putData() throws UnsupportedEncodingException {
-		String data = JsonUtil.createSimpleJson(Collections.singletonMap("value", value), true);
+		String data = JsonUtil.createSimpleJson(Collections.singletonMap("value", JsonUtil.escapeText(value)), true);
 
 		return data.getBytes(ApiConstants.UTF8_ENCODING);
 	}

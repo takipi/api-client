@@ -1,17 +1,13 @@
 package com.takipi.api.client.util.regression;
 
 public class SeasonlityResult {
-	public final long largerVolumePeriod;
-	public final long halfVolumePeriods;
-	public final int largerVolumePriodIndex;
+	public final long majorSpike;
+	public final long minorSpikes;
+	public final int makorSpikeIndex;
 
-	private SeasonlityResult(long largerVolumePeriod, long halfVolumePeriods, int largerVolumePriodIndex) {
-		this.largerVolumePeriod = largerVolumePeriod;
-		this.halfVolumePeriods = halfVolumePeriods;
-		this.largerVolumePriodIndex = largerVolumePriodIndex;
-	}
-
-	public static SeasonlityResult create(long largerVolumePeriod, long halfVolumePeriods, int largerVolumePriodIndex) {
-		return new SeasonlityResult(largerVolumePeriod, halfVolumePeriods, largerVolumePriodIndex);
+	public SeasonlityResult(long majorSpike, long minorSpikes, int makorSpikeIndex) {
+		this.majorSpike = majorSpike;
+		this.minorSpikes = minorSpikes;
+		this.makorSpikeIndex = makorSpikeIndex;
 	}
 }

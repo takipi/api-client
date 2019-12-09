@@ -7,11 +7,12 @@ import com.takipi.api.client.util.transaction.TransactionUtil;
 import com.takipi.common.util.CollectionUtil;
 
 public class GraphPerformanceCalculator extends BaseGraphPerformanceCalculator<TransactionGraph> {
+	
 	private GraphPerformanceCalculator(long activeInvocationsThreshold, long baselineInvocationsThreshold,
 			int minDeltaThreshold, double minDeltaThresholdPercentage, double overAvgSlowingPercentage,
-			double overAvgCriticalPercentage, double stdDevFactor) {
+			double overAvgCriticalPercentage, double stdDevFactor, long maxAvgTimeThreshold) {
 		super(activeInvocationsThreshold, baselineInvocationsThreshold, minDeltaThreshold, minDeltaThresholdPercentage,
-				overAvgSlowingPercentage, overAvgCriticalPercentage, stdDevFactor);
+				overAvgSlowingPercentage, overAvgCriticalPercentage, stdDevFactor, maxAvgTimeThreshold);
 	}
 
 	@Override
@@ -28,10 +29,10 @@ public class GraphPerformanceCalculator extends BaseGraphPerformanceCalculator<T
 
 	public static GraphPerformanceCalculator of(long activeInvocationsThreshold, long baselineInvocationsThreshold,
 			int minDeltaThreshold, double minDeltaThresholdPercentage, double overAvgSlowingPercentage,
-			double overAvgCriticalPercentage, double stdDevFactor) {
+			double overAvgCriticalPercentage, double stdDevFactor, long maxAvgTimeThreshold) {
 
 		return new GraphPerformanceCalculator(activeInvocationsThreshold, baselineInvocationsThreshold,
 				minDeltaThreshold, minDeltaThresholdPercentage, overAvgSlowingPercentage, overAvgCriticalPercentage,
-				stdDevFactor);
+				stdDevFactor, maxAvgTimeThreshold);
 	}
 }
