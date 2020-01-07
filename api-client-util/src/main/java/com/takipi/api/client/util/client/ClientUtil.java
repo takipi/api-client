@@ -1,5 +1,6 @@
 package com.takipi.api.client.util.client;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import com.takipi.api.client.result.deployment.DeploymentsResult;
 import com.takipi.api.client.result.server.ServersResult;
 import com.takipi.api.client.result.service.ServicesResult;
 import com.takipi.api.core.url.UrlClient.Response;
+import com.takipi.common.util.CollectionUtil;
 
 public class ClientUtil {
 
@@ -26,7 +28,18 @@ public class ClientUtil {
 	}
 
 	public static List<String> getDeployments(ApiClient apiClient, String serviceId, boolean active) {
+		Collection<SummarizedDeployment> deployments = getSummarizedDeployments(apiClient, serviceId, active);
 
+		List<String> result = Lists.newArrayListWithCapacity(deployments.size());
+
+		for (SummarizedDeployment deployment : deployments) {
+			result.add(deployment.name);
+		}
+
+		return result;
+	}
+
+	public static Collection<SummarizedDeployment> getSummarizedDeployments(ApiClient apiClient, String serviceId, boolean active) {
 		DeploymentsRequest request = DeploymentsRequest.newBuilder().setServiceId(serviceId).setActive(active).build();
 
 		Response<DeploymentsResult> response = apiClient.get(request);
@@ -36,17 +49,11 @@ public class ClientUtil {
 					"Could not acquire deployments for service " + serviceId + " . Error " + response.responseCode);
 		}
 
-		if (response.data.deployments == null) {
-			return Collections.emptyList();
+		if (CollectionUtil.safeIsEmpty(response.data.deployments)) {
+			return Collections.emptySet();
 		}
 
-		List<String> result = Lists.newArrayListWithCapacity(response.data.deployments.size());
-
-		for (SummarizedDeployment deployment : response.data.deployments) {
-			result.add(deployment.name);
-		}
-
-		return result;
+		return response.data.deployments;
 	}
 
 	public static List<String> getApplications(ApiClient apiClient, String serviceId) {

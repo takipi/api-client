@@ -8,11 +8,6 @@ if (project.ext.has("backendJavac")) {
   }
 }
 
-compileJava {
-	sourceCompatibility = 1.8
-	targetCompatibility = 1.8
-}
-
 dependencies {
 	compile(
 		project(':api-client'),
