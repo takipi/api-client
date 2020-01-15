@@ -14,6 +14,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.takipi.common.util.CollectionUtil;
+import com.takipi.common.util.IOUtil;
 
 public class Categories {
 
@@ -43,7 +44,7 @@ public class Categories {
 						}
 					} catch (Exception e) {
 					} finally {
-						IOUtils.closeQuietly(stream);
+						IOUtil.closeQuietly(stream);
 					}
 
 					instance = ((result != null) ? result : EMPTY_CATEGORIES);
