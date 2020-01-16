@@ -12,6 +12,14 @@ public class CollectionUtil {
 		return ((map == null) || (map.isEmpty()));
 	}
 
+	public static <T> int safeSize(Collection<T> collection) {
+		return (safeIsEmpty(collection) ? 0 : collection.size());
+	}
+
+	public static <K, V> int safeSize(Map<K, V> map) {
+		return (safeIsEmpty(map) ? 0 : map.size());
+	}
+
 	public static <T> boolean safeContains(Collection<T> collection, T item) {
 		return ((collection != null) && (collection.contains(item)));
 	}
