@@ -37,7 +37,7 @@ public class ProcessQualityGates {
 		if ((deploymentsActiveWindow == null) ||
 			(deploymentsActiveWindow.getFirst() == null)) {
 			throw new IllegalStateException("Deployments " + Arrays.toString(input.deployments.toArray())
-					+ " not found. Please ensure your collector and Jenkins configuration are pointing to the same environment.");
+					+ " not found. Please ensure your collector and CI/CD configuration are pointing to the same environment.");
 		}
 		
 		DateTime deploymentStart = deploymentsActiveWindow.getFirst();
