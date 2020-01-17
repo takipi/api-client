@@ -59,7 +59,7 @@ public class EventsInput extends BaseEventVolumeInput {
 	public List<String> getFields() {
 		
 		if ((fields == null) || (fields.isEmpty())) {
-			return FIELDS;
+			return DEFAULT_FIELDS;
 		}
 		
 		String[] array = ArrayUtil.safeSplitArray(fields, ARRAY_SEPERATOR, true);
@@ -88,7 +88,8 @@ public class EventsInput extends BaseEventVolumeInput {
 	public static final String LINK = "link";
 	public static final String TYPE_MESSAGE = "typeMessage";
 	public static final String JIRA_STATE = "jira_state";	
-	public static final String JIRA_ISSUE_URL = "jira_issue_url";	
+	public static final String JIRA_ISSUE_URL = "jira_issue_url";
+	public static final String STACK_FRAMES = "stack_frames";	
 	public static final String RATE = "rate";	
 	public static final String RATE_DESC = "rate_desc";
 	public static final String DESCRIPTION = "description";	
@@ -98,10 +99,10 @@ public class EventsInput extends BaseEventVolumeInput {
 	public static final String RANK = "rank";
 	public static final String ENTRY_POINT_NAME = "entry_point_name";
 	
-	public static final List<String> FIELDS = Arrays.asList(new String[] {
+	public static final List<String> DEFAULT_FIELDS = Arrays.asList(new String[] {
 			ENV_ID, ID, SUMMARY, NAME, MESSAGE, TYPE, FIRST_SEEN, ERROR_LOCATION, ERROR_ORIGIN,
 			INTRODUCED_BY, HITS, INVOCATIONS, LABELS, SIMILAR_EVENT_UDS,
-			IS_RETHROW, LINK, TYPE_MESSAGE, JIRA_STATE, JIRA_ISSUE_URL, RATE, RATE_DESC,
+			IS_RETHROW, LINK, TYPE_MESSAGE, JIRA_STATE, JIRA_ISSUE_URL,  RATE, RATE_DESC,
 			DESCRIPTION, RATE_DELTA, LAST_SEEN, RATE_DELTA_DESC, RANK,
 			ENTRY_POINT_NAME
 	});
