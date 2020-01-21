@@ -1,8 +1,15 @@
 package com.takipi.api.client.functions.output;
 
+import java.util.List;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.takipi.api.client.data.event.Location;
 import com.takipi.api.client.functions.input.EventsInput;
 
 public class BaseEventRow {
+	
+	protected static Gson gson = new Gson();
 	
 	/**
 	 * Field values documented in matching EventsInput constants
@@ -44,6 +51,8 @@ public class BaseEventRow {
 	public String rate_delta;
 	public String rate_delta_desc;
 	
+	public List<Location> stack_frames;
+	
 	public int rank;
 	
 	public BaseEventRow(Series<?> series, int index) {
@@ -76,6 +85,12 @@ public class BaseEventRow {
 				
 		this.jira_state = series.getString(EventsInput.JIRA_STATE, index);
 		this.jira_issue_url = series.getString(EventsInput.JIRA_ISSUE_URL, index);		
+		
+		String stackFramesGson = series.getString(EventsInput.STACK_FRAMES, index);
+		
+		if (stackFramesGson != null) {
+			this.stack_frames = gson.fromJson(stackFramesGson, new TypeToken<List<Location>>(){}.getType());
+		}
 		
 		this.rate = series.getDouble(EventsInput.RATE, index);
 		this.rate_desc = series.getString(EventsInput.RATE_DESC, index);

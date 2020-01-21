@@ -195,7 +195,7 @@ public class RegressionsInput extends EventsInput {
 	}
 	
 	static {
-		REGRESSION_FIELDS =  new ArrayList<String>(EventsInput.FIELDS);
+		REGRESSION_FIELDS =  new ArrayList<String>(EventsInput.DEFAULT_FIELDS);
 		
 		REGRESSION_FIELDS.addAll(Arrays.asList(new String[] {
 				REGRESSION_TYPE, SEVERITY, REG_DELTA, REGRESSION, REG_DESC
