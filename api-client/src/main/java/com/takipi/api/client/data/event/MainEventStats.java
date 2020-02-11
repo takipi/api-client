@@ -16,7 +16,7 @@ public class MainEventStats extends BaseStats {
 		result.invocations = this.invocations;
 
 		if (!CollectionUtil.safeIsEmpty(this.contributors)) {
-			result.contributors = new ArrayList<>();
+			result.contributors = new ArrayList<>(this.contributors.size());
 
 			for (Stats stats : this.contributors) {
 				result.contributors.add(stats.clone());
