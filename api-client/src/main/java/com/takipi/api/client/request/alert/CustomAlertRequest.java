@@ -40,7 +40,7 @@ public class CustomAlertRequest extends AlertRequest {
 		map.put("body", JsonUtil.stringify(body));
 
 		if (!CollectionUtil.safeIsEmpty(links)) {
-			List<String> jsons = new ArrayList<>();
+			List<String> jsons = new ArrayList<>(links.size());
 
 			for (AlertLink link : links) {
 				jsons.add(link.toJson());

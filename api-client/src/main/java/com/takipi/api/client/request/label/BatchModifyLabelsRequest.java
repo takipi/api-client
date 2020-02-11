@@ -26,7 +26,7 @@ public class BatchModifyLabelsRequest extends ModifyLabelsRequest {
 
 	@Override
 	public String postData() {
-		Collection<String> itemJsons = new ArrayList<>();
+		Collection<String> itemJsons = new ArrayList<>(modifications.size());
 
 		for (Modification modification : modifications) {
 			String itemJson = JsonUtil

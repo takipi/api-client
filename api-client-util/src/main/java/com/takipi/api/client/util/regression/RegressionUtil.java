@@ -905,7 +905,7 @@ public class RegressionUtil {
 			}
 		}
 
-		Map<String, RegressionStats> result = new HashMap<>();
+		Map<String, RegressionStats> result = new HashMap<>(rawData.size());
 
 		for (Map.Entry<String, Pair<long[], long[]>> entry : rawData.entrySet()) {
 			result.put(entry.getKey(), buildRegressionStats(entry.getValue()));

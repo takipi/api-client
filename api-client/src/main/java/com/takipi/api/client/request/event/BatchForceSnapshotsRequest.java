@@ -28,7 +28,7 @@ public class BatchForceSnapshotsRequest extends ServiceRequest implements ApiPos
 
 	@Override
 	public String postData() {
-		Collection<String> itemJsons = new ArrayList<>();
+		Collection<String> itemJsons = new ArrayList<>(eventIds.size());
 
 		for (String eventId : eventIds) {
 			String itemJson = JsonUtil.createSimpleJson(CollectionUtil.mapOf("event_id", JsonUtil.stringify(eventId)));

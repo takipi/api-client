@@ -58,7 +58,7 @@ public class AnomalyAlertRequest extends AlertRequest {
 	}
 
 	private String anomalyJson() {
-		Collection<String> periodsJsons = new ArrayList<>();
+		Collection<String> periodsJsons = new ArrayList<>(anomaly.periodsCount());
 
 		for (AnomalyPeriod period : anomaly.getAnomalyPeriods()) {
 			periodsJsons.add(JsonUtil.createSimpleJson(CollectionUtil.mapOf("id", period.id, "from",
@@ -66,7 +66,7 @@ public class AnomalyAlertRequest extends AlertRequest {
 					true));
 		}
 
-		Collection<String> contributorsJsons = new ArrayList<>();
+		Collection<String> contributorsJsons = new ArrayList<>(anomaly.contributorsCount());
 
 		for (AnomalyContributor contributor : anomaly.getAnomalyContributors()) {
 			contributorsJsons.add(JsonUtil.createSimpleJson(
