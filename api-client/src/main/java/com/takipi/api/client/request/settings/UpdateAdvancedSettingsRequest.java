@@ -1,8 +1,8 @@
 package com.takipi.api.client.request.settings;
 
+import java.util.HashMap;
 import java.util.Map;
 
-import com.google.common.collect.Maps;
 import com.takipi.api.client.data.advanced.AdvancedSettings;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.EmptyResult;
@@ -23,7 +23,7 @@ public class UpdateAdvancedSettingsRequest extends ServiceRequest implements Api
 
 	@Override
 	public String postData() {
-		Map<String, String> map = Maps.newHashMapWithExpectedSize(2);
+		Map<String, String> map = new HashMap<>();
 
 		if (advancedSettings.allowed_ips != null) {
 			map.put("allowed_ips", JsonUtil.stringify(advancedSettings.allowed_ips));

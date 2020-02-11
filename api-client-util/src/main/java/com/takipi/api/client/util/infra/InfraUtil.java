@@ -3,11 +3,10 @@ package com.takipi.api.client.util.infra;
 import java.net.HttpURLConnection;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.data.view.SummarizedView;
 import com.takipi.api.client.data.view.ViewFilters;
@@ -26,6 +25,7 @@ import com.takipi.api.client.util.infra.Categories.CategoryType;
 import com.takipi.api.core.url.UrlClient.Response;
 import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.Pair;
+import com.takipi.common.util.StringUtil;
 
 public class InfraUtil {
 
@@ -58,8 +58,8 @@ public class InfraUtil {
 			return Pair.of(Collections.emptySet(), Collections.emptySet());
 		}
 
-		Set<String> labelsToAdd = Sets.newHashSet();
-		Set<String> labelsToRemove = Sets.newHashSet();
+		Set<String> labelsToAdd = new HashSet<>();
+		Set<String> labelsToRemove = new HashSet<>();
 
 		for (Map.Entry<CategoryType, String> entry : categoryIds.entrySet()) {
 			CategoryType categoryType = entry.getKey();
@@ -139,7 +139,7 @@ public class InfraUtil {
 		if (createViewResponse.isOK()) {
 			CreateViewResult createViewResult = createViewResponse.data;
 
-			if ((createViewResult == null) || (Strings.isNullOrEmpty(createViewResult.view_id))) {
+			if ((createViewResult == null) || (StringUtil.isNullOrEmpty(createViewResult.view_id))) {
 				throw new IllegalStateException("Failed creating view - " + labelName);
 			}
 
@@ -161,7 +161,7 @@ public class InfraUtil {
 
 		SummarizedView view = getViewsResponse.data.views.get(0);
 
-		if ((!labelName.equalsIgnoreCase(view.name)) || (Strings.isNullOrEmpty(view.id))) {
+		if ((!labelName.equalsIgnoreCase(view.name)) || (StringUtil.isNullOrEmpty(view.id))) {
 			throw new IllegalStateException("Failed getting view - " + labelName);
 		}
 

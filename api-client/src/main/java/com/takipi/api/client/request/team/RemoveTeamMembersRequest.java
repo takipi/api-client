@@ -1,20 +1,20 @@
 package com.takipi.api.client.request.team;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.takipi.api.client.data.team.TeamMember;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.team.ChangeTeamMembersResult;
 import com.takipi.api.core.request.intf.ApiDeleteRequest;
+import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.JsonUtil;
+import com.takipi.common.util.StringUtil;
 
 public class RemoveTeamMembersRequest extends ServiceRequest implements ApiDeleteRequest<ChangeTeamMembersResult> {
 	private final Collection<String> usersToRemove;
@@ -27,7 +27,7 @@ public class RemoveTeamMembersRequest extends ServiceRequest implements ApiDelet
 
 	@Override
 	public String postData() {
-		List<TeamMember> teamMembers = Lists.newArrayList();
+		List<TeamMember> teamMembers = new ArrayList<>();
 
 		for (String userToRemove : usersToRemove) {
 			TeamMember teamMember = new TeamMember();
@@ -36,7 +36,7 @@ public class RemoveTeamMembersRequest extends ServiceRequest implements ApiDelet
 			teamMembers.add(teamMember);
 		}
 
-		Map<String, String> map = ImmutableMap.of("team_members", (new Gson()).toJson(teamMembers));
+		Map<String, String> map = CollectionUtil.mapOf("team_members", (new Gson()).toJson(teamMembers));
 
 		return JsonUtil.createSimpleJson(map, false);
 	}
@@ -59,7 +59,7 @@ public class RemoveTeamMembersRequest extends ServiceRequest implements ApiDelet
 		private Set<String> usersToRemove;
 
 		Builder() {
-			this.usersToRemove = Sets.newHashSet();
+			this.usersToRemove = new HashSet<>();
 		}
 
 		@Override
@@ -70,7 +70,7 @@ public class RemoveTeamMembersRequest extends ServiceRequest implements ApiDelet
 		}
 
 		public Builder addTeamMemberToRemove(String email) {
-			if (Strings.isNullOrEmpty(email)) {
+			if (StringUtil.isNullOrEmpty(email)) {
 				throw new IllegalArgumentException("User email cannot be empty");
 			}
 

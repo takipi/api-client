@@ -1,6 +1,6 @@
 package com.takipi.api.client.functions.input;
 
-import com.google.common.base.Objects;
+import com.takipi.common.util.ObjectUtil;
 import com.takipi.integrations.functions.annotations.Param;
 import com.takipi.integrations.functions.annotations.Param.ParamType;
 
@@ -41,7 +41,7 @@ public abstract class EnvironmentsFilterInput extends BaseEnvironmentsInput {
 	
 	public boolean adjustToDepTimespan() {
 		return (timeFilterMode == null) 
-			|| (Objects.equal(timeFilterMode, TIME_FILTER_DEPLOYMENT_TIMESPAN));
+			|| (ObjectUtil.equal(timeFilterMode, TIME_FILTER_DEPLOYMENT_TIMESPAN));
 	}
 	
 	public boolean hasApplications() {
@@ -91,9 +91,9 @@ public abstract class EnvironmentsFilterInput extends BaseEnvironmentsInput {
 		
 		EnvironmentsFilterInput other = (EnvironmentsFilterInput)obj;
 		
-		return Objects.equal(applications, other.applications) 
-				&& Objects.equal(deployments, other.deployments)
-				&& Objects.equal(servers, other.servers);
+		return ObjectUtil.equal(applications, other.applications) 
+				&& ObjectUtil.equal(deployments, other.deployments)
+				&& ObjectUtil.equal(servers, other.servers);
 	}
 	
 }

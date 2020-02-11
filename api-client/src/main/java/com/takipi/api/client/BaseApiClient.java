@@ -2,17 +2,15 @@ package com.takipi.api.client;
 
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
 
-import com.google.common.base.Objects;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -28,7 +26,9 @@ import com.takipi.api.core.request.intf.ApiRequest;
 import com.takipi.api.core.result.intf.ApiResult;
 import com.takipi.api.core.url.UrlClient;
 import com.takipi.common.util.CollectionUtil;
+import com.takipi.common.util.ObjectUtil;
 import com.takipi.common.util.Pair;
+import com.takipi.common.util.StringUtil;
 
 public abstract class BaseApiClient extends UrlClient {
 
@@ -49,7 +49,7 @@ public abstract class BaseApiClient extends UrlClient {
 		this.observerLock = new Object();
 
 		if (!CollectionUtil.safeIsEmpty(observers)) {
-			this.observers = Lists.newArrayList(observers);
+			this.observers = new ArrayList<>(observers);
 		}
 	}
 
@@ -62,11 +62,11 @@ public abstract class BaseApiClient extends UrlClient {
 
 		BaseApiClient other = (BaseApiClient) obj;
 
-		if (!Objects.equal(getHostname(), other.getHostname())) {
+		if (!ObjectUtil.equal(getHostname(), other.getHostname())) {
 			return false;
 		}
 
-		if (!Objects.equal(auth, other.auth)) {
+		if (!ObjectUtil.equal(auth, other.auth)) {
 			return false;
 		}
 
@@ -135,7 +135,7 @@ public abstract class BaseApiClient extends UrlClient {
 	public <T extends ApiResult> Response<T> post(ApiPostRequest<T> request) {
 		try {
 			String postData = request.postData();
-			byte[] data = (Strings.isNullOrEmpty(postData) ? null : postData.getBytes(ApiConstants.UTF8_ENCODING));
+			byte[] data = (StringUtil.isNullOrEmpty(postData) ? null : postData.getBytes(ApiConstants.UTF8_ENCODING));
 
 			long t1 = System.currentTimeMillis();
 			Response<String> response = post(buildTargetUrl(request), data, request.contentType(),
@@ -172,7 +172,7 @@ public abstract class BaseApiClient extends UrlClient {
 	public <T extends ApiResult> Response<T> delete(ApiDeleteRequest<T> request) {
 		try {
 			String postData = request.postData();
-			byte[] data = (Strings.isNullOrEmpty(postData) ? null : postData.getBytes(ApiConstants.UTF8_ENCODING));
+			byte[] data = (StringUtil.isNullOrEmpty(postData) ? null : postData.getBytes(ApiConstants.UTF8_ENCODING));
 
 			long t1 = System.currentTimeMillis();
 			Response<String> response = delete(buildTargetUrl(request), data, request.contentType(),
@@ -190,7 +190,7 @@ public abstract class BaseApiClient extends UrlClient {
 	}
 
 	private <T extends ApiResult> Response<T> getApiResponse(Response<String> response, Class<T> clazz) {
-		if ((response.isBadResponse()) || (Strings.isNullOrEmpty(response.data))) {
+		if ((response.isBadResponse()) || (StringUtil.isNullOrEmpty(response.data))) {
 			return Response.of(response.responseCode, null);
 		}
 
@@ -209,9 +209,9 @@ public abstract class BaseApiClient extends UrlClient {
 			List<Observer> observers;
 
 			if (this.observers != null) {
-				observers = Lists.newArrayList(this.observers);
+				observers = new ArrayList<>(this.observers);
 			} else {
-				observers = Lists.newArrayList();
+				observers = new ArrayList<>();
 			}
 
 			observers.add(observer);
@@ -227,7 +227,7 @@ public abstract class BaseApiClient extends UrlClient {
 
 		synchronized (observerLock) {
 			if ((observers != null) && (observers.contains(observer))) {
-				List<Observer> observers = Lists.newArrayList(this.observers);
+				List<Observer> observers = new ArrayList<>(this.observers);
 				observers.remove(observer);
 				this.observers = observers;
 			}
@@ -277,8 +277,8 @@ public abstract class BaseApiClient extends UrlClient {
 			this.readTimeout = READ_TIMEOUT;
 
 			this.defaultLogLevel = LogLevel.ERROR;
-			this.responseLogLevels = Maps.newHashMap();
-			this.observers = Sets.newHashSet();
+			this.responseLogLevels = new HashMap<>();
+			this.observers = new HashSet<>();
 		}
 
 		public Builder setHostname(String hostname) {
@@ -336,15 +336,15 @@ public abstract class BaseApiClient extends UrlClient {
 		}
 
 		protected Pair<String, String> getAuth() {
-			if (!Strings.isNullOrEmpty(apiKey)) {
+			if (!StringUtil.isNullOrEmpty(apiKey)) {
 				return Pair.of("X-API-Key", apiKey);
 			}
 
-			if (Strings.isNullOrEmpty(username)) {
+			if (StringUtil.isNullOrEmpty(username)) {
 				throw new IllegalArgumentException("Missing username/api key");
 			}
 
-			if (Strings.isNullOrEmpty(password)) {
+			if (StringUtil.isNullOrEmpty(password)) {
 				throw new IllegalArgumentException("Missing password");
 			}
 

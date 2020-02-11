@@ -1,10 +1,10 @@
 package com.takipi.api.client.request.service;
 
-import com.google.common.base.Strings;
 import com.takipi.api.client.request.BaseRequest;
 import com.takipi.api.client.result.service.ServicesResult;
 import com.takipi.api.client.util.validation.ValidationUtil;
 import com.takipi.api.core.request.intf.ApiGetRequest;
+import com.takipi.common.util.StringUtil;
 
 public class ServicesRequest extends BaseRequest implements ApiGetRequest<ServicesResult> {
 	public final String serviceId;
@@ -20,7 +20,7 @@ public class ServicesRequest extends BaseRequest implements ApiGetRequest<Servic
 
 	@Override
 	public String urlPath() {
-		if (Strings.isNullOrEmpty(serviceId)) {
+		if (StringUtil.isNullOrEmpty(serviceId)) {
 			return "/services";
 		} else {
 			return "/services/" + serviceId;
@@ -47,7 +47,7 @@ public class ServicesRequest extends BaseRequest implements ApiGetRequest<Servic
 		protected void validate() {
 			// We allow not specifying a service id, but if specified, must be legal
 			//
-			if ((!Strings.isNullOrEmpty(serviceId)) && (!ValidationUtil.isLegalServiceId(serviceId))) {
+			if ((!StringUtil.isNullOrEmpty(serviceId)) && (!ValidationUtil.isLegalServiceId(serviceId))) {
 				throw new IllegalArgumentException("Illegal service id - " + serviceId);
 			}
 		}

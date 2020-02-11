@@ -1,9 +1,9 @@
 package com.takipi.api.client.util.label;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
-import com.google.common.collect.Maps;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.data.label.Label;
 import com.takipi.api.client.request.label.CreateLabelRequest;
@@ -23,7 +23,7 @@ public class LabelUtil {
 			return Collections.emptyMap();
 		}
 
-		Map<String, Label> result = Maps.newHashMap();
+		Map<String, Label> result = new HashMap<>();
 
 		for (Label label : labelsResponse.data.labels) {
 			result.put(label.name, label);

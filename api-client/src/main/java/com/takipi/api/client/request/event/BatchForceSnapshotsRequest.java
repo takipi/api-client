@@ -1,15 +1,15 @@
 package com.takipi.api.client.request.event;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.EmptyResult;
 import com.takipi.api.client.util.validation.ValidationUtil;
 import com.takipi.api.core.request.intf.ApiPostRequest;
+import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.JsonUtil;
 
 public class BatchForceSnapshotsRequest extends ServiceRequest implements ApiPostRequest<EmptyResult> {
@@ -28,15 +28,15 @@ public class BatchForceSnapshotsRequest extends ServiceRequest implements ApiPos
 
 	@Override
 	public String postData() {
-		Collection<String> itemJsons = Lists.newArrayListWithCapacity(eventIds.size());
+		Collection<String> itemJsons = new ArrayList<>();
 
 		for (String eventId : eventIds) {
-			String itemJson = JsonUtil.createSimpleJson(ImmutableMap.of("event_id", JsonUtil.stringify(eventId)));
+			String itemJson = JsonUtil.createSimpleJson(CollectionUtil.mapOf("event_id", JsonUtil.stringify(eventId)));
 
 			itemJsons.add(itemJson);
 		}
 
-		return JsonUtil.createSimpleJson(ImmutableMap.of("items", JsonUtil.createSimpleJson(itemJsons, false)));
+		return JsonUtil.createSimpleJson(CollectionUtil.mapOf("items", JsonUtil.createSimpleJson(itemJsons, false)));
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class BatchForceSnapshotsRequest extends ServiceRequest implements ApiPos
 		private final Set<String> eventIds;
 
 		Builder() {
-			this.eventIds = Sets.newHashSet();
+			this.eventIds = new HashSet<>();
 		}
 
 		@Override

@@ -1,11 +1,11 @@
 package com.takipi.api.client.request.event;
 
 import java.util.Collection;
+import java.util.HashSet;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Sets;
 import com.takipi.api.client.request.label.ModifyLabelsRequest;
 import com.takipi.api.client.util.validation.ValidationUtil;
+import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.JsonUtil;
 
 public class EventModifyLabelsRequest extends ModifyLabelsRequest {
@@ -29,7 +29,7 @@ public class EventModifyLabelsRequest extends ModifyLabelsRequest {
 
 	@Override
 	public String postData() {
-		return JsonUtil.createSimpleJson(ImmutableMap.of("add", JsonUtil.createSimpleJson(addLabels, true), "remove",
+		return JsonUtil.createSimpleJson(CollectionUtil.mapOf("add", JsonUtil.createSimpleJson(addLabels, true), "remove",
 				JsonUtil.createSimpleJson(removeLabels, true)));
 	}
 
@@ -44,8 +44,8 @@ public class EventModifyLabelsRequest extends ModifyLabelsRequest {
 		private final Collection<String> removeLabels;
 
 		Builder() {
-			this.addLabels = Sets.newHashSet();
-			this.removeLabels = Sets.newHashSet();
+			this.addLabels = new HashSet<>();
+			this.removeLabels = new HashSet<>();
 		}
 
 		@Override

@@ -1,12 +1,12 @@
 package com.takipi.api.client.request.view;
 
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.takipi.api.client.data.view.ViewInfo;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.view.CreateViewResult;
 import com.takipi.api.core.request.intf.ApiPostRequest;
 import com.takipi.common.util.CollectionUtil;
+import com.takipi.common.util.StringUtil;
 
 public class CreateViewRequest extends ServiceRequest implements ApiPostRequest<CreateViewResult> {
 	private final ViewInfo viewInfo;
@@ -64,11 +64,11 @@ public class CreateViewRequest extends ServiceRequest implements ApiPostRequest<
 				throw new IllegalArgumentException("Missing view info");
 			}
 
-			if (Strings.isNullOrEmpty(viewInfo.name)) {
+			if (StringUtil.isNullOrEmpty(viewInfo.name)) {
 				throw new IllegalArgumentException("Missing name");
 			}
 
-			if (!Strings.isNullOrEmpty(viewInfo.id)) {
+			if (!StringUtil.isNullOrEmpty(viewInfo.id)) {
 				throw new IllegalArgumentException("Can't provide id for view creation");
 			}
 
@@ -86,7 +86,7 @@ public class CreateViewRequest extends ServiceRequest implements ApiPostRequest<
 					&& (CollectionUtil.safeIsEmpty(viewInfo.filters.apps))
 					&& (CollectionUtil.safeIsEmpty(viewInfo.filters.deployments))
 					&& (CollectionUtil.safeIsEmpty(viewInfo.filters.introduced_by))
-					&& (Strings.isNullOrEmpty(viewInfo.filters.search))) {
+					&& (StringUtil.isNullOrEmpty(viewInfo.filters.search))) {
 				throw new IllegalArgumentException("Empty filters");
 			}
 		}

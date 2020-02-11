@@ -1,7 +1,9 @@
 package com.takipi.api.client.util.view;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,9 +11,6 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.data.metrics.Graph;
 import com.takipi.api.client.data.view.SummarizedView;
@@ -37,6 +36,7 @@ import com.takipi.api.client.util.validation.ValidationUtil.VolumeType;
 import com.takipi.api.core.url.UrlClient.Response;
 import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.Pair;
+import com.takipi.common.util.StringUtil;
 
 public class ViewUtil {
 	private static final DateTimeFormatter fmt = ISODateTimeFormat.dateTime().withZoneUTC();
@@ -97,7 +97,7 @@ public class ViewUtil {
 	public static void createLabelViewsIfNotExists(ApiClient apiClient, String serviceId,
 			Collection<Pair<String, String>> viewsAndLabels, boolean immutableViews, String categoryId) {
 
-		List<ViewInfo> viewInfos = Lists.newArrayList();
+		List<ViewInfo> viewInfos = new ArrayList<>();
 
 		for (Pair<String, String> pair : viewsAndLabels) {
 
@@ -128,7 +128,7 @@ public class ViewUtil {
 			return Collections.emptyMap();
 		}
 
-		Map<String, SummarizedView> result = Maps.newHashMap();
+		Map<String, SummarizedView> result = new HashMap<>();
 
 		for (SummarizedView view : viewsResponse.data.views) {
 			result.put(view.name, view);
@@ -143,7 +143,7 @@ public class ViewUtil {
 		Response<ViewResult> viewsResponse = apiClient.get(viewRequest);
 
 		if ((viewsResponse.isBadResponse()) || (viewsResponse.data == null)
-				|| (Strings.isNullOrEmpty(viewsResponse.data.id)) || (Strings.isNullOrEmpty(viewsResponse.data.name))) {
+				|| (StringUtil.isNullOrEmpty(viewsResponse.data.id)) || (StringUtil.isNullOrEmpty(viewsResponse.data.name))) {
 			return null;
 		}
 

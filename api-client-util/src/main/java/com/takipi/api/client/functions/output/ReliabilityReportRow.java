@@ -1,8 +1,8 @@
 package com.takipi.api.client.functions.output;
 
-import com.google.common.base.Objects;
 import com.takipi.api.client.functions.input.EventsInput;
 import com.takipi.api.client.functions.input.ReliabilityReportInput;
+import com.takipi.common.util.ObjectUtil;
 
 public class ReliabilityReportRow implements SeriesRow {
 	
@@ -72,11 +72,11 @@ public class ReliabilityReportRow implements SeriesRow {
 			
 			ReliabilityReportRow.Header other = (ReliabilityReportRow.Header)obj;
 			
-			if (!Objects.equal(serviceId, other.serviceId)) {
+			if (!ObjectUtil.equal(serviceId, other.serviceId)) {
 				return false;
 			}
 			
-			if (!Objects.equal(key, other.key)) {
+			if (!ObjectUtil.equal(key, other.key)) {
 				return false;
 			}
 			

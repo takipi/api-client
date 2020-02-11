@@ -1,7 +1,7 @@
 package com.takipi.api.client.util.validation;
 
-import com.google.common.base.Strings;
 import com.takipi.api.core.consts.ApiConstants;
+import com.takipi.common.util.StringUtil;
 
 public class ValidationUtil {
 	public static boolean isLegalServiceId(String serviceId) {
@@ -21,7 +21,7 @@ public class ValidationUtil {
 	}
 
 	public static boolean isLegalId(String id, String prefix) {
-		if (Strings.isNullOrEmpty(id)) {
+		if (StringUtil.isNullOrEmpty(id)) {
 			return false;
 		}
 

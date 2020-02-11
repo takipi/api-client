@@ -2,11 +2,11 @@ package com.takipi.api.client.request;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
+import java.util.HashSet;
 
 import org.joda.time.DateTime;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
+import com.takipi.common.util.StringUtil;
 
 public abstract class TimeframeRequest extends ServiceRequest {
 	public final String from;
@@ -73,9 +73,9 @@ public abstract class TimeframeRequest extends ServiceRequest {
 		protected Collection<String> deployments;
 
 		protected Builder() {
-			this.servers = Sets.newHashSet();
-			this.apps = Sets.newHashSet();
-			this.deployments = Sets.newHashSet();
+			this.servers = new HashSet<>();
+			this.apps = new HashSet<>();
+			this.deployments = new HashSet<>();
 		}
 
 		@Override
@@ -98,7 +98,7 @@ public abstract class TimeframeRequest extends ServiceRequest {
 		}
 
 		public Builder addServer(String server) {
-			if (Strings.isNullOrEmpty(server)) {
+			if (StringUtil.isNullOrEmpty(server)) {
 				throw new IllegalArgumentException();
 			}
 
@@ -108,7 +108,7 @@ public abstract class TimeframeRequest extends ServiceRequest {
 		}
 
 		public Builder addApp(String app) {
-			if (Strings.isNullOrEmpty(app)) {
+			if (StringUtil.isNullOrEmpty(app)) {
 				throw new IllegalArgumentException();
 			}
 
@@ -118,7 +118,7 @@ public abstract class TimeframeRequest extends ServiceRequest {
 		}
 
 		public Builder addDeployment(String deployment) {
-			if (Strings.isNullOrEmpty(deployment)) {
+			if (StringUtil.isNullOrEmpty(deployment)) {
 				throw new IllegalArgumentException();
 			}
 

@@ -1,13 +1,13 @@
 package com.takipi.api.client;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableMap;
 import com.takipi.api.client.observe.Observer;
 import com.takipi.api.core.consts.ApiConstants;
 import com.takipi.common.util.Pair;
+import com.takipi.common.util.StringUtil;
 
 public class RemoteApiClient extends BaseApiClient implements ApiClient {
 
@@ -149,12 +149,12 @@ public class RemoteApiClient extends BaseApiClient implements ApiClient {
 		}
 
 		public ApiClient build() {
-			if (Strings.isNullOrEmpty(hostname)) {
+			if (StringUtil.isNullOrEmpty(hostname)) {
 				throw new IllegalArgumentException("Missing hostname");
 			}
 
 			return new RemoteApiClient(hostname, getAuth(), apiVersion, connectTimeout, readTimeout, defaultLogLevel,
-					ImmutableMap.copyOf(responseLogLevels), observers);
+					new HashMap<>(responseLogLevels), observers);
 		}
 	}
 }

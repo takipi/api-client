@@ -1,8 +1,8 @@
 package com.takipi.api.client.data.event;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.collect.Lists;
 import com.takipi.common.util.CollectionUtil;
 
 public class MainEventStats extends BaseStats {
@@ -16,7 +16,7 @@ public class MainEventStats extends BaseStats {
 		result.invocations = this.invocations;
 
 		if (!CollectionUtil.safeIsEmpty(this.contributors)) {
-			result.contributors = Lists.newArrayListWithExpectedSize(this.contributors.size());
+			result.contributors = new ArrayList<>();
 
 			for (Stats stats : this.contributors) {
 				result.contributors.add(stats.clone());

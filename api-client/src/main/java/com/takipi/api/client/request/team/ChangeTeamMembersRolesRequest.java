@@ -1,19 +1,19 @@
 package com.takipi.api.client.request.team;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.takipi.api.client.data.team.TeamMember;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.team.ChangeTeamMembersResult;
 import com.takipi.api.client.util.validation.ValidationUtil.UserRole;
 import com.takipi.api.core.request.intf.ApiPostRequest;
+import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.JsonUtil;
+import com.takipi.common.util.StringUtil;
 
 public class ChangeTeamMembersRolesRequest extends ServiceRequest implements ApiPostRequest<ChangeTeamMembersResult> {
 	private final Map<String, UserRole> membersRoles;
@@ -26,7 +26,7 @@ public class ChangeTeamMembersRolesRequest extends ServiceRequest implements Api
 
 	@Override
 	public String postData() {
-		List<TeamMember> teamMembers = Lists.newArrayList();
+		List<TeamMember> teamMembers = new ArrayList<>();
 
 		for (Map.Entry<String, UserRole> entry : membersRoles.entrySet()) {
 			TeamMember teamMember = new TeamMember();
@@ -36,7 +36,7 @@ public class ChangeTeamMembersRolesRequest extends ServiceRequest implements Api
 			teamMembers.add(teamMember);
 		}
 
-		Map<String, String> map = ImmutableMap.of("team_members", (new Gson()).toJson(teamMembers));
+		Map<String, String> map = CollectionUtil.mapOf("team_members", (new Gson()).toJson(teamMembers));
 
 		return JsonUtil.createSimpleJson(map, false);
 	}
@@ -59,7 +59,7 @@ public class ChangeTeamMembersRolesRequest extends ServiceRequest implements Api
 		private Map<String, UserRole> membersRoles;
 
 		Builder() {
-			this.membersRoles = Maps.newHashMap();
+			this.membersRoles = new HashMap<>();
 		}
 
 		@Override
@@ -74,7 +74,7 @@ public class ChangeTeamMembersRolesRequest extends ServiceRequest implements Api
 		}
 
 		public Builder addTeamMember(String email, UserRole role) {
-			if (Strings.isNullOrEmpty(email)) {
+			if (StringUtil.isNullOrEmpty(email)) {
 				throw new IllegalArgumentException("User email cannot be empty");
 			}
 

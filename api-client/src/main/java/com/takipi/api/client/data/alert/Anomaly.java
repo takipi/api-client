@@ -1,17 +1,16 @@
 package com.takipi.api.client.data.alert;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 public class Anomaly {
 	private final List<AnomalyPeriod> anomalyPeriods;
 	private final List<AnomalyContributor> anomalyContributors;
 
 	private Anomaly() {
-		this.anomalyPeriods = Lists.newArrayList();
-		this.anomalyContributors = Lists.newArrayList();
+		this.anomalyPeriods = new ArrayList<>();
+		this.anomalyContributors = new ArrayList<>();
 	}
 
 	public void addAnomalyPeriod(String id, long fromTimestamp, long toTimestamp) {

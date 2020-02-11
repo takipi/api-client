@@ -1,12 +1,12 @@
 package com.takipi.api.client.request.label;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.takipi.api.client.util.validation.ValidationUtil;
+import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.JsonUtil;
 
 public class BatchModifyLabelsRequest extends ModifyLabelsRequest {
@@ -26,18 +26,18 @@ public class BatchModifyLabelsRequest extends ModifyLabelsRequest {
 
 	@Override
 	public String postData() {
-		Collection<String> itemJsons = Lists.newArrayListWithCapacity(modifications.size());
+		Collection<String> itemJsons = new ArrayList<>();
 
 		for (Modification modification : modifications) {
 			String itemJson = JsonUtil
-					.createSimpleJson(ImmutableMap.of("event_id", JsonUtil.stringify(modification.eventId), "add",
+					.createSimpleJson(CollectionUtil.mapOf("event_id", JsonUtil.stringify(modification.eventId), "add",
 							JsonUtil.createSimpleJson(modification.addLabels, true), "remove",
 							JsonUtil.createSimpleJson(modification.removeLabels, true)));
 
 			itemJsons.add(itemJson);
 		}
 
-		return JsonUtil.createSimpleJson(ImmutableMap.of("items", JsonUtil.createSimpleJson(itemJsons, false)));
+		return JsonUtil.createSimpleJson(CollectionUtil.mapOf("items", JsonUtil.createSimpleJson(itemJsons, false)));
 	}
 
 	static class Modification {
@@ -64,7 +64,7 @@ public class BatchModifyLabelsRequest extends ModifyLabelsRequest {
 		private final Map<String, Modification> modifications;
 
 		Builder() {
-			this.modifications = Maps.newHashMap();
+			this.modifications = new HashMap<>();
 		}
 
 		@Override
