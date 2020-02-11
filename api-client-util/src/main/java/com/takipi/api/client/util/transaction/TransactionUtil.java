@@ -2,14 +2,13 @@ package com.takipi.api.client.util.transaction;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.data.transaction.Stats;
 import com.takipi.api.client.data.transaction.Transaction;
@@ -22,6 +21,7 @@ import com.takipi.api.client.result.transaction.TransactionsVolumeResult;
 import com.takipi.api.core.url.UrlClient.Response;
 import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.MathUtil;
+import com.takipi.common.util.StringUtil;
 
 public class TransactionUtil {
 
@@ -57,10 +57,10 @@ public class TransactionUtil {
 			return Collections.emptyMap();
 		}
 
-		Map<String, Transaction> result = Maps.newHashMapWithExpectedSize(transactions.size());
+		Map<String, Transaction> result = new HashMap<>(transactions.size());
 
 		for (Transaction transaction : transactions) {
-			if (!Strings.isNullOrEmpty(transaction.name)) {
+			if (!StringUtil.isNullOrEmpty(transaction.name)) {
 				result.put(transaction.name, transaction);
 			}
 		}
@@ -102,10 +102,10 @@ public class TransactionUtil {
 			return Collections.emptyMap();
 		}
 
-		Map<String, TransactionGraph> result = Maps.newHashMapWithExpectedSize(transactionGraphs.size());
+		Map<String, TransactionGraph> result = new HashMap<>(transactionGraphs.size());
 
 		for (TransactionGraph transactionGraph : transactionGraphs) {
-			if (!Strings.isNullOrEmpty(transactionGraph.name)) {
+			if (!StringUtil.isNullOrEmpty(transactionGraph.name)) {
 				result.put(transactionGraph.name, transactionGraph);
 			}
 		}

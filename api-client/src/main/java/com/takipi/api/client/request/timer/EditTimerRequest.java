@@ -2,10 +2,10 @@ package com.takipi.api.client.request.timer;
 
 import java.util.Map;
 
-import com.google.common.collect.ImmutableMap;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.EmptyResult;
 import com.takipi.api.core.request.intf.ApiPostRequest;
+import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.JsonUtil;
 
 public class EditTimerRequest extends ServiceRequest implements ApiPostRequest<EmptyResult> {
@@ -26,7 +26,7 @@ public class EditTimerRequest extends ServiceRequest implements ApiPostRequest<E
 
 	@Override
 	public String postData() {
-		Map<String, String> map = ImmutableMap.of("threshold", Long.toString(threshold));
+		Map<String, String> map = CollectionUtil.mapOf("threshold", Long.toString(threshold));
 
 		return JsonUtil.createSimpleJson(map, false);
 	}

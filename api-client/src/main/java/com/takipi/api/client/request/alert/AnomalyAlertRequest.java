@@ -1,18 +1,18 @@
 package com.takipi.api.client.request.alert;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.joda.time.DateTime;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.takipi.api.client.data.alert.Anomaly;
 import com.takipi.api.client.data.alert.Anomaly.AnomalyContributor;
 import com.takipi.api.client.data.alert.Anomaly.AnomalyPeriod;
+import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.JsonUtil;
+import com.takipi.common.util.StringUtil;
 
 public class AnomalyAlertRequest extends AlertRequest {
 	private final String desc;
@@ -43,7 +43,7 @@ public class AnomalyAlertRequest extends AlertRequest {
 
 	@Override
 	public String postData() {
-		Map<String, String> map = Maps.newHashMap();
+		Map<String, String> map = new HashMap<>();
 
 		map.put("desc", JsonUtil.stringify(desc));
 		map.put("timeframe", timeframeJson());
@@ -54,26 +54,26 @@ public class AnomalyAlertRequest extends AlertRequest {
 
 	private String timeframeJson() {
 		return JsonUtil.createSimpleJson(
-				ImmutableMap.of("from", from, "to", to, "name", Strings.nullToEmpty(prettyTimeframe)), true);
+				CollectionUtil.mapOf("from", from, "to", to, "name", StringUtil.nullToEmpty(prettyTimeframe)), true);
 	}
 
 	private String anomalyJson() {
-		Collection<String> periodsJsons = Lists.newArrayListWithCapacity(anomaly.periodsCount());
+		Collection<String> periodsJsons = new ArrayList<>(anomaly.periodsCount());
 
 		for (AnomalyPeriod period : anomaly.getAnomalyPeriods()) {
-			periodsJsons.add(JsonUtil.createSimpleJson(ImmutableMap.of("id", period.id, "from",
+			periodsJsons.add(JsonUtil.createSimpleJson(CollectionUtil.mapOf("id", period.id, "from",
 					new DateTime(period.fromTimestamp).toString(), "to", new DateTime(period.toTimestamp).toString()),
 					true));
 		}
 
-		Collection<String> contributorsJsons = Lists.newArrayListWithCapacity(anomaly.contributorsCount());
+		Collection<String> contributorsJsons = new ArrayList<>(anomaly.contributorsCount());
 
 		for (AnomalyContributor contributor : anomaly.getAnomalyContributors()) {
 			contributorsJsons.add(JsonUtil.createSimpleJson(
-					ImmutableMap.of("id", String.valueOf(contributor.id), "value", String.valueOf(contributor.value))));
+					CollectionUtil.mapOf("id", String.valueOf(contributor.id), "value", String.valueOf(contributor.value))));
 		}
 
-		return JsonUtil.createSimpleJson(ImmutableMap.of("periods", JsonUtil.createSimpleJson(periodsJsons),
+		return JsonUtil.createSimpleJson(CollectionUtil.mapOf("periods", JsonUtil.createSimpleJson(periodsJsons),
 				"contributors", JsonUtil.createSimpleJson(contributorsJsons)));
 	}
 
@@ -140,7 +140,7 @@ public class AnomalyAlertRequest extends AlertRequest {
 		protected void validate() {
 			super.validate();
 
-			if (Strings.isNullOrEmpty(desc)) {
+			if (StringUtil.isNullOrEmpty(desc)) {
 				throw new IllegalArgumentException("Empty description");
 			}
 

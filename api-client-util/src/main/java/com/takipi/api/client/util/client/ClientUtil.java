@@ -1,10 +1,10 @@
 package com.takipi.api.client.util.client;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import com.google.common.collect.Lists;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.data.application.SummarizedApplication;
 import com.takipi.api.client.data.deployment.SummarizedDeployment;
@@ -30,7 +30,7 @@ public class ClientUtil {
 	public static List<String> getDeployments(ApiClient apiClient, String serviceId, boolean active) {
 		Collection<SummarizedDeployment> deployments = getSummarizedDeployments(apiClient, serviceId, active);
 
-		List<String> result = Lists.newArrayListWithCapacity(deployments.size());
+		List<String> result = new ArrayList<>(deployments.size());
 
 		for (SummarizedDeployment deployment : deployments) {
 			result.add(deployment.name);
@@ -76,7 +76,7 @@ public class ClientUtil {
 			return Collections.emptyList();
 		}
 
-		List<String> result = Lists.newArrayListWithCapacity(response.data.applications.size());
+		List<String> result = new ArrayList<>(response.data.applications.size());
 
 		for (SummarizedApplication app : response.data.applications) {
 			result.add(app.name);
@@ -99,7 +99,7 @@ public class ClientUtil {
 			return Collections.emptyList();
 		}
 
-		List<String> result = Lists.newArrayListWithCapacity(response.data.servers.size());
+		List<String> result = new ArrayList<>(response.data.servers.size());
 
 		for (SummarizedServer server : response.data.servers) {
 			result.add(server.name);

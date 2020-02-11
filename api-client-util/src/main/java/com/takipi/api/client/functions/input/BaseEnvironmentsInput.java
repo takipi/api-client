@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.google.common.base.Objects;
 import com.takipi.common.util.ArrayUtil;
+import com.takipi.common.util.ObjectUtil;
 import com.takipi.integrations.functions.annotations.Param;
 import com.takipi.integrations.functions.annotations.Param.ParamType;
 
@@ -80,7 +80,7 @@ public abstract class BaseEnvironmentsInput extends VariableInput {
 			return false;
 		}
 		
-		return Objects.equal(this.environments, ((BaseEnvironmentsInput)obj).environments);
+		return ObjectUtil.equal(this.environments, ((BaseEnvironmentsInput)obj).environments);
 	}
 	
 	@Override

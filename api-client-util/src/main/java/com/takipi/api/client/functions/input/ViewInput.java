@@ -3,7 +3,7 @@ package com.takipi.api.client.functions.input;
 import java.util.Collection;
 import java.util.Collections;
 
-import com.google.common.base.Objects;
+import com.takipi.common.util.ObjectUtil;
 import com.takipi.integrations.functions.annotations.Param;
 import com.takipi.integrations.functions.annotations.Param.ParamType;
 
@@ -82,9 +82,9 @@ public abstract class ViewInput extends EnvironmentsFilterInput {
 		
 		ViewInput other = (ViewInput)obj;
 		
-		return Objects.equal(view, other.view) 
-				&& Objects.equal(transactions, other.transactions)
-				&& Objects.equal(timeFilter, other.timeFilter);
+		return ObjectUtil.equal(view, other.view) 
+				&& ObjectUtil.equal(transactions, other.transactions)
+				&& ObjectUtil.equal(timeFilter, other.timeFilter);
 	}
 	
 	@Override

@@ -2,10 +2,10 @@ package com.takipi.api.client.request.category;
 
 import java.io.UnsupportedEncodingException;
 
-import com.google.common.base.Strings;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.category.CategoriesResult;
 import com.takipi.api.core.request.intf.ApiGetRequest;
+import com.takipi.common.util.StringUtil;
 
 public class CategoriesRequest extends ServiceRequest implements ApiGetRequest<CategoriesResult> {
 	public final String categoryName;
@@ -30,13 +30,13 @@ public class CategoriesRequest extends ServiceRequest implements ApiGetRequest<C
 
 	@Override
 	public String[] queryParams() throws UnsupportedEncodingException {
-		int size = (Strings.isNullOrEmpty(categoryName) ? 1 : 2);
+		int size = (StringUtil.isNullOrEmpty(categoryName) ? 1 : 2);
 
 		String[] params = new String[size];
 
 		params[0] = "views=" + Boolean.toString(includeViews);
 
-		if (!Strings.isNullOrEmpty(categoryName)) {
+		if (!StringUtil.isNullOrEmpty(categoryName)) {
 			params[1] = "name=" + encode(categoryName);
 		}
 

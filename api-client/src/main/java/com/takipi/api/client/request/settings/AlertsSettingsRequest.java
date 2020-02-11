@@ -2,10 +2,10 @@ package com.takipi.api.client.request.settings;
 
 import java.io.UnsupportedEncodingException;
 
-import com.google.common.base.Strings;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.settings.AlertsSettingsResult;
 import com.takipi.api.core.request.intf.ApiGetRequest;
+import com.takipi.common.util.StringUtil;
 
 public class AlertsSettingsRequest extends ServiceRequest implements ApiGetRequest<AlertsSettingsResult> {
 	public final String email;
@@ -32,7 +32,7 @@ public class AlertsSettingsRequest extends ServiceRequest implements ApiGetReque
 
 	@Override
 	public String[] queryParams() throws UnsupportedEncodingException {
-		if (Strings.isNullOrEmpty(email)) {
+		if (StringUtil.isNullOrEmpty(email)) {
 			return null;
 		}
 

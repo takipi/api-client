@@ -1,8 +1,8 @@
 package com.takipi.api.client.data.metrics;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.collect.Lists;
 import com.takipi.api.client.data.event.Stats;
 
 public class Graph {
@@ -30,7 +30,7 @@ public class Graph {
 			}
 
 			if (contributors != null) {
-				graphPoint.contributors = Lists.newArrayList();
+				graphPoint.contributors = new ArrayList<>();
 
 				for (GraphPointContributor graphPointContributor : this.contributors) {
 					if (graphPointContributor != null) {

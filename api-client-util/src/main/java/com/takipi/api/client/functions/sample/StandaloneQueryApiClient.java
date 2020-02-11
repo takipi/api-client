@@ -2,15 +2,15 @@ package com.takipi.api.client.functions.sample;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableMap;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.BaseApiClient;
 import com.takipi.api.client.observe.Observer;
 import com.takipi.api.core.request.intf.ApiRequest;
 import com.takipi.common.util.Pair;
+import com.takipi.common.util.StringUtil;
 
 public class StandaloneQueryApiClient extends BaseApiClient  implements ApiClient {
 	private static final String OO_AS_INFLUX_PATH = "/oo-as-influx";
@@ -113,12 +113,12 @@ public class StandaloneQueryApiClient extends BaseApiClient  implements ApiClien
 		}
 
 		public StandaloneQueryApiClient build() {
-			if (Strings.isNullOrEmpty(hostname)) {
+			if (StringUtil.isNullOrEmpty(hostname)) {
 				throw new IllegalArgumentException("Missing hostname");
 			}
 
 			return new StandaloneQueryApiClient(hostname, getAuth(), connectTimeout, readTimeout, defaultLogLevel,
-					ImmutableMap.copyOf(responseLogLevels), observers);
+					new HashMap<>(responseLogLevels), observers);
 		}
 	}
 

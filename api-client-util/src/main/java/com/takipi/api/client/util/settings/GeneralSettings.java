@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import com.google.common.base.Strings;
+import com.takipi.common.util.StringUtil;
 
 public class GeneralSettings {
 
@@ -30,7 +30,7 @@ public class GeneralSettings {
 	public String transaction_failures;
 
 	public Collection<String> getDefaultTypes() {
-		if (Strings.isNullOrEmpty(event_types)) {
+		if (StringUtil.isNullOrEmpty(event_types)) {
 			return Collections.emptyList();
 		}
 

@@ -3,17 +3,17 @@ package com.takipi.api.client.util.grafana;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.joda.time.DateTime;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.takipi.api.client.functions.input.FunctionInput;
 import com.takipi.api.core.consts.ApiConstants;
 import com.takipi.common.util.CollectionUtil;
+import com.takipi.common.util.StringUtil;
 
 public class GrafanaUrlBuilder {
 	private static final String BASE_TEMPLATE = "%s/d/%s/%s?ordId=1";
@@ -35,18 +35,18 @@ public class GrafanaUrlBuilder {
 	private GrafanaUrlBuilder(String grafanaHostname, GrafanaDashboard dashboard) {
 		this.grafanaHostname = grafanaHostname;
 		this.dashboard = dashboard;
-		this.urlParams = Maps.newHashMap();
-		this.urlListParams = Maps.newHashMap();
+		this.urlParams = new HashMap<>();
+		this.urlListParams = new HashMap<>();
 	}
 
 	public GrafanaUrlBuilder withEnrivonment(String environmentName, String environmentId) {
-		if (Strings.isNullOrEmpty(environmentId)) {
+		if (StringUtil.isNullOrEmpty(environmentId)) {
 			urlParams.remove(ENVS_PARAM);
 
 			return this;
 		}
 
-		if (Strings.isNullOrEmpty(environmentName)) {
+		if (StringUtil.isNullOrEmpty(environmentName)) {
 			urlParams.put(ENVS_PARAM, environmentId);
 		} else {
 			urlParams.put(ENVS_PARAM, environmentName + FunctionInput.SERVICE_SEPERATOR + environmentId);
@@ -56,7 +56,7 @@ public class GrafanaUrlBuilder {
 	}
 
 	public GrafanaUrlBuilder withParam(String param, String value) {
-		if (Strings.isNullOrEmpty(value)) {
+		if (StringUtil.isNullOrEmpty(value)) {
 			urlParams.remove(param);
 
 			return this;
@@ -80,14 +80,14 @@ public class GrafanaUrlBuilder {
 	}
 
 	public GrafanaUrlBuilder withListParam(String param, String value) {
-		if (Strings.isNullOrEmpty(value)) {
+		if (StringUtil.isNullOrEmpty(value)) {
 			return this;
 		}
 
 		Collection<String> listParams = urlListParams.get(param);
 
 		if (listParams == null) {
-			listParams = Sets.newHashSet();
+			listParams = new HashSet<>();
 			urlListParams.put(param, listParams);
 		}
 
@@ -109,7 +109,7 @@ public class GrafanaUrlBuilder {
 	}
 
 	public GrafanaUrlBuilder withoutListParam(String param, String value) {
-		if (Strings.isNullOrEmpty(value)) {
+		if (StringUtil.isNullOrEmpty(value)) {
 			return this;
 		}
 
@@ -188,7 +188,7 @@ public class GrafanaUrlBuilder {
 			builder.append('&');
 			builder.append(param);
 
-			if (!Strings.isNullOrEmpty(value)) {
+			if (!StringUtil.isNullOrEmpty(value)) {
 				builder.append('=');
 				builder.append(value);
 			}
@@ -201,7 +201,7 @@ public class GrafanaUrlBuilder {
 			for (String rawValue : values) {
 				String value = safeUrlEncode(rawValue);
 
-				if (!Strings.isNullOrEmpty(value)) {
+				if (!StringUtil.isNullOrEmpty(value)) {
 					builder.append('&');
 					builder.append(param);
 					builder.append('=');
@@ -214,7 +214,7 @@ public class GrafanaUrlBuilder {
 	}
 
 	private static String safeUrlEncode(String value) {
-		if (Strings.isNullOrEmpty(value)) {
+		if (StringUtil.isNullOrEmpty(value)) {
 			return value;
 		}
 
