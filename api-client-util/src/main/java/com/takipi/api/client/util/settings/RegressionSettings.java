@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import com.google.common.base.Strings;
+import com.takipi.common.util.StringUtil;
 
 public class RegressionSettings {
 
@@ -78,7 +78,7 @@ public class RegressionSettings {
 
 	public Collection<String> getCriticalExceptionTypes() {
 
-		if (Strings.isNullOrEmpty(critical_exception_types)) {
+		if (StringUtil.isNullOrEmpty(critical_exception_types)) {
 			return Collections.emptyList();
 		}
 

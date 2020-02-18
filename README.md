@@ -66,7 +66,6 @@ dependencies {
 
 ```java
 import com.takipi.api.client.ApiClient;
-import com.takipi.api.client.util.*;
 ```
 
 ### Constructors
@@ -210,6 +209,7 @@ import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.request.event.EventRequest;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.core.url.UrlClient.Response;
+import com.takipi.api.client.RemoteApiClient;
 
 public class Example {
 

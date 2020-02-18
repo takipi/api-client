@@ -1,13 +1,13 @@
 package com.takipi.api.client.request.category;
 
+import java.util.HashMap;
 import java.util.Map;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.category.CreateCategoryResult;
 import com.takipi.api.core.request.intf.ApiPostRequest;
 import com.takipi.common.util.JsonUtil;
+import com.takipi.common.util.StringUtil;
 
 public class CreateCategoryRequest extends ServiceRequest implements ApiPostRequest<CreateCategoryResult> {
 	private final String name;
@@ -27,7 +27,7 @@ public class CreateCategoryRequest extends ServiceRequest implements ApiPostRequ
 
 	@Override
 	public String postData() {
-		Map<String, String> map = Maps.newHashMapWithExpectedSize(2);
+		Map<String, String> map = new HashMap<>();
 
 		map.put("name", JsonUtil.stringify(name));
 		map.put("shared", Boolean.toString(shared));
@@ -75,7 +75,7 @@ public class CreateCategoryRequest extends ServiceRequest implements ApiPostRequ
 		protected void validate() {
 			super.validate();
 
-			if (Strings.isNullOrEmpty(name)) {
+			if (StringUtil.isNullOrEmpty(name)) {
 				throw new IllegalArgumentException("Missing name");
 			}
 		}

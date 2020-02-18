@@ -1,9 +1,8 @@
 package com.takipi.api.client.request.alertssettings;
 
+import java.util.HashMap;
 import java.util.Map;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 import com.takipi.api.client.data.settings.AlertChannelsSettings;
 import com.takipi.api.client.data.settings.AlertChannelsSettings.EmailAlertSettings;
 import com.takipi.api.client.data.settings.AlertChannelsSettings.HipChatAlertSettings;
@@ -15,6 +14,7 @@ import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.EmptyResult;
 import com.takipi.api.core.request.intf.ApiPostRequest;
 import com.takipi.common.util.JsonUtil;
+import com.takipi.common.util.StringUtil;
 
 public class UpdateDefaultAlertsSettingsRequest extends ServiceRequest implements ApiPostRequest<EmptyResult> {
 	private final AlertChannelsSettings alertChannelsSettings;
@@ -30,9 +30,9 @@ public class UpdateDefaultAlertsSettingsRequest extends ServiceRequest implement
 
 	@Override
 	public String postData() {
-		Map<String, String> map = Maps.newHashMap();
+		Map<String, String> map = new HashMap<>();
 
-		Map<String, String> emailsMap = Maps.newHashMap();
+		Map<String, String> emailsMap = new HashMap<>();
 
 		if (this.initializedFields.emailAlertMeInitialized) {
 			emailsMap.put("alert_me", Boolean.toString(alertChannelsSettings.email.alert_me));
@@ -58,13 +58,13 @@ public class UpdateDefaultAlertsSettingsRequest extends ServiceRequest implement
 		}
 
 		if (alertChannelsSettings.slack != null) {
-			Map<String, String> slackMap = Maps.newHashMap();
+			Map<String, String> slackMap = new HashMap<>();
 			slackMap.put("inhook_url", JsonUtil.stringify(alertChannelsSettings.slack.inhook_url));
 			map.put("slack", JsonUtil.createSimpleJson(slackMap));
 		}
 
 		if (alertChannelsSettings.hip_chat != null) {
-			Map<String, String> hipChatMap = Maps.newHashMap();
+			Map<String, String> hipChatMap = new HashMap<>();
 
 			hipChatMap.put("token", JsonUtil.stringify(alertChannelsSettings.hip_chat.token));
 			hipChatMap.put("room", JsonUtil.stringify(alertChannelsSettings.hip_chat.room));
@@ -76,7 +76,7 @@ public class UpdateDefaultAlertsSettingsRequest extends ServiceRequest implement
 		}
 
 		if (alertChannelsSettings.pager_duty != null) {
-			Map<String, String> pagerDutyMap = Maps.newHashMap();
+			Map<String, String> pagerDutyMap = new HashMap<>();
 
 			pagerDutyMap.put("service_integration_key",
 					JsonUtil.stringify(alertChannelsSettings.pager_duty.service_integration_key));
@@ -85,7 +85,7 @@ public class UpdateDefaultAlertsSettingsRequest extends ServiceRequest implement
 		}
 
 		if (alertChannelsSettings.webhook != null) {
-			Map<String, String> webhookMap = Maps.newHashMap();
+			Map<String, String> webhookMap = new HashMap<>();
 
 			webhookMap.put("webhook_url", JsonUtil.stringify(alertChannelsSettings.webhook.webhook_url));
 
@@ -93,7 +93,7 @@ public class UpdateDefaultAlertsSettingsRequest extends ServiceRequest implement
 		}
 
 		if (alertChannelsSettings.service_now != null) {
-			Map<String, String> serviceNowMap = Maps.newHashMap();
+			Map<String, String> serviceNowMap = new HashMap<>();
 
 			serviceNowMap.put("url", JsonUtil.stringify(alertChannelsSettings.service_now.url));
 			serviceNowMap.put("user_id", JsonUtil.stringify(alertChannelsSettings.service_now.user_id));
@@ -219,37 +219,37 @@ public class UpdateDefaultAlertsSettingsRequest extends ServiceRequest implement
 
 			SlackAlertSettings slackSettings = alertChannelsSettings.slack;
 
-			if ((slackSettings != null) && (Strings.isNullOrEmpty(slackSettings.inhook_url))) {
+			if ((slackSettings != null) && (StringUtil.isNullOrEmpty(slackSettings.inhook_url))) {
 				throw new IllegalArgumentException("No inhook URL supplied for Slack inhook connection request");
 			}
 
 			HipChatAlertSettings hipChatSettings = alertChannelsSettings.hip_chat;
 
 			if (hipChatSettings != null) {
-				if ((Strings.isNullOrEmpty(hipChatSettings.token)) || (Strings.isNullOrEmpty(hipChatSettings.room))) {
+				if ((StringUtil.isNullOrEmpty(hipChatSettings.token)) || (StringUtil.isNullOrEmpty(hipChatSettings.room))) {
 					throw new IllegalArgumentException("No room or token supplied for HipChat connection request");
 				}
 			}
 
 			PagerDutyAlertSettings pagerDutySettings = alertChannelsSettings.pager_duty;
 
-			if ((pagerDutySettings != null) && (Strings.isNullOrEmpty(pagerDutySettings.service_integration_key))) {
+			if ((pagerDutySettings != null) && (StringUtil.isNullOrEmpty(pagerDutySettings.service_integration_key))) {
 				throw new IllegalArgumentException("No integration key supplied for PagerDuty connection request");
 			}
 
 			WebhookAlertSettings webhookSettings = alertChannelsSettings.webhook;
 
-			if ((webhookSettings != null) && (Strings.isNullOrEmpty(webhookSettings.webhook_url))) {
+			if ((webhookSettings != null) && (StringUtil.isNullOrEmpty(webhookSettings.webhook_url))) {
 				throw new IllegalArgumentException("No webhook URL supplied for webhook request");
 			}
 
 			ServiceNowAlertSettings serviceNowSettings = alertChannelsSettings.service_now;
 
 			if (serviceNowSettings != null) {
-				if ((Strings.isNullOrEmpty(serviceNowSettings.url))
-						|| (Strings.isNullOrEmpty(serviceNowSettings.user_id))
-						|| (Strings.isNullOrEmpty(serviceNowSettings.password))
-						|| (Strings.isNullOrEmpty(serviceNowSettings.table))) {
+				if ((StringUtil.isNullOrEmpty(serviceNowSettings.url))
+						|| (StringUtil.isNullOrEmpty(serviceNowSettings.user_id))
+						|| (StringUtil.isNullOrEmpty(serviceNowSettings.password))
+						|| (StringUtil.isNullOrEmpty(serviceNowSettings.table))) {
 					throw new IllegalArgumentException("Not all settings supplied for ServiceNow integration");
 				}
 			}

@@ -1,15 +1,14 @@
 package com.takipi.api.client.util.settings;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import com.google.common.base.Objects;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.takipi.common.util.CollectionUtil;
+import com.takipi.common.util.ObjectUtil;
 
 public class GroupSettings {
 	public static final String REGEX_ESCAPE = "/";
@@ -20,8 +19,8 @@ public class GroupSettings {
 		public final Collection<Pattern> patterns;
 
 		private GroupFilter(Collection<String> values, Collection<Pattern> patterns) {
-			this.values = ImmutableList.copyOf(values);
-			this.patterns = ImmutableList.copyOf(patterns);
+			this.values = new ArrayList<>(values);
+			this.patterns = new ArrayList<>(patterns);
 		}
 
 		public boolean isEmpty() {
@@ -48,8 +47,8 @@ public class GroupSettings {
 		}
 
 		public static GroupFilter from(Collection<String> values) {
-			List<String> filterValues = Lists.newArrayList();
-			List<Pattern> filterPatterns = Lists.newArrayList();
+			List<String> filterValues = new ArrayList<>();
+			List<Pattern> filterPatterns = new ArrayList<>();
 
 			for (String value : values) {
 
@@ -87,7 +86,7 @@ public class GroupSettings {
 				return Collections.emptyList();
 			}
 
-			List<String> result = Lists.newArrayList();
+			List<String> result = new ArrayList<>();
 
 			for (String value : values) {
 				result.addAll(Arrays.asList(value.split(ServiceSettingsData.ARRAY_SEPERATOR)));
@@ -140,7 +139,7 @@ public class GroupSettings {
 	}
 
 	public Collection<String> expandList(Collection<String> values) {
-		List<String> result = Lists.newArrayList();
+		List<String> result = new ArrayList<>();
 
 		for (String value : values) {
 			if (GroupSettings.isGroup(value)) {
@@ -162,7 +161,7 @@ public class GroupSettings {
 			return Collections.emptyList();
 		}
 
-		List<String> result = Lists.newArrayList();
+		List<String> result = new ArrayList<>();
 
 		for (Group group : groups) {
 			if (includePrefix) {
@@ -181,7 +180,7 @@ public class GroupSettings {
 			return Collections.emptyList();
 		}
 
-		List<String> result = Lists.newArrayList();
+		List<String> result = new ArrayList<>();
 
 		for (Group group : groups) {
 			result.addAll(group.getValues());
@@ -205,7 +204,7 @@ public class GroupSettings {
 		}
 
 		for (Group group : groups) {
-			if (Objects.equal(group.name, value)) {
+			if (ObjectUtil.equal(group.name, value)) {
 				return group;
 			}
 		}

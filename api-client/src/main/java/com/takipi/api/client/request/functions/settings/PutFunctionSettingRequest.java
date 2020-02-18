@@ -3,11 +3,11 @@ package com.takipi.api.client.request.functions.settings;
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 
-import com.google.common.base.Strings;
 import com.takipi.api.client.result.EmptyResult;
 import com.takipi.api.core.consts.ApiConstants;
 import com.takipi.api.core.request.intf.ApiPutRequest;
 import com.takipi.common.util.JsonUtil;
+import com.takipi.common.util.StringUtil;
 
 public class PutFunctionSettingRequest extends FunctionSettingRequest implements ApiPutRequest<EmptyResult> {
 
@@ -80,7 +80,7 @@ public class PutFunctionSettingRequest extends FunctionSettingRequest implements
 		protected void validate() {
 			super.validate();
 
-			if (Strings.isNullOrEmpty(value)) {
+			if (StringUtil.isNullOrEmpty(value)) {
 				throw new IllegalArgumentException("Missing value");
 			}
 		}

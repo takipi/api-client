@@ -1,8 +1,8 @@
 package com.takipi.api.client.util.infra;
 
 import java.util.Collection;
+import java.util.HashSet;
 
-import com.google.common.collect.Sets;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.data.event.Location;
 import com.takipi.api.client.result.event.EventResult;
@@ -87,7 +87,7 @@ public abstract class Categorizer {
 
 		@Override
 		protected Collection<String> getTierLabels(EventResult event, Categories categories) {
-			Collection<String> appLabels = Sets.newHashSet();
+			Collection<String> appLabels = new HashSet<>();
 
 			for (Location location : event.stack_frames) {
 				Collection<String> frameMatches = categories.getCategories(location.class_name, CategoryType.app);

@@ -2,10 +2,10 @@ package com.takipi.api.client.request.view;
 
 import java.io.UnsupportedEncodingException;
 
-import com.google.common.base.Strings;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.view.ViewsResult;
 import com.takipi.api.core.request.intf.ApiGetRequest;
+import com.takipi.common.util.StringUtil;
 
 public class ViewsRequest extends ServiceRequest implements ApiGetRequest<ViewsResult> {
 	public final String viewName;
@@ -28,7 +28,7 @@ public class ViewsRequest extends ServiceRequest implements ApiGetRequest<ViewsR
 
 	@Override
 	public String[] queryParams() throws UnsupportedEncodingException {
-		if (Strings.isNullOrEmpty(viewName)) {
+		if (StringUtil.isNullOrEmpty(viewName)) {
 			return null;
 		}
 

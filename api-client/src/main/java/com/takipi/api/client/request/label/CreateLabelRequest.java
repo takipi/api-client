@@ -1,13 +1,13 @@
 package com.takipi.api.client.request.label;
 
+import java.util.HashMap;
 import java.util.Map;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.EmptyResult;
 import com.takipi.api.core.request.intf.ApiPostRequest;
 import com.takipi.common.util.JsonUtil;
+import com.takipi.common.util.StringUtil;
 
 public class CreateLabelRequest extends ServiceRequest implements ApiPostRequest<EmptyResult> {
 	private final String name;
@@ -27,11 +27,11 @@ public class CreateLabelRequest extends ServiceRequest implements ApiPostRequest
 
 	@Override
 	public String postData() {
-		Map<String, String> map = Maps.newHashMapWithExpectedSize(2);
+		Map<String, String> map = new HashMap<>();
 
 		map.put("name", name);
 
-		if (!Strings.isNullOrEmpty(color)) {
+		if (!StringUtil.isNullOrEmpty(color)) {
 			map.put("color", color);
 		}
 
@@ -78,7 +78,7 @@ public class CreateLabelRequest extends ServiceRequest implements ApiPostRequest
 		protected void validate() {
 			super.validate();
 
-			if (Strings.isNullOrEmpty(name)) {
+			if (StringUtil.isNullOrEmpty(name)) {
 				throw new IllegalArgumentException("Missing name");
 			}
 		}

@@ -2,9 +2,9 @@ package com.takipi.api.client.request.functions.settings;
 
 import java.io.UnsupportedEncodingException;
 
-import com.google.common.base.Strings;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.util.validation.ValidationUtil;
+import com.takipi.common.util.StringUtil;
 
 public abstract class FunctionSettingRequest extends ServiceRequest {
 
@@ -67,11 +67,11 @@ public abstract class FunctionSettingRequest extends ServiceRequest {
 				throw new IllegalArgumentException("Illegal library id - " + libraryId);
 			}
 
-			if (Strings.isNullOrEmpty(functionId)) {
+			if (StringUtil.isNullOrEmpty(functionId)) {
 				throw new IllegalArgumentException("Missing function id");
 			}
 
-			if (Strings.isNullOrEmpty(key)) {
+			if (StringUtil.isNullOrEmpty(key)) {
 				throw new IllegalArgumentException("Missing key");
 			}
 		}

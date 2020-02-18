@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.base.Objects;
+import com.takipi.common.util.ObjectUtil;
 
 public class ResultContent {
 	
@@ -20,7 +20,7 @@ public class ResultContent {
 		
 		for (Series<?> item : series) {
 			
-			if (Objects.equal(item.name, name)) {
+			if (ObjectUtil.equal(item.name, name)) {
 				return item;
 			}
 		}

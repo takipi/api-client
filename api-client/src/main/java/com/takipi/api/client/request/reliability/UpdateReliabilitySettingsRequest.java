@@ -1,11 +1,11 @@
 package com.takipi.api.client.request.reliability;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableMap;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.EmptyResult;
 import com.takipi.api.core.request.intf.ApiPostRequest;
+import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.JsonUtil;
+import com.takipi.common.util.StringUtil;
 
 public class UpdateReliabilitySettingsRequest extends ServiceRequest implements ApiPostRequest<EmptyResult> {
 	private final String reliabilitySettingsJson;
@@ -18,7 +18,7 @@ public class UpdateReliabilitySettingsRequest extends ServiceRequest implements 
 
 	@Override
 	public String postData() {
-		return JsonUtil.createSimpleJson(ImmutableMap.of("reliability_settings_json", reliabilitySettingsJson), true);
+		return JsonUtil.createSimpleJson(CollectionUtil.mapOf("reliability_settings_json", reliabilitySettingsJson), true);
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class UpdateReliabilitySettingsRequest extends ServiceRequest implements 
 		protected void validate() {
 			super.validate();
 
-			if (Strings.isNullOrEmpty(reliabilitySettingsJson)) {
+			if (StringUtil.isNullOrEmpty(reliabilitySettingsJson)) {
 				throw new IllegalArgumentException("Missing reliability settings json");
 			}
 

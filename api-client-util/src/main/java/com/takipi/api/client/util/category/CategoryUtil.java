@@ -2,7 +2,6 @@ package com.takipi.api.client.util.category;
 
 import java.net.HttpURLConnection;
 
-import com.google.common.base.Strings;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.data.category.Category;
 import com.takipi.api.client.request.category.CategoriesRequest;
@@ -13,6 +12,7 @@ import com.takipi.api.client.result.category.CategoriesResult;
 import com.takipi.api.client.result.category.CreateCategoryResult;
 import com.takipi.api.core.url.UrlClient.Response;
 import com.takipi.common.util.CollectionUtil;
+import com.takipi.common.util.StringUtil;
 
 public class CategoryUtil {
 	public static Category getServiceCategoryByName(ApiClient apiClient, String serviceId, String categoryName) {
@@ -44,7 +44,7 @@ public class CategoryUtil {
 		if (createCategoryResponse.isOK()) {
 			CreateCategoryResult createCategoryResult = createCategoryResponse.data;
 
-			if ((createCategoryResult == null) || (Strings.isNullOrEmpty(createCategoryResult.category_id))) {
+			if ((createCategoryResult == null) || (StringUtil.isNullOrEmpty(createCategoryResult.category_id))) {
 				throw new IllegalStateException("Failed creating category - " + categoryName);
 			}
 
@@ -65,7 +65,7 @@ public class CategoryUtil {
 		}
 
 		for (Category category : getCategoriesResponse.data.categories) {
-			if ((categoryName.equalsIgnoreCase(category.name)) && (!Strings.isNullOrEmpty(category.id))) {
+			if ((categoryName.equalsIgnoreCase(category.name)) && (!StringUtil.isNullOrEmpty(category.id))) {
 				return category.id;
 			}
 		}

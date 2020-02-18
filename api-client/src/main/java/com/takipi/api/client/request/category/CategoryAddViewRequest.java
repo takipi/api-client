@@ -1,9 +1,9 @@
 package com.takipi.api.client.request.category;
 
-import com.google.common.collect.ImmutableMap;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.client.result.EmptyResult;
 import com.takipi.api.core.request.intf.ApiPostRequest;
+import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.JsonUtil;
 
 public class CategoryAddViewRequest extends ServiceRequest implements ApiPostRequest<EmptyResult> {
@@ -29,7 +29,7 @@ public class CategoryAddViewRequest extends ServiceRequest implements ApiPostReq
 
 	@Override
 	public String postData() {
-		return JsonUtil.createSimpleJson(ImmutableMap.of("view_id", viewId), true);
+		return JsonUtil.createSimpleJson(CollectionUtil.mapOf("view_id", viewId), true);
 	}
 
 	public static Builder newBuilder() {

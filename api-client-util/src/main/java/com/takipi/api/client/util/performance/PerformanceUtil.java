@@ -3,15 +3,14 @@ package com.takipi.api.client.util.performance;
 import java.net.HttpURLConnection;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import org.joda.time.DateTime;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.data.transaction.Transaction;
 import com.takipi.api.client.request.event.EventModifyLabelsRequest;
@@ -25,6 +24,7 @@ import com.takipi.api.client.util.transaction.TransactionUtil;
 import com.takipi.api.core.url.UrlClient.Response;
 import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.Pair;
+import com.takipi.common.util.StringUtil;
 
 public class PerformanceUtil {
 
@@ -68,7 +68,7 @@ public class PerformanceUtil {
 			return Collections.emptyMap();
 		}
 
-		Map<T, PerformanceScore> result = Maps.newHashMapWithExpectedSize(activeTargets.size());
+		Map<T, PerformanceScore> result = new HashMap<>(activeTargets.size());
 
 		if (CollectionUtil.safeIsEmpty(baselineTargets)) {
 			for (Entry<String, T> entry : activeTargets.entrySet()) {
@@ -102,7 +102,7 @@ public class PerformanceUtil {
 			return Pair.of(Collections.emptySet(), Collections.emptySet());
 		}
 
-		Set<String> labelsToRemove = Sets.newHashSet();
+		Set<String> labelsToRemove = new HashSet<>();
 
 		if (!CollectionUtil.safeIsEmpty(event.labels)) {
 			for (String currentLabel : event.labels) {
@@ -115,11 +115,11 @@ public class PerformanceUtil {
 		Set<String> labelsToAdd;
 
 		if (state != PerformanceState.NO_DATA) {
-			labelsToAdd = Sets.newHashSetWithExpectedSize(1);
+			labelsToAdd = new HashSet<>();
 
 			String labelName = getLabelName(state);
 
-			if (!Strings.isNullOrEmpty(labelName)) {
+			if (!StringUtil.isNullOrEmpty(labelName)) {
 				String perfLabelName = toInternalPerfLabelName(labelName);
 				labelsToRemove.remove(perfLabelName);
 

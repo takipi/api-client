@@ -2,12 +2,12 @@ package com.takipi.api.client.request.timer;
 
 import java.util.Map;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableMap;
 import com.takipi.api.client.data.timer.Timer;
 import com.takipi.api.client.request.ServiceRequest;
 import com.takipi.api.core.request.intf.ApiPostRequest;
+import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.JsonUtil;
+import com.takipi.common.util.StringUtil;
 
 public class CreateTimerRequest extends ServiceRequest implements ApiPostRequest<Timer> {
 	private final String className;
@@ -29,7 +29,7 @@ public class CreateTimerRequest extends ServiceRequest implements ApiPostRequest
 
 	@Override
 	public String postData() {
-		Map<String, String> map = ImmutableMap.of("class_name", JsonUtil.stringify(className), "method_name",
+		Map<String, String> map = CollectionUtil.mapOf("class_name", JsonUtil.stringify(className), "method_name",
 				JsonUtil.stringify(methodName), "threshold", Long.toString(threshold));
 
 		return JsonUtil.createSimpleJson(map, false);
@@ -82,11 +82,11 @@ public class CreateTimerRequest extends ServiceRequest implements ApiPostRequest
 		protected void validate() {
 			super.validate();
 
-			if (Strings.isNullOrEmpty(className)) {
+			if (StringUtil.isNullOrEmpty(className)) {
 				throw new IllegalArgumentException("Missing class name");
 			}
 
-			if (Strings.isNullOrEmpty(methodName)) {
+			if (StringUtil.isNullOrEmpty(methodName)) {
 				throw new IllegalArgumentException("Missing method name");
 			}
 

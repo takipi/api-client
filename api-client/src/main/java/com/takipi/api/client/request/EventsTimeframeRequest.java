@@ -2,8 +2,8 @@ package com.takipi.api.client.request;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
+import java.util.HashSet;
 
-import com.google.common.collect.Sets;
 import com.takipi.api.client.util.validation.ValidationUtil;
 
 public abstract class EventsTimeframeRequest extends TimeframeRequest {
@@ -40,7 +40,7 @@ public abstract class EventsTimeframeRequest extends TimeframeRequest {
 		protected Collection<String> eventIds;
 
 		protected Builder() {
-			this.eventIds = Sets.newHashSet();
+			this.eventIds = new HashSet<>();
 		}
 
 		public Builder addEventId(String eventId) {

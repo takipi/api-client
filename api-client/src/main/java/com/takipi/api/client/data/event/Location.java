@@ -1,12 +1,13 @@
 package com.takipi.api.client.data.event;
 
-import com.google.common.base.Objects;
+import com.takipi.common.util.ObjectUtil;
 
 public class Location {
 	public String prettified_name;
 	public String class_name;
 	public String method_name;
 	public String method_desc;
+	public String code_last_modified;
 	public int original_line_number = -1;
 	public int method_position = -1;
 	public boolean in_filter;
@@ -19,15 +20,15 @@ public class Location {
 
 		Location other = (Location) obj;
 
-		if (!Objects.equal(class_name, other.class_name)) {
+		if (!ObjectUtil.equal(class_name, other.class_name)) {
 			return false;
 		}
 
-		if (!Objects.equal(method_name, other.method_name)) {
+		if (!ObjectUtil.equal(method_name, other.method_name)) {
 			return false;
 		}
 
-		if (!Objects.equal(method_desc, other.method_desc)) {
+		if (!ObjectUtil.equal(method_desc, other.method_desc)) {
 			return false;
 		}
 

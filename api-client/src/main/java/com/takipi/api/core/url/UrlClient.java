@@ -12,8 +12,8 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
 import com.takipi.api.core.consts.ApiConstants;
+import com.takipi.common.util.StringUtil;
 
 public abstract class UrlClient {
 
@@ -58,7 +58,7 @@ public abstract class UrlClient {
 		boolean first = true;
 
 		for (String param : params) {
-			if (Strings.isNullOrEmpty(param)) {
+			if (StringUtil.isNullOrEmpty(param)) {
 				continue;
 			}
 
@@ -228,7 +228,7 @@ public abstract class UrlClient {
 
 		String errorMessage = responseData;
 
-		if (Strings.isNullOrEmpty(errorMessage)) {
+		if (StringUtil.isNullOrEmpty(errorMessage)) {
 			errorMessage = "No error message received";
 		}
 

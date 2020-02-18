@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -17,7 +18,6 @@ import org.joda.time.Minutes;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import com.google.common.collect.Maps;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.data.deployment.SummarizedDeployment;
 import com.takipi.api.client.data.event.BaseStats;
@@ -50,7 +50,11 @@ public class RegressionUtil {
 	public static class RegressionWindow {
 		public DateTime activeWindowStart;
 		public int activeTimespan;
-		public boolean deploymentFound;
+		public boolean deploymentNotFound;
+		
+		public RegressionWindow() {
+			
+		}
 		
 		@Override
 		public RegressionWindow clone() {
@@ -59,7 +63,7 @@ public class RegressionUtil {
 			
 			result.activeWindowStart = this.activeWindowStart;
 			result.activeTimespan = this.activeTimespan;
-			result.deploymentFound = this.deploymentFound;
+			result.deploymentNotFound = this.deploymentNotFound;
 			
 			return result;
 		}
@@ -153,7 +157,7 @@ public class RegressionUtil {
 
 	private static Map<String, long[]> getPeriodVolumes(DateTime startTime, Graph baselineGraph, int activeTimespan,
 			int baselineTimespan) {
-		Map<String, long[]> result = Maps.newHashMap();
+		Map<String, long[]> result = new HashMap<>();
 
 		DateTime baselineStart = startTime.minusMinutes(baselineTimespan);
 		int timeWindows = baselineTimespan / activeTimespan;
@@ -587,7 +591,7 @@ public class RegressionUtil {
 	private static Pair<DateTime, DateTime> getDeploymentsActiveWindow(Collection<String> deployments,
 			Collection<SummarizedDeployment> summarizedDeployments) {
 
-		Map<String, SummarizedDeployment> summarizedDeploymentByName = Maps.newHashMap();
+		Map<String, SummarizedDeployment> summarizedDeploymentByName = new HashMap<>();
 
 		for (SummarizedDeployment summaryDeployment : summarizedDeployments) {
 			summarizedDeploymentByName.put(summaryDeployment.name, summaryDeployment);
@@ -656,13 +660,16 @@ public class RegressionUtil {
 
 		if (deploymentsActiveWindow == null) {
 			result.activeWindowStart = now.minusMinutes(input.activeTimespan);
-
+			result.deploymentNotFound = true;
 			return result;
 		}
 
 		result.activeWindowStart = deploymentsActiveWindow.getFirst();
 
 		if (result.activeWindowStart == null) {
+			
+			result.deploymentNotFound = true;
+			
 			if (printStream != null) {
 				printStream.println(
 						"Could not acquire start time for deployments " + Arrays.toString(input.deployments.toArray()));
@@ -686,8 +693,6 @@ public class RegressionUtil {
 			result.activeTimespan = (int) (TimeUnit.DAYS.toMinutes(1));
 			result.activeWindowStart = now.minusDays(1);
 		}
-
-		result.deploymentFound = true;
 
 		return result;
 	}
@@ -760,7 +765,7 @@ public class RegressionUtil {
 
 		RateRegression.Builder builder = new RateRegression.Builder();
 
-		if ((regressionWindow.activeTimespan == 0) && (!regressionWindow.deploymentFound)) {
+		if ((regressionWindow.activeTimespan == 0) && (regressionWindow.deploymentNotFound)) {
 
 			if (printStream != null) {
 				printStream.println(
@@ -872,7 +877,7 @@ public class RegressionUtil {
 		// Maps from event id to a list of hits/invocations.
 		// Uses long[] to optimize data size, we know how many points are there based on
 		// the graph.
-		Map<String, Pair<long[], long[]>> rawData = Maps.newHashMap();
+		Map<String, Pair<long[], long[]>> rawData = new HashMap<>();
 
 		int pointsCount = graph.points.size();
 
@@ -900,7 +905,7 @@ public class RegressionUtil {
 			}
 		}
 
-		Map<String, RegressionStats> result = Maps.newHashMapWithExpectedSize(rawData.size());
+		Map<String, RegressionStats> result = new HashMap<>(rawData.size());
 
 		for (Map.Entry<String, Pair<long[], long[]>> entry : rawData.entrySet()) {
 			result.put(entry.getKey(), buildRegressionStats(entry.getValue()));

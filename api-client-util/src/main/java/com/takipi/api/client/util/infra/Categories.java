@@ -1,19 +1,16 @@
 package com.takipi.api.client.util.infra;
 
-import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.io.IOUtils;
-
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.takipi.common.util.CollectionUtil;
+import com.takipi.common.util.IOUtil;
+import com.takipi.common.util.StringUtil;
 
 public class Categories {
 
@@ -30,21 +27,7 @@ public class Categories {
 		if (instance == null) {
 			synchronized (Categories.class) {
 				if (instance == null) {
-					Categories result = null;
-
-					InputStream stream = null;
-
-					try {
-						stream = Categories.class.getResourceAsStream(DEFAULT_CATEGORIES);
-
-						if (stream != null) {
-							result = (new Gson()).fromJson(IOUtils.toString(stream, Charset.defaultCharset()),
-									Categories.class);
-						}
-					} catch (Exception e) {
-					} finally {
-						IOUtils.closeQuietly(stream);
-					}
+					Categories result = IOUtil.readFromResource(DEFAULT_CATEGORIES, Categories.class, new Gson());
 
 					instance = ((result != null) ? result : EMPTY_CATEGORIES);
 				}
@@ -72,7 +55,7 @@ public class Categories {
 
 			for (String name : category.names) {
 				if (className.startsWith(name)) {
-					return Sets.newHashSet(category.labels);
+					return new HashSet<>(category.labels);
 				}
 			}
 		}
@@ -138,7 +121,7 @@ public class Categories {
 
 		Categories result = new Categories();
 
-		result.categories = Lists.newArrayList(categories);
+		result.categories = new ArrayList<>(categories);
 
 		List<Category> defaultCategories = defaultCategories().categories;
 
@@ -161,7 +144,7 @@ public class Categories {
 
 			for (Category defaultCategory : defaultCategories().categories) {
 				if (doCategoriesMatch(category, defaultCategory)) {
-					category.names = Lists.newArrayList(defaultCategory.names);
+					category.names = new ArrayList<>(defaultCategory.names);
 					break;
 				}
 			}
@@ -175,7 +158,7 @@ public class Categories {
 
 		for (String label : a.labels) {
 
-			if (Strings.isNullOrEmpty(label)) {
+			if (StringUtil.isNullOrEmpty(label)) {
 				continue;
 			}
 

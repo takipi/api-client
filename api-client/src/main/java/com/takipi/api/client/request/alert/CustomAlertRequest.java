@@ -1,15 +1,14 @@
 package com.takipi.api.client.request.alert;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.JsonUtil;
+import com.takipi.common.util.StringUtil;
 
 public class CustomAlertRequest extends AlertRequest {
 	public final String title;
@@ -22,7 +21,7 @@ public class CustomAlertRequest extends AlertRequest {
 
 		this.title = title;
 		this.body = body;
-		this.links = ImmutableList.copyOf(links);
+		this.links = new ArrayList<>(links);
 	}
 
 	@Override
@@ -32,16 +31,16 @@ public class CustomAlertRequest extends AlertRequest {
 
 	@Override
 	public String postData() {
-		Map<String, String> map = Maps.newHashMap();
+		Map<String, String> map = new HashMap<>();
 
-		if (!Strings.isNullOrEmpty(title)) {
+		if (!StringUtil.isNullOrEmpty(title)) {
 			map.put("title", JsonUtil.stringify(title));
 		}
 
 		map.put("body", JsonUtil.stringify(body));
 
 		if (!CollectionUtil.safeIsEmpty(links)) {
-			List<String> jsons = Lists.newArrayListWithCapacity(links.size());
+			List<String> jsons = new ArrayList<>(links.size());
 
 			for (AlertLink link : links) {
 				jsons.add(link.toJson());
@@ -63,7 +62,7 @@ public class CustomAlertRequest extends AlertRequest {
 		private final List<AlertLink> links;
 
 		Builder() {
-			this.links = Lists.newArrayList();
+			this.links = new ArrayList<>();
 		}
 
 		@Override
@@ -97,11 +96,11 @@ public class CustomAlertRequest extends AlertRequest {
 		}
 
 		public Builder addLink(String preLinkText, String linkText, String postLinkText, String link) {
-			if (Strings.isNullOrEmpty(linkText)) {
+			if (StringUtil.isNullOrEmpty(linkText)) {
 				throw new IllegalArgumentException("Empty link text");
 			}
 
-			if (Strings.isNullOrEmpty(link)) {
+			if (StringUtil.isNullOrEmpty(link)) {
 				throw new IllegalArgumentException("Empty link");
 			}
 
@@ -118,7 +117,7 @@ public class CustomAlertRequest extends AlertRequest {
 		protected void validate() {
 			super.validate();
 
-			if (Strings.isNullOrEmpty(body)) {
+			if (StringUtil.isNullOrEmpty(body)) {
 				throw new IllegalArgumentException("Empty alert body");
 			}
 		}
