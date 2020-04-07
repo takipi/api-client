@@ -1,0 +1,64 @@
+subprojects {
+  apply plugin: 'java'
+  apply plugin: 'maven'
+  apply plugin: 'signing'
+  apply plugin: 'eclipse'
+  apply plugin: 'idea'
+
+  group = 'com.takipi'
+  version = '2.32.0'
+
+  repositories {
+      mavenCentral()
+  }
+
+  task javadocJar(type: Jar) {
+      classifier = 'javadoc'
+      from javadoc
+  }
+  task sourcesJar(type: Jar) {
+      classifier = 'sources'
+      from sourceSets.main.allSource
+  }
+  artifacts {
+      archives javadocJar, sourcesJar
+  }
+  signing {
+      required { gradle.taskGraph.hasTask("uploadArchives") }
+      sign configurations.archives
+  }
+  uploadArchives {
+    repositories {
+      mavenDeployer {
+        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+        repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+          authentication(userName: findProperty('ossrhUsername'), password: findProperty('ossrhPassword'))
+        }
+
+        snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+          authentication(userName: findProperty('ossrhUsername'), password: findProperty('ossrhPassword'))
+        }
+        pom.project {
+          packaging 'jar'
+          url 'https://github.com/takipi/api-client'
+
+          licenses {
+            license {
+              name 'MIT License'
+              url 'http://www.opensource.org/licenses/mit-license.php'
+            }
+          }
+
+          developers {
+            developer {
+              id 'chook'
+              name 'Chen Harel'
+              email 'chen.harel@takipi.com'
+            }
+          }
+        }
+      }
+    }
+  }
+}
