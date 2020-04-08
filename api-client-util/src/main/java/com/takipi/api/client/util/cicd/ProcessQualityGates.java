@@ -114,6 +114,11 @@ public class ProcessQualityGates {
 			}
 		}
 		
+		if (CollectionUtil.safeIsEmpty(result)) {
+			throw new IllegalStateException("Application(s) " + Arrays.toString(input.applictations.toArray())
+			+ " not found. Please ensure Application names(s) provided are correct.");
+		}
+		
 		return result;
 	}
 	
