@@ -11,3 +11,4 @@ rootProject.name = 'test'
 
 include "api-client"
 include "api-client-util"
+include "report-service"
