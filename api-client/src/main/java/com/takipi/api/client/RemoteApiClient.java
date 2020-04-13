@@ -46,7 +46,7 @@ public class RemoteApiClient extends BaseApiClient implements ApiClient {
 	}
 
 	public Response<String> testConnection() {
-		return get(baseApiPath() + "/test", null, ApiConstants.CONTENT_TYPE_JSON);
+		return get(baseApiPath() + "/test", ApiConstants.CONTENT_TYPE_JSON );
 	}
 
 	public boolean validateConnection() {
