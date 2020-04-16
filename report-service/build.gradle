@@ -1,6 +1,6 @@
 apply plugin: 'maven'
 
-archivesBaseName = 'api-client'
+archivesBaseName = 'report-service'
 
 if (project.ext.has("backendJavac")) {
   compileJava {
@@ -19,7 +19,7 @@ uploadArchives {
   repositories {
     mavenDeployer {
       pom.project {
-        name 'api-client'
+        name 'report-service'
         description 'OverOps API Client, interacts with OverOps Server REST API'
 
         scm {

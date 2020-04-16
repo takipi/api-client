@@ -13,6 +13,8 @@ public class EventVisualizationModel {
     private long hits;
     private long calls;
 
+    public EventVisualizationModel(){
+    }
 
     public EventVisualizationModel(OOReportEvent event) {
         this.arcLink = event.getARCLink();
