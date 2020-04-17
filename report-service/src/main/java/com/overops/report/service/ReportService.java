@@ -48,12 +48,12 @@ public class ReportService {
         return gson.fromJson(json, ReportVisualizationModel.class);
     }
 
-    public ReportVisualizationModel createReportVisualizationModel(String endPoint, String apiKey, String sid, QualityReportParams reportParams) {
+    public ReportVisualizationModel createReportVisualizationModel(String endPoint, String apiKey, QualityReportParams reportParams) {
         PrintStream printStream = System.out;
 
         boolean runRegressions = convertToMinutes(reportParams.getBaselineTimespan()) > 0;
 
-        validateInputs(endPoint, apiKey, sid, reportParams);
+        validateInputs(endPoint, apiKey, reportParams);
 
         RemoteApiClient apiClient = (RemoteApiClient) RemoteApiClient.newBuilder().setHostname(endPoint).setApiKey(apiKey).build();
 
@@ -61,7 +61,7 @@ public class ReportService {
             apiClient.addObserver(new ApiClientObserver(printStream, reportParams.isDebug()));
         }
 
-        SummarizedView allEventsView = ViewUtil.getServiceViewByName(apiClient, sid.toUpperCase(), "All Events");
+        SummarizedView allEventsView = ViewUtil.getServiceViewByName(apiClient, reportParams.getServiceId().toUpperCase(), "All Events");
 
         if (Objects.isNull(allEventsView)) {
             throw new IllegalStateException(
@@ -69,7 +69,7 @@ public class ReportService {
         }
 
         RegressionInput input = new RegressionInput();
-        input.serviceId = sid;
+        input.serviceId = reportParams.getServiceId();
         input.viewId = allEventsView.id;
         input.applictations = parseArrayString(reportParams.getApplicationName(), printStream, "Application Name");
         input.deployments = parseArrayString(reportParams.getDeploymentName(), printStream, "Deployment Name");
@@ -228,7 +228,7 @@ public class ReportService {
         return 0;
     }
 
-    private void validateInputs(String endPoint, String apiKey, String sid, QualityReportParams reportParams) {
+    private void validateInputs(String endPoint, String apiKey, QualityReportParams reportParams) {
 
         if (isEmptyString(endPoint)) {
             throw new IllegalArgumentException("Missing host name");
@@ -251,7 +251,7 @@ public class ReportService {
             }
         }
 
-        if (isEmptyString(sid)) {
+        if (isEmptyString(reportParams.getServiceId())) {
             throw new IllegalArgumentException("Missing environment Id");
         }
 
@@ -386,14 +386,5 @@ public class ReportService {
         boolean result = !pattern.matcher(json).find();
 
         return result;
-    }
-
-    private static String webResourceToString(String location) {
-        try {
-            InputStream overopsLogo = null; //this.getServletContext().getClassLoader().getResourceAsStream(location);
-            return IOUtils.toString(overopsLogo, Charset.defaultCharset());
-        } catch (Exception e) {
-            return "";
-        }
     }
 }
