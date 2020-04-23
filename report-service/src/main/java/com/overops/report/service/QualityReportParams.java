@@ -21,7 +21,6 @@ public class QualityReportParams {
     private double criticalRegressionDelta = 0d;
     private boolean applySeasonality = false;
 
-    // advanced settings
     private boolean debug = false;
     private boolean errorSuccess = false;
 
@@ -177,10 +176,12 @@ public class QualityReportParams {
         this.applySeasonality = applySeasonality;
     }
 
+    @Deprecated
     public boolean isDebug() {
         return debug;
     }
 
+    @Deprecated
     public void setDebug(boolean debug) {
         this.debug = debug;
     }

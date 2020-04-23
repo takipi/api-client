@@ -2,6 +2,14 @@ apply plugin: 'maven'
 
 archivesBaseName = 'report-service'
 
+sourceSets {
+  main {
+    resources {
+      srcDirs "src/main/resources/**, src/main/resources/web/css**"
+    }
+  }
+}
+
 if (project.ext.has("backendJavac")) {
   compileJava {
     options.forkOptions.executable = project.ext.get("backendJavac")
