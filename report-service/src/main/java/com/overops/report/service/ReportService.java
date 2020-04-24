@@ -561,8 +561,10 @@ public class ReportService {
             String replace = "&source=" + requestorId;    // replace with 58
     
             for (OOReportEvent event : events) {
-                String arcLink = event.getARCLink().replaceAll(match, replace);
-                event.setArcLink(arcLink);
+                String arcLink = event.getARCLink();
+                if (arcLink != null) {
+                    event.setArcLink(arcLink.replaceAll(match, replace));
+                }
             }
         }
     }

@@ -321,27 +321,27 @@ public class QualityReport {
         switch (testType) {
             case NEW_ERRORS:
                 testResults = getNewErrorsTestResults(); 
-                anchorRef = "#new-gate";
+                anchorRef = "new-gate";
                 break;
             case CRITICAL_ERRORS:
                 testResults = getCriticalErrorsTestResults(); 
-                anchorRef = "#critical-gate";
+                anchorRef = "critical-gate";
                 break;
             case REGRESSION_ERRORS:
                 testResults = getRegressionErrorsTestResults(); 
-                anchorRef = "#increasing-gate";
+                anchorRef = "increasing-gate";
                break;
             case RESURFACED_ERRORS:
                 testResults = getResurfacedErrorsTestResults(); 
-                anchorRef = "#resurfaced-gate";
+                anchorRef = "resurfaced-gate";
                 break;
             case TOTAL_ERRORS:
                 testResults = getTotalErrorsTestResults(); 
-                anchorRef = "#total-gate";
+                anchorRef = "total-gate";
                 break;
             case UNIQUE_ERRORS:
                 testResults = getUniqueErrorsTestResults(); 
-                anchorRef = "#unique-gate";
+                anchorRef = "unique-gate";
                 break;
         }
 
@@ -412,6 +412,7 @@ public class QualityReport {
             html = getWebResource(WebResource.EVENTS_TABLE_HTML);
             if (testType == TestType.REGRESSION_ERRORS) {
                 html = html.replace("<th>Volume</th>", "<th>Volume / Rate</th>");
+            } else {
                 html = html.replace("<th>Type</th>", "");
             }
             String eventsHtml = "";
@@ -423,8 +424,11 @@ public class QualityReport {
                     eventHtml = eventHtml.replace("applications", convertNullToString(event.getApplications()));
                     eventHtml = eventHtml.replace("introducedBy", convertNullToString(event.getIntroducedBy()));
                     eventHtml = eventHtml.replace("eventRate", convertNullToString(event.getEventRate()));
-                    eventHtml = eventHtml.replace("eventType", convertNullToString(event.getType()));
-    
+                    if (testType == TestType.REGRESSION_ERRORS) {
+                        eventHtml = eventHtml.replace("eventType", convertNullToString(event.getType()));
+                    } else {
+                        eventHtml = eventHtml.replace("<td>eventType</td>", "");
+                    }   
                     eventsHtml += eventHtml;
                 }
             }
