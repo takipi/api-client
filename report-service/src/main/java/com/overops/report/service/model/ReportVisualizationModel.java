@@ -36,11 +36,11 @@ public class ReportVisualizationModel {
     private String uniqueErrorSummary;
     private String regressionSummary;
 
-    private List<EventVisualizationModel> newEvents = new ArrayList<>();
-    private List<EventVisualizationModel> resurfacedEvents = new ArrayList<>();
-    private List<EventVisualizationModel> criticalEvents = new ArrayList<>();
-    private List<EventVisualizationModel> topEvents = new ArrayList<>();
-    private List<EventVisualizationModel> regressedEvents = new ArrayList<>();
+    private List<QualityGateEvent> newEvents = new ArrayList<>();
+    private List<QualityGateEvent> resurfacedEvents = new ArrayList<>();
+    private List<QualityGateEvent> criticalEvents = new ArrayList<>();
+    private List<QualityGateEvent> topEvents = new ArrayList<>();
+    private List<QualityGateEvent> regressedEvents = new ArrayList<>();
 
     // UI summary table
     private boolean hasTotal;
@@ -61,7 +61,16 @@ public class ReportVisualizationModel {
     public ReportVisualizationModel() {
     }
 
-    public ReportVisualizationModel(QualityGateReport qualityGateReport, RegressionInput input, RateRegression regression, List<OOReportRegressedEvent> regressions, boolean unstable, boolean checkNewGate, boolean checkResurfacedGate, boolean checkCriticalGate, boolean checkVolumeGate, boolean checkUniqueGate, boolean checkRegressionGate, Integer maxEventVolume, Integer maxUniqueVolume, boolean markedUnstable) {
+    public ReportVisualizationModel(QualityGateReport qualityGateReport, RegressionInput input, RateRegression regression, List<OOReportRegressedEvent> regressions, boolean checkNewGate, boolean checkResurfacedGate, boolean checkCriticalGate, boolean checkVolumeGate, boolean checkUniqueGate, boolean checkRegressionGate, Integer maxEventVolume, Integer maxUniqueVolume, boolean markedUnstable) {
+        boolean hasNewErrors = (qualityGateReport.getNewErrors() != null) && (qualityGateReport.getNewErrors().size() > 0);
+        boolean hasResurfacedErrors = (qualityGateReport.getResurfacedErrors() != null) && (qualityGateReport.getResurfacedErrors().size() > 0);
+        boolean hasCriticalErrors = (qualityGateReport.getCriticalErrors() != null) && (qualityGateReport.getCriticalErrors().size() > 0);
+        boolean hasRegressions = (regressions != null) && (regressions.size() > 0);
+        boolean maxVolumeExceeded = (maxEventVolume != 0) && (qualityGateReport.getTotalErrorCount() > maxEventVolume);
+        boolean maxUniqueErrorsExceeded = (maxUniqueVolume != 0) && (qualityGateReport.getUniqueErrorCount() > maxUniqueVolume);
+        
+        boolean unstable = hasRegressions || maxVolumeExceeded || maxUniqueErrorsExceeded || hasNewErrors || hasResurfacedErrors || hasCriticalErrors;
+
         setMarkedUnstable(markedUnstable);
         setUnstable(unstable);
         setCheckNewEvents(checkNewGate);
@@ -71,37 +80,38 @@ public class ReportVisualizationModel {
         setCheckRegressedErrors(checkRegressionGate);
         setCheckTotalErrors(checkVolumeGate);
 
-        setNewEvents(Optional.ofNullable(qualityGateReport.getNewErrors()).orElse(new ArrayList<>()).stream().map(e -> new EventVisualizationModel(e)).collect(Collectors.toList()));
-        setResurfacedEvents(Optional.ofNullable(qualityGateReport.getResurfacedErrors()).orElse(new ArrayList<>()).stream().map(e -> new EventVisualizationModel(e)).collect(Collectors.toList()));
-        setCriticalEvents(Optional.ofNullable(qualityGateReport.getCriticalErrors()).orElse(new ArrayList<>()).stream().map(e -> new EventVisualizationModel(e)).collect(Collectors.toList()));
-        setTopEvents(Optional.ofNullable(qualityGateReport.getTopErrors()).orElse(new ArrayList<>()).stream().map(e -> new EventVisualizationModel(e)).collect(Collectors.toList()));
+        setNewEvents(Optional.ofNullable(qualityGateReport.getNewErrors()).orElse(new ArrayList<>()).stream().map(e -> new QualityGateEvent(e)).collect(Collectors.toList()));
+        setResurfacedEvents(Optional.ofNullable(qualityGateReport.getResurfacedErrors()).orElse(new ArrayList<>()).stream().map(e -> new QualityGateEvent(e)).collect(Collectors.toList()));
+        setCriticalEvents(Optional.ofNullable(qualityGateReport.getCriticalErrors()).orElse(new ArrayList<>()).stream().map(e -> new QualityGateEvent(e)).collect(Collectors.toList()));
+        setTopEvents(Optional.ofNullable(qualityGateReport.getTopErrors()).orElse(new ArrayList<>()).stream().map(e -> new QualityGateEvent(e)).collect(Collectors.toList()));
 
         ArrayList<OOReportEvent> allIssues = new ArrayList<>();
         if (regressions != null) {
             allIssues.addAll(regressions);
         }
-        setRegressedEvents(allIssues.stream().map(e -> new EventVisualizationModel(e)).collect(Collectors.toList()));
+        setRegressedEvents(allIssues.stream().map(e -> new QualityGateEvent(e)).collect(Collectors.toList()));
 
-        setPassedNewErrorGate(checkNewGate && !(getNewEvents().size() > 0));
-        setPassedResurfacedErrorGate(checkResurfacedGate && (getResurfacedEvents().size() == 0));
-        setPassedCriticalErrorGate(checkCriticalGate && getCriticalEvents().size() == 0);
-        setPassedTotalErrorGate(checkVolumeGate && (qualityGateReport.getTotalErrorCount() > 0 && qualityGateReport.getTotalErrorCount() < maxEventVolume));
-        setPassedUniqueErrorGate(checkUniqueGate && (qualityGateReport.getUniqueErrorCount() > 0 && qualityGateReport.getUniqueErrorCount() < maxUniqueVolume));
-        setPassedRegressedEvents(!(checkRegressionGate && regressions != null && regressions.size() > 0));
+        setPassedNewErrorGate(checkNewGate && !hasNewErrors);
+        setPassedResurfacedErrorGate(checkResurfacedGate && !hasResurfacedErrors);
+        setPassedCriticalErrorGate(checkCriticalGate && !hasCriticalErrors);
+        setPassedRegressedEvents(checkRegressionGate && !hasRegressions);
+        setPassedTotalErrorGate(checkVolumeGate && !maxVolumeExceeded);
+        setPassedUniqueErrorGate(checkUniqueGate && !maxUniqueErrorsExceeded);
+        setHasTopErrors((checkVolumeGate && maxVolumeExceeded) || (checkUniqueGate && maxUniqueErrorsExceeded));
 
         String deploymentName = getDeploymentName(input);
-
-        if (isUnstable() && isMarkedUnstable()) {
-            // the build is unstable when marking the build as unstable
-            // teamcity has no "unstable" status like Jenkins, so we're using "failure"
-            setSummary("OverOps has marked build "+ deploymentName + " as \"failure\"."); ;
-        } else if (isUnstable() && !isMarkedUnstable()) {
-            //unstable build stable when NOT marking the build as unstable
-            setSummary("OverOps has detected issues with build "+ deploymentName + " but did not mark the build as \"failure\".");
+        if (isUnstable()) {
+            if (isMarkedUnstable()) {
+                setSummary("OverOps has marked build "+ deploymentName + " as \"failure\"."); ;
+            } else {
+                setSummary("OverOps has detected issues with build "+ deploymentName + " but did not mark the build as \"failure\".");
+            }
         } else {
-            //stable build when marking the build as unstable
             setSummary("Congratulations, build " + deploymentName + " has passed all quality gates!");
         }
+
+        long eventVolume = qualityGateReport.getTotalErrorCount();
+        long uniqueEventsCount = qualityGateReport.getUniqueErrorCount();
 
         if (getNewEvents().size() > 0) {
             int count = getNewEvents().size();
@@ -129,17 +139,11 @@ public class ReportVisualizationModel {
             setCriticalErrorSummary("Critical Error Gate: Passed, OverOps did not detect any critical errors in your build.");
         }
 
-        long eventVolume = qualityGateReport.getTotalErrorCount();
         if (eventVolume > 0 && eventVolume >= maxEventVolume) {
             setTotalErrorSummary("Total Error Volume Gate: Failed, OverOps detected " + eventVolume + " total errors which is >= the max allowable of " + maxEventVolume);
         } else if (eventVolume > 0 && eventVolume < maxEventVolume) {
             setTotalErrorSummary("Total Error Volume Gate: Passed, OverOps detected " + eventVolume + " total errors which is < than max allowable of " + maxEventVolume);
         }
-
-        long uniqueEventsCount = qualityGateReport.getUniqueErrorCount();
-        setHasTopErrors(!(checkVolumeGate && (eventVolume > 0 && eventVolume < maxEventVolume)) 
-            || !(checkUniqueGate && (uniqueEventsCount > 0 && uniqueEventsCount < maxUniqueVolume)));
-
 
         if (uniqueEventsCount > 0 && uniqueEventsCount >= maxUniqueVolume) {
             setUniqueErrorSummary("Unique Error Volume Gate: Failed, OverOps detected " + uniqueEventsCount + " unique errors which is >= the max allowable of " + maxUniqueVolume);
@@ -360,43 +364,43 @@ public class ReportVisualizationModel {
         this.regressionSummary = regressionSummary;
     }
 
-    public List<EventVisualizationModel> getNewEvents() {
+    public List<QualityGateEvent> getNewEvents() {
         return newEvents;
     }
 
-    public void setNewEvents(List<EventVisualizationModel> newEvents) {
+    public void setNewEvents(List<QualityGateEvent> newEvents) {
         this.newEvents = newEvents;
     }
 
-    public List<EventVisualizationModel> getResurfacedEvents() {
+    public List<QualityGateEvent> getResurfacedEvents() {
         return resurfacedEvents;
     }
 
-    public void setResurfacedEvents(List<EventVisualizationModel> resurfacedEvents) {
+    public void setResurfacedEvents(List<QualityGateEvent> resurfacedEvents) {
         this.resurfacedEvents = resurfacedEvents;
     }
 
-    public List<EventVisualizationModel> getCriticalEvents() {
+    public List<QualityGateEvent> getCriticalEvents() {
         return criticalEvents;
     }
 
-    public void setCriticalEvents(List<EventVisualizationModel> criticalEvents) {
+    public void setCriticalEvents(List<QualityGateEvent> criticalEvents) {
         this.criticalEvents = criticalEvents;
     }
 
-    public List<EventVisualizationModel> getTopEvents() {
+    public List<QualityGateEvent> getTopEvents() {
         return topEvents;
     }
 
-    public void setTopEvents(List<EventVisualizationModel> topEvents) {
+    public void setTopEvents(List<QualityGateEvent> topEvents) {
         this.topEvents = topEvents;
     }
 
-    public List<EventVisualizationModel> getRegressedEvents() {
+    public List<QualityGateEvent> getRegressedEvents() {
         return regressedEvents;
     }
 
-    public void setRegressedEvents(List<EventVisualizationModel> regressedEvents) {
+    public void setRegressedEvents(List<QualityGateEvent> regressedEvents) {
         this.regressedEvents = regressedEvents;
     }
 

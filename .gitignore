@@ -3,6 +3,7 @@
 *.bak
 *.swp
 *~.nib
+.vscode
 
 .metadata
 .gradle
