@@ -167,9 +167,8 @@ public class ReportService {
     }
 
     public QualityReport runQualityReport(String endPoint, String apiKey, QualityReportParams reportParams, Integer requestorId, PrintStream outputStream, boolean debug) {
-        if (requestorId == null) {
-            requestorId = Requestor.UNKNOWN.getId();
-        }
+        Integer actualRequestorId = ((requestorId != null) ? requestorId : Requestor.UNKNOWN.getId());
+        
         try {
             boolean runRegressions = convertToMinutes(reportParams.getBaselineTimespan()) > 0;
 
@@ -262,13 +261,13 @@ public class ReportService {
                 }
 
                 regressions = getAllRegressions(apiClient, input, rateRegression, filter);
-                replaceSourceId(regressions, requestorId);
+                replaceSourceId(regressions, actualRequestorId);
             }
 
-            replaceSourceId(qualityGateReport.getNewErrors(), requestorId);
-            replaceSourceId(qualityGateReport.getResurfacedErrors(), requestorId);
-            replaceSourceId(qualityGateReport.getCriticalErrors(), requestorId);
-            replaceSourceId(qualityGateReport.getTopErrors(), requestorId);
+            replaceSourceId(qualityGateReport.getNewErrors(), actualRequestorId);
+            replaceSourceId(qualityGateReport.getResurfacedErrors(), actualRequestorId);
+            replaceSourceId(qualityGateReport.getCriticalErrors(), actualRequestorId);
+            replaceSourceId(qualityGateReport.getTopErrors(), actualRequestorId);
 
             return runQualityReport(qualityGateReport, input, regressions, newEvents, resurfacedEvents, runRegressions, maxEventVolume, maxUniqueErrors, reportParams.isMarkUnstable());
         } catch (Throwable ex) {
