@@ -146,15 +146,15 @@ public class ReportService {
         return reportVisualizationModel;
     }
 
-    public String getQualityReportHtml(String endPoint, String apiKey, QualityReportParams reportParams, Requestor requestor) throws IOException {
+    public String getQualityReportHtml(String endPoint, String apiKey, QualityReportParams reportParams, Requestor requestor) {
         return runQualityReport(endPoint, apiKey, reportParams, requestor != null ? requestor.getId() : null, null, false).toHtml();
     }
 
-    public String getQualityReportHtml(String endPoint, String apiKey, QualityReportParams reportParams, Requestor requestor, PrintStream outputStream, boolean debug) throws IOException {
+    public String getQualityReportHtml(String endPoint, String apiKey, QualityReportParams reportParams, Requestor requestor, PrintStream outputStream, boolean debug) {
         return runQualityReport(endPoint, apiKey, reportParams, requestor != null ? requestor.getId() : null, outputStream, debug).toHtml();
     }
 
-    public String getQualityReportHtml(String endPoint, String apiKey, QualityReportParams reportParams, Integer requestorId, PrintStream outputStream, boolean debug) throws IOException {
+    public String getQualityReportHtml(String endPoint, String apiKey, QualityReportParams reportParams, Integer requestorId, PrintStream outputStream, boolean debug) {
         return runQualityReport(endPoint, apiKey, reportParams, requestorId, outputStream, debug).toHtml();
     }
 
