@@ -191,9 +191,9 @@ public class ReportService {
             RegressionInput input = new RegressionInput();
             input.serviceId = reportParams.getServiceId();
             input.viewId = allEventsView.id;
-            input.applictations = parseArrayString(reportParams.getApplicationName(), "Application Name");
-            input.deployments = parseArrayString(reportParams.getDeploymentName(), "Deployment Name");
-            input.criticalExceptionTypes = parseArrayString(reportParams.getCriticalExceptionTypes(), "Critical Exception Types");
+            input.applictations = parseArrayString(reportParams.getApplicationName());
+            input.deployments = parseArrayString(reportParams.getDeploymentName());
+            input.criticalExceptionTypes = parseArrayString(reportParams.getCriticalExceptionTypes());
 
             if (runRegressions) {
                 input.activeTimespan = convertToMinutes(reportParams.getActiveTimespan());
@@ -270,7 +270,7 @@ public class ReportService {
             replaceSourceId(qualityGateReport.getCriticalErrors(), requestorId);
             replaceSourceId(qualityGateReport.getTopErrors(), requestorId);
 
-            return runQualityReport(qualityGateReport, input, rateRegression, regressions, newEvents, resurfacedEvents, runRegressions, maxEventVolume, maxUniqueErrors, reportParams.isMarkUnstable());
+            return runQualityReport(qualityGateReport, input, regressions, newEvents, resurfacedEvents, runRegressions, maxEventVolume, maxUniqueErrors, reportParams.isMarkUnstable());
         } catch (Throwable ex) {
             QualityReport qualityReport = new QualityReport();
 
@@ -307,8 +307,7 @@ public class ReportService {
         return 0;
     }
 
-
-    private QualityReport runQualityReport(QualityGateReport qualityGateReport, RegressionInput input, RateRegression regression, List<OOReportRegressedEvent> regressions, boolean checkNewGate, boolean checkResurfacedGate, boolean checkRegressionGate, Integer maxEventVolume, Integer maxUniqueVolume, boolean markedUnstable) {
+    private QualityReport runQualityReport(QualityGateReport qualityGateReport, RegressionInput input, List<OOReportRegressedEvent> regressions, boolean checkNewGate, boolean checkResurfacedGate, boolean checkRegressionGate, Integer maxEventVolume, Integer maxUniqueVolume, boolean markedUnstable) {
         QualityReport reportModel = new QualityReport();
 
         boolean checkCriticalGate = input.criticalExceptionTypes != null && (input.criticalExceptionTypes.size() > 0);
@@ -457,7 +456,7 @@ public class ReportService {
         }
     }
 
-    private Collection<String> parseArrayString(String value, String name) {
+    private Collection<String> parseArrayString(String value) {
         if (isEmptyString(value)) {
             return Collections.emptySet();
         }
