@@ -136,11 +136,17 @@ public class ReportService {
         reportVisualizationModel.setTopEvents(qualityReport.getTopEvents());
 
         QualityReportExceptionDetails exceptionDetails = qualityReport.getExceptionDetails();
-        reportVisualizationModel.setHasException(exceptionDetails != null);       
-        if (reportVisualizationModel.isHasException()) {
+        
+        if (exceptionDetails != null)
+        {
+        	reportVisualizationModel.setHasException(true);
             reportVisualizationModel.setExceptionMessage(exceptionDetails.getExceptionMessage());
             reportVisualizationModel.setEmailMessage(exceptionDetails.getEmailMessage());
             reportVisualizationModel.setStackTrace(String.join("\n", exceptionDetails.getStackTrace()));
+        }
+        else
+        {
+        	reportVisualizationModel.setHasException(false);
         }
 
         return reportVisualizationModel;
@@ -363,7 +369,12 @@ public class ReportService {
 
             QualityGateTestResults regressionErrorsTestResults = new QualityGateTestResults();
             regressionErrorsTestResults.setPassed(!hasRegressions);
-            if (hasRegressions) {
+            if ((hasRegressions) &&
+            	(regressions != null)) {
+            	// We check regressions != null explicitly because it prevents a false positive NPE warning.
+            	// While the fact that it's certainly not null is encapsulated in the fact hasRegressions is true,
+            	// The IDE can't directly make that assumption.
+            	//
                 regressionErrorsTestResults.setEvents(regressions.stream().map(e -> new QualityGateEvent(e)).collect(Collectors.toList()));
                 regressionErrorsTestResults.setMessage("Increasing Quality Gate: Failed, OverOps detected increasing errors in the current build against the baseline of " + baselineTime);
             } else {
