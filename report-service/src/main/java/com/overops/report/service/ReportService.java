@@ -288,6 +288,11 @@ public class ReportService {
             stackTrace.addAll(stackElements.stream().map(stack -> stack.toString()).collect(Collectors.toList()));
             exceptionDetails.setStackTrace(stackTrace.toArray(new String[stackTrace.size()]));
 
+            if (reportParams.isMarkUnstable()) {
+                qualityReport.setStatusCode(ReportStatus.FAILED);
+            } else {
+                qualityReport.setStatusCode(ReportStatus.WARNING);
+            }
             qualityReport.setExceptionDetails(exceptionDetails);
 
             return qualityReport;
@@ -409,7 +414,7 @@ public class ReportService {
             reportModel.setUniqueErrorsTestResults(uniqueErrorsTestResults);
         }
 
-        if (maxUniqueVolume != 0) {
+        if (maxEventVolume != 0) {
             long eventVolume = qualityGateReport.getTotalErrorCount();
             QualityGateTestResults totalErrorsTestResults = new QualityGateTestResults();
             totalErrorsTestResults.setPassed(!maxVolumeExceeded);
@@ -422,7 +427,7 @@ public class ReportService {
             reportModel.setTotalErrorsTestResults(totalErrorsTestResults);
         }
 
-        if ((maxUniqueVolume != 0) || (maxUniqueVolume != 0)) {
+        if ((maxUniqueVolume != 0) || (maxEventVolume != 0)) {
             reportModel.setTopEvents(Optional.ofNullable(qualityGateReport.getTopErrors()).orElse(new ArrayList<>()).stream().map(e -> new QualityGateEvent(e)).collect(Collectors.toList()));
         }
 
