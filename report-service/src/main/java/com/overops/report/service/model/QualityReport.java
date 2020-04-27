@@ -143,7 +143,7 @@ public class QualityReport {
         this.topEvents = topEvents;
     }
 
-    public HtmlParts getHtmlParts() throws IOException {
+    public HtmlParts getHtmlParts() {
         HtmlParts htmlParts = new HtmlParts();
         if (exceptionDetails != null) {
             htmlParts.setHtml(getExceptionHtml());
@@ -154,7 +154,7 @@ public class QualityReport {
         return htmlParts;
     }
 
-    public String toHtml() throws IOException {
+    public String toHtml() {
         HtmlParts htmlParts = getHtmlParts();
         String html = getWebResource(WebResource.PAGE_HTML).replace("<style></style>", "<style>" + htmlParts.getCss() + "</style>");
         html = html.replace("<body></body>", "<body>" + htmlParts.getHtml() + "</body>");

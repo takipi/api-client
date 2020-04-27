@@ -136,25 +136,31 @@ public class ReportService {
         reportVisualizationModel.setTopEvents(qualityReport.getTopEvents());
 
         QualityReportExceptionDetails exceptionDetails = qualityReport.getExceptionDetails();
-        reportVisualizationModel.setHasException(exceptionDetails != null);       
-        if (reportVisualizationModel.isHasException()) {
+        
+        if (exceptionDetails != null)
+        {
+        	reportVisualizationModel.setHasException(true);
             reportVisualizationModel.setExceptionMessage(exceptionDetails.getExceptionMessage());
             reportVisualizationModel.setEmailMessage(exceptionDetails.getEmailMessage());
             reportVisualizationModel.setStackTrace(String.join("\n", exceptionDetails.getStackTrace()));
+        }
+        else
+        {
+        	reportVisualizationModel.setHasException(false);
         }
 
         return reportVisualizationModel;
     }
 
-    public String getQualityReportHtml(String endPoint, String apiKey, QualityReportParams reportParams, Requestor requestor) throws IOException {
+    public String getQualityReportHtml(String endPoint, String apiKey, QualityReportParams reportParams, Requestor requestor) {
         return runQualityReport(endPoint, apiKey, reportParams, requestor != null ? requestor.getId() : null, null, false).toHtml();
     }
 
-    public String getQualityReportHtml(String endPoint, String apiKey, QualityReportParams reportParams, Requestor requestor, PrintStream outputStream, boolean debug) throws IOException {
+    public String getQualityReportHtml(String endPoint, String apiKey, QualityReportParams reportParams, Requestor requestor, PrintStream outputStream, boolean debug) {
         return runQualityReport(endPoint, apiKey, reportParams, requestor != null ? requestor.getId() : null, outputStream, debug).toHtml();
     }
 
-    public String getQualityReportHtml(String endPoint, String apiKey, QualityReportParams reportParams, Integer requestorId, PrintStream outputStream, boolean debug) throws IOException {
+    public String getQualityReportHtml(String endPoint, String apiKey, QualityReportParams reportParams, Integer requestorId, PrintStream outputStream, boolean debug) {
         return runQualityReport(endPoint, apiKey, reportParams, requestorId, outputStream, debug).toHtml();
     }
 
@@ -167,9 +173,8 @@ public class ReportService {
     }
 
     public QualityReport runQualityReport(String endPoint, String apiKey, QualityReportParams reportParams, Integer requestorId, PrintStream outputStream, boolean debug) {
-        if (requestorId == null) {
-            requestorId = Requestor.UNKNOWN.getId();
-        }
+        Integer actualRequestorId = ((requestorId != null) ? requestorId : Requestor.UNKNOWN.getId());
+        
         try {
             boolean runRegressions = convertToMinutes(reportParams.getBaselineTimespan()) > 0;
 
@@ -191,9 +196,9 @@ public class ReportService {
             RegressionInput input = new RegressionInput();
             input.serviceId = reportParams.getServiceId();
             input.viewId = allEventsView.id;
-            input.applictations = parseArrayString(reportParams.getApplicationName(), "Application Name");
-            input.deployments = parseArrayString(reportParams.getDeploymentName(), "Deployment Name");
-            input.criticalExceptionTypes = parseArrayString(reportParams.getCriticalExceptionTypes(), "Critical Exception Types");
+            input.applictations = parseArrayString(reportParams.getApplicationName());
+            input.deployments = parseArrayString(reportParams.getDeploymentName());
+            input.criticalExceptionTypes = parseArrayString(reportParams.getCriticalExceptionTypes());
 
             if (runRegressions) {
                 input.activeTimespan = convertToMinutes(reportParams.getActiveTimespan());
@@ -262,15 +267,15 @@ public class ReportService {
                 }
 
                 regressions = getAllRegressions(apiClient, input, rateRegression, filter);
-                replaceSourceId(regressions, requestorId);
+                replaceSourceId(regressions, actualRequestorId);
             }
 
-            replaceSourceId(qualityGateReport.getNewErrors(), requestorId);
-            replaceSourceId(qualityGateReport.getResurfacedErrors(), requestorId);
-            replaceSourceId(qualityGateReport.getCriticalErrors(), requestorId);
-            replaceSourceId(qualityGateReport.getTopErrors(), requestorId);
+            replaceSourceId(qualityGateReport.getNewErrors(), actualRequestorId);
+            replaceSourceId(qualityGateReport.getResurfacedErrors(), actualRequestorId);
+            replaceSourceId(qualityGateReport.getCriticalErrors(), actualRequestorId);
+            replaceSourceId(qualityGateReport.getTopErrors(), actualRequestorId);
 
-            return runQualityReport(qualityGateReport, input, rateRegression, regressions, newEvents, resurfacedEvents, runRegressions, maxEventVolume, maxUniqueErrors, reportParams.isMarkUnstable());
+            return runQualityReport(qualityGateReport, input, regressions, newEvents, resurfacedEvents, runRegressions, maxEventVolume, maxUniqueErrors, reportParams.isMarkUnstable());
         } catch (Throwable ex) {
             QualityReport qualityReport = new QualityReport();
 
@@ -307,8 +312,7 @@ public class ReportService {
         return 0;
     }
 
-
-    private QualityReport runQualityReport(QualityGateReport qualityGateReport, RegressionInput input, RateRegression regression, List<OOReportRegressedEvent> regressions, boolean checkNewGate, boolean checkResurfacedGate, boolean checkRegressionGate, Integer maxEventVolume, Integer maxUniqueVolume, boolean markedUnstable) {
+    private QualityReport runQualityReport(QualityGateReport qualityGateReport, RegressionInput input, List<OOReportRegressedEvent> regressions, boolean checkNewGate, boolean checkResurfacedGate, boolean checkRegressionGate, Integer maxEventVolume, Integer maxUniqueVolume, boolean markedUnstable) {
         QualityReport reportModel = new QualityReport();
 
         boolean checkCriticalGate = input.criticalExceptionTypes != null && (input.criticalExceptionTypes.size() > 0);
@@ -365,7 +369,12 @@ public class ReportService {
 
             QualityGateTestResults regressionErrorsTestResults = new QualityGateTestResults();
             regressionErrorsTestResults.setPassed(!hasRegressions);
-            if (hasRegressions) {
+            if ((hasRegressions) &&
+            	(regressions != null)) {
+            	// We check regressions != null explicitly because it prevents a false positive NPE warning.
+            	// While the fact that it's certainly not null is encapsulated in the fact hasRegressions is true,
+            	// The IDE can't directly make that assumption.
+            	//
                 regressionErrorsTestResults.setEvents(regressions.stream().map(e -> new QualityGateEvent(e)).collect(Collectors.toList()));
                 regressionErrorsTestResults.setMessage("Increasing Quality Gate: Failed, OverOps detected increasing errors in the current build against the baseline of " + baselineTime);
             } else {
@@ -457,7 +466,7 @@ public class ReportService {
         }
     }
 
-    private Collection<String> parseArrayString(String value, String name) {
+    private Collection<String> parseArrayString(String value) {
         if (isEmptyString(value)) {
             return Collections.emptySet();
         }
