@@ -389,7 +389,7 @@ public class QualityReport {
                 }
                 break;
             case RESURFACED_ERRORS:
-                testResults = getRegressionErrorsTestResults();
+                testResults = getResurfacedErrorsTestResults();
                 if (testResults != null) {
                     events = testResults.getEvents();
                 }
