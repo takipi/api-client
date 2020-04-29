@@ -334,14 +334,26 @@ public class ReportService {
         String deploymentName = getDeploymentName(input);
         if (!unstable) {
             reportModel.setStatusCode(ReportStatus.PASSED);
-            reportModel.setStatusMsg("Congratulations, build " + deploymentName + " has passed all quality gates!");
+            if ((deploymentName != null) && (deploymentName.trim().length() > 0)) {
+                reportModel.setStatusMsg("Congratulations, build " + deploymentName + " has passed all quality gates!");
+            } else {
+                reportModel.setStatusMsg("Congratulations, the build  has passed all quality gates!");
+            }
         }  else {
             if (markedUnstable) {
                 reportModel.setStatusCode(ReportStatus.FAILED);
-                reportModel.setStatusMsg("OverOps has marked build "+ deploymentName + " as \"failure\"."); ;
+                if ((deploymentName != null) && (deploymentName.trim().length() > 0)) {
+                    reportModel.setStatusMsg("OverOps has marked build "+ deploymentName + " as \"failed\"."); ;
+                } else {
+                    reportModel.setStatusMsg("OverOps has marked the build as \"failed\"."); ;
+                }
             } else {
                 reportModel.setStatusCode(ReportStatus.WARNING);
-                reportModel.setStatusMsg("OverOps has detected issues with build "+ deploymentName + " but did not mark the build as \"failure\".");
+                if ((deploymentName != null) && (deploymentName.trim().length() > 0)) {
+                    reportModel.setStatusMsg("OverOps has detected issues with build "+ deploymentName + " but did not mark the build as \"failed\".");
+                } else {
+                    reportModel.setStatusMsg("OverOps has detected issues with the build but did not mark the build as \"failed\".");
+                }
             }
         }
 

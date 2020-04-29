@@ -572,6 +572,22 @@ public class RegressionUtil {
 
 		return true;
 	}
+
+	public static Pair<DateTime, DateTime> getDeploymentsActiveWindow(ApiClient apiClient, String serviceId) {
+		
+		Collection<SummarizedDeployment> activeSummarizedDeployments = ClientUtil.getSummarizedDeployments(apiClient, serviceId, true);
+		
+		Pair<DateTime, DateTime> activeDeploymentsTimespan = getDeploymentsActiveWindow(activeSummarizedDeployments);
+		
+		if (activeDeploymentsTimespan != null) {
+			return activeDeploymentsTimespan;
+		}
+		
+		Collection<SummarizedDeployment> nonActiveSummarizedDeployments = ClientUtil.getSummarizedDeployments(apiClient, serviceId, false);
+		
+		return getDeploymentsActiveWindow(nonActiveSummarizedDeployments);
+	}
+
 	
 	public static Pair<DateTime, DateTime> getDeploymentsActiveWindow(ApiClient apiClient, String serviceId, Collection<String> deployments) {
 		
@@ -586,6 +602,39 @@ public class RegressionUtil {
 		Collection<SummarizedDeployment> nonActiveSummarizedDeployments = ClientUtil.getSummarizedDeployments(apiClient, serviceId, false);
 		
 		return getDeploymentsActiveWindow(deployments, nonActiveSummarizedDeployments);
+	}
+
+	private static Pair<DateTime, DateTime> getDeploymentsActiveWindow(Collection<SummarizedDeployment> summarizedDeployments) {
+		DateTime minDeploymentStart = null;
+		DateTime maxDeploymentEnd = new DateTime(0L);
+
+		for (SummarizedDeployment summarizedDeployment : summarizedDeployments) {
+
+			if ((summarizedDeployment == null) || (summarizedDeployment.first_seen == null)) {
+				return null;
+			}
+
+			DateTime start = dateTimeFormatter.parseDateTime(summarizedDeployment.first_seen);
+			DateTime end = null;
+
+			if (summarizedDeployment.last_seen != null) {
+				end = dateTimeFormatter.parseDateTime(summarizedDeployment.last_seen);
+			}
+
+			if ((minDeploymentStart == null) || (start.isBefore(minDeploymentStart))) {
+
+				minDeploymentStart = start;
+			}
+
+			if ((end == null) || (end.isAfter(maxDeploymentEnd))) {
+
+				maxDeploymentEnd = end;
+			}
+		}
+
+		Pair<DateTime, DateTime> deploymentsActiveWindow = Pair.of(minDeploymentStart, maxDeploymentEnd);
+
+		return deploymentsActiveWindow;
 	}
 	
 	private static Pair<DateTime, DateTime> getDeploymentsActiveWindow(Collection<String> deployments,
