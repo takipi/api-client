@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.overops.report.service.model.QualityGateTestResults.TestType;
+
 public class QualityReport {
   
     public enum ReportStatus {
@@ -41,15 +43,6 @@ public class QualityReport {
         public String getFilePath() {
             return filePath;
         }
-    };
-
-    private enum TestType {
-        NEW_ERRORS, 
-        RESURFACED_ERRORS, 
-        TOTAL_ERRORS,
-        UNIQUE_ERRORS, 
-        CRITICAL_ERRORS,
-        REGRESSION_ERRORS
     };
 
     ReportStatus statusCode = ReportStatus.FAILED;
@@ -230,24 +223,24 @@ public class QualityReport {
         reportHtml = reportHtml.replace("<img id=\"reportStatusIcon\"></img>", icon);
         reportHtml = reportHtml.replace("<span id=\"reportStatusMsg\"></span>", getStatusMsg());
 
-        reportHtml = reportHtml.replace("<tr id=\"newErrorsSummary\"></tr>", getErrorGateSummaryHtml(TestType.NEW_ERRORS));
-        reportHtml = reportHtml.replace("<tr id=\"resurfacedErrorsSummary\"></tr>", getErrorGateSummaryHtml(TestType.RESURFACED_ERRORS));
-        reportHtml = reportHtml.replace("<tr id=\"totalErrorsSummary\"></tr>", getErrorGateSummaryHtml(TestType.TOTAL_ERRORS));
-        reportHtml = reportHtml.replace("<tr id=\"uniqueErrorsSummary\"></tr>", getErrorGateSummaryHtml(TestType.UNIQUE_ERRORS));
-        reportHtml = reportHtml.replace("<tr id=\"criticalErrorsSummary\"></tr>", getErrorGateSummaryHtml(TestType.CRITICAL_ERRORS));
-        reportHtml = reportHtml.replace("<tr id=\"regressionErrorsSummary\"></tr>", getErrorGateSummaryHtml(TestType.REGRESSION_ERRORS));
+        reportHtml = reportHtml.replace("<tr id=\"newErrorsSummary\"></tr>", getErrorGateSummaryHtml(TestType.NEW_EVENTS_TEST));
+        reportHtml = reportHtml.replace("<tr id=\"resurfacedErrorsSummary\"></tr>", getErrorGateSummaryHtml(TestType.RESURFACED_EVENTS_TEST));
+        reportHtml = reportHtml.replace("<tr id=\"totalErrorsSummary\"></tr>", getErrorGateSummaryHtml(TestType.TOTAL_EVENTS_TEST));
+        reportHtml = reportHtml.replace("<tr id=\"uniqueErrorsSummary\"></tr>", getErrorGateSummaryHtml(TestType.UNIQUE_EVENTS_TEST));
+        reportHtml = reportHtml.replace("<tr id=\"criticalErrorsSummary\"></tr>", getErrorGateSummaryHtml(TestType.CRITICAL_EVENTS_TEST));
+        reportHtml = reportHtml.replace("<tr id=\"regressionErrorsSummary\"></tr>", getErrorGateSummaryHtml(TestType.REGRESSION_EVENTS_TEST));
 
-        reportHtml = reportHtml.replace("<div id=\"newErrorsHeader\"></div>", getEventsHeader(TestType.NEW_ERRORS));
-        reportHtml = reportHtml.replace("<table id=\"newErrorEvents\"></table>", getEventsTable(TestType.NEW_ERRORS));
-        reportHtml = reportHtml.replace("<div id=\"resurfacedErrorsHeader\"></div>", getEventsHeader(TestType.RESURFACED_ERRORS));
-        reportHtml = reportHtml.replace("<table id=\"resurfacedErrorEvents\"></table>", getEventsTable(TestType.RESURFACED_ERRORS));
-        reportHtml = reportHtml.replace("<div id=\"totalErrorsHeader\"></div>", getEventsHeader(TestType.TOTAL_ERRORS));
-        reportHtml = reportHtml.replace("<div id=\"uniqueErrorsHeader\"></div>", getEventsHeader(TestType.UNIQUE_ERRORS));
-        reportHtml = reportHtml.replace("<table id=\"topErrorEvents\"></table>", getEventsTable(TestType.TOTAL_ERRORS));
-        reportHtml = reportHtml.replace("<div id=\"criticalErrorsHeader\"></div>", getEventsHeader(TestType.CRITICAL_ERRORS));
-        reportHtml = reportHtml.replace("<table id=\"criticalErrorEvents\"></table>", getEventsTable(TestType.CRITICAL_ERRORS));
-        reportHtml = reportHtml.replace("<div id=\"regressionErrorsHeader\"></div>", getEventsHeader(TestType.REGRESSION_ERRORS));
-        reportHtml = reportHtml.replace("<table id=\"regressionErrorEvents\"></table>", getEventsTable(TestType.REGRESSION_ERRORS));
+        reportHtml = reportHtml.replace("<div id=\"newErrorsHeader\"></div>", getEventsHeader(TestType.NEW_EVENTS_TEST));
+        reportHtml = reportHtml.replace("<table id=\"newErrorEvents\"></table>", getEventsTable(TestType.NEW_EVENTS_TEST));
+        reportHtml = reportHtml.replace("<div id=\"resurfacedErrorsHeader\"></div>", getEventsHeader(TestType.RESURFACED_EVENTS_TEST));
+        reportHtml = reportHtml.replace("<table id=\"resurfacedErrorEvents\"></table>", getEventsTable(TestType.RESURFACED_EVENTS_TEST));
+        reportHtml = reportHtml.replace("<div id=\"totalErrorsHeader\"></div>", getEventsHeader(TestType.TOTAL_EVENTS_TEST));
+        reportHtml = reportHtml.replace("<div id=\"uniqueErrorsHeader\"></div>", getEventsHeader(TestType.UNIQUE_EVENTS_TEST));
+        reportHtml = reportHtml.replace("<table id=\"topErrorEvents\"></table>", getEventsTable(TestType.TOTAL_EVENTS_TEST));
+        reportHtml = reportHtml.replace("<div id=\"criticalErrorsHeader\"></div>", getEventsHeader(TestType.CRITICAL_EVENTS_TEST));
+        reportHtml = reportHtml.replace("<table id=\"criticalErrorEvents\"></table>", getEventsTable(TestType.CRITICAL_EVENTS_TEST));
+        reportHtml = reportHtml.replace("<div id=\"regressionErrorsHeader\"></div>", getEventsHeader(TestType.REGRESSION_EVENTS_TEST));
+        reportHtml = reportHtml.replace("<table id=\"regressionErrorEvents\"></table>", getEventsTable(TestType.REGRESSION_EVENTS_TEST));
 
         return reportHtml;
     }
@@ -263,32 +256,32 @@ public class QualityReport {
         String icon = "";
 
         switch (testType) {
-            case NEW_ERRORS:
+            case NEW_EVENTS_TEST:
                 testResults = getNewErrorsTestResults(); 
                 anchorRef = "#new-gate";
                 anchorDesc = "New";
                 break;
-            case CRITICAL_ERRORS:
+            case CRITICAL_EVENTS_TEST:
                 testResults = getCriticalErrorsTestResults(); 
                 anchorRef = "#critical-gate";
                 anchorDesc = "Critical";
                 break;
-            case REGRESSION_ERRORS:
+            case REGRESSION_EVENTS_TEST:
                 testResults = getRegressionErrorsTestResults(); 
                 anchorRef = "#increasing-gate";
                 anchorDesc = "Increasing";
                break;
-            case RESURFACED_ERRORS:
+            case RESURFACED_EVENTS_TEST:
                 testResults = getResurfacedErrorsTestResults(); 
                 anchorRef = "#resurfaced-gate";
                 anchorDesc = "Resurfaced";
                 break;
-            case TOTAL_ERRORS:
+            case TOTAL_EVENTS_TEST:
                 testResults = getTotalErrorsTestResults(); 
                 anchorRef = "#total-gate";
                 anchorDesc = "Total";
                 break;
-            case UNIQUE_ERRORS:
+            case UNIQUE_EVENTS_TEST:
                 testResults = getUniqueErrorsTestResults(); 
                 anchorRef = "#unique-gate";
                 anchorDesc = "Unique";
@@ -319,27 +312,27 @@ public class QualityReport {
         String anchorRef = "";
 
         switch (testType) {
-            case NEW_ERRORS:
+            case NEW_EVENTS_TEST:
                 testResults = getNewErrorsTestResults(); 
                 anchorRef = "new-gate";
                 break;
-            case CRITICAL_ERRORS:
+            case CRITICAL_EVENTS_TEST:
                 testResults = getCriticalErrorsTestResults(); 
                 anchorRef = "critical-gate";
                 break;
-            case REGRESSION_ERRORS:
+            case REGRESSION_EVENTS_TEST:
                 testResults = getRegressionErrorsTestResults(); 
                 anchorRef = "increasing-gate";
                break;
-            case RESURFACED_ERRORS:
+            case RESURFACED_EVENTS_TEST:
                 testResults = getResurfacedErrorsTestResults(); 
                 anchorRef = "resurfaced-gate";
                 break;
-            case TOTAL_ERRORS:
+            case TOTAL_EVENTS_TEST:
                 testResults = getTotalErrorsTestResults(); 
                 anchorRef = "total-gate";
                 break;
-            case UNIQUE_ERRORS:
+            case UNIQUE_EVENTS_TEST:
                 testResults = getUniqueErrorsTestResults(); 
                 anchorRef = "unique-gate";
                 break;
@@ -352,7 +345,7 @@ public class QualityReport {
             html = html.replace("summary", testResults.getMessage());
 
             if (testResults.isPassed()) {
-                if ((testType == TestType.NEW_ERRORS) || (testType == TestType.RESURFACED_ERRORS) || (testType == TestType.RESURFACED_ERRORS)|| (testType == TestType.REGRESSION_ERRORS)) {
+                if ((testType == TestType.NEW_EVENTS_TEST) || (testType == TestType.RESURFACED_EVENTS_TEST) || (testType == TestType.RESURFACED_EVENTS_TEST)|| (testType == TestType.REGRESSION_EVENTS_TEST)) {
                     html = html.replace("mb-2", "");
                 }
                 html = html.replace("<img></img>", getWebResource(WebResource.SUCCESS_ICON));
@@ -370,37 +363,37 @@ public class QualityReport {
         List<QualityGateEvent> events = new ArrayList<>();
 
         switch (testType) {
-            case NEW_ERRORS:
+            case NEW_EVENTS_TEST:
                 testResults = getNewErrorsTestResults();
                 if (testResults != null) {
                     events = testResults.getEvents();
                 }
                 break;
-            case CRITICAL_ERRORS:
+            case CRITICAL_EVENTS_TEST:
                 testResults = getCriticalErrorsTestResults();
                 if (testResults != null) {
                     events = testResults.getEvents();
                 }
                 break;
-            case REGRESSION_ERRORS:
+            case REGRESSION_EVENTS_TEST:
                 testResults = getRegressionErrorsTestResults();
                 if (testResults != null) {
                     events = testResults.getEvents();
                 }
                 break;
-            case RESURFACED_ERRORS:
+            case RESURFACED_EVENTS_TEST:
                 testResults = getResurfacedErrorsTestResults();
                 if (testResults != null) {
                     events = testResults.getEvents();
                 }
                 break;
-            case TOTAL_ERRORS:
+            case TOTAL_EVENTS_TEST:
                 testResults = getTotalErrorsTestResults();
                 if (testResults != null) {
                     events = getTopEvents();
                 }
                 break;
-            case UNIQUE_ERRORS:
+            case UNIQUE_EVENTS_TEST:
                 testResults = getUniqueErrorsTestResults();
                 if (testResults != null) {
                     events = getTopEvents();
@@ -410,7 +403,7 @@ public class QualityReport {
 
         if ((testResults != null) && !testResults.isPassed()){
             html = getWebResource(WebResource.EVENTS_TABLE_HTML);
-            if (testType == TestType.REGRESSION_ERRORS) {
+            if (testType == TestType.REGRESSION_EVENTS_TEST) {
                 html = html.replace("<th>Volume</th>", "<th>Volume / Rate</th>");
             } else {
                 html = html.replace("<th>Type</th>", "");
@@ -424,7 +417,7 @@ public class QualityReport {
                     eventHtml = eventHtml.replace("applications", convertNullToString(event.getApplications()));
                     eventHtml = eventHtml.replace("introducedBy", convertNullToString(event.getIntroducedBy()));
                     eventHtml = eventHtml.replace("eventRate", convertNullToString(event.getEventRate()));
-                    if (testType == TestType.REGRESSION_ERRORS) {
+                    if (testType == TestType.REGRESSION_EVENTS_TEST) {
                         eventHtml = eventHtml.replace("eventType", convertNullToString(event.getType()));
                     } else {
                         eventHtml = eventHtml.replace("<td>eventType</td>", "");

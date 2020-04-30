@@ -5,6 +5,7 @@ import com.overops.report.service.model.OOReportRegressedEvent;
 import com.overops.report.service.model.QualityReport;
 import com.overops.report.service.model.QualityReportExceptionDetails;
 import com.overops.report.service.model.ReportVisualizationModel;
+import com.overops.report.service.model.QualityGateTestResults.TestType;
 import com.overops.report.service.model.QualityReport.ReportStatus;
 import com.overops.report.service.model.QualityGateTestResults;
 import com.overops.report.service.model.QualityGateEvent;
@@ -358,7 +359,7 @@ public class ReportService {
         }
 
         if (checkNewGate) {
-            QualityGateTestResults newErrorsTestResults = new QualityGateTestResults();
+            QualityGateTestResults newErrorsTestResults = new QualityGateTestResults(TestType.NEW_EVENTS_TEST);
             newErrorsTestResults.setPassed(!hasNewErrors);
             if (hasNewErrors) {
                 newErrorsTestResults.setEvents(qualityGateReport.getNewErrors().stream().map(e -> new QualityGateEvent(e)).collect(Collectors.toList()));
@@ -370,7 +371,7 @@ public class ReportService {
         }
 
         if (checkCriticalGate) {
-            QualityGateTestResults criticalErrorsTestResults = new QualityGateTestResults();
+            QualityGateTestResults criticalErrorsTestResults = new QualityGateTestResults(TestType.CRITICAL_EVENTS_TEST);
             criticalErrorsTestResults.setPassed(!hasCriticalErrors);
             if (hasCriticalErrors) {
                 criticalErrorsTestResults.setEvents(qualityGateReport.getCriticalErrors().stream().map(e -> new QualityGateEvent(e)).collect(Collectors.toList()));
@@ -384,7 +385,7 @@ public class ReportService {
         if (checkRegressionGate) {
             String baselineTime = Objects.nonNull(input) ? input.baselineTime : "";
 
-            QualityGateTestResults regressionErrorsTestResults = new QualityGateTestResults();
+            QualityGateTestResults regressionErrorsTestResults = new QualityGateTestResults(TestType.REGRESSION_EVENTS_TEST);
             regressionErrorsTestResults.setPassed(!hasRegressions);
             if ((hasRegressions) &&
             	(regressions != null)) {
@@ -401,7 +402,7 @@ public class ReportService {
         }
 
         if (checkResurfacedGate) {
-            QualityGateTestResults resurfacedErrorsTestResults = new QualityGateTestResults();
+            QualityGateTestResults resurfacedErrorsTestResults = new QualityGateTestResults(TestType.RESURFACED_EVENTS_TEST);
             resurfacedErrorsTestResults.setPassed(!hasResurfacedErrors);
             if (hasResurfacedErrors) {
                 resurfacedErrorsTestResults.setEvents(qualityGateReport.getResurfacedErrors().stream().map(e -> new QualityGateEvent(e)).collect(Collectors.toList()));
@@ -415,7 +416,7 @@ public class ReportService {
         if (maxUniqueVolume != 0) {
             long uniqueEventsCount = qualityGateReport.getUniqueErrorCount();
 
-            QualityGateTestResults uniqueErrorsTestResults = new QualityGateTestResults();
+            QualityGateTestResults uniqueErrorsTestResults = new QualityGateTestResults(TestType.UNIQUE_EVENTS_TEST);
             uniqueErrorsTestResults.setPassed(!maxUniqueErrorsExceeded);
             if (maxUniqueErrorsExceeded) {
                 uniqueErrorsTestResults.setMessage("Unique Error Volume Gate: Failed, OverOps detected " + uniqueEventsCount + " unique error(s) which is >= the max allowable of " + maxUniqueVolume);
@@ -428,7 +429,7 @@ public class ReportService {
 
         if (maxEventVolume != 0) {
             long eventVolume = qualityGateReport.getTotalErrorCount();
-            QualityGateTestResults totalErrorsTestResults = new QualityGateTestResults();
+            QualityGateTestResults totalErrorsTestResults = new QualityGateTestResults(TestType.TOTAL_EVENTS_TEST);
             totalErrorsTestResults.setPassed(!maxVolumeExceeded);
             if (maxVolumeExceeded) {
                 totalErrorsTestResults.setMessage("Total Error Volume Gate: Failed, OverOps detected " + eventVolume + " total error(s) which is >= the max allowable of " + maxEventVolume);
