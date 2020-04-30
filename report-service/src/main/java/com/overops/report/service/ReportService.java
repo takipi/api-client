@@ -74,11 +74,11 @@ public class ReportService {
         QualityReport qualityReport = runQualityReport(endPoint, apiKey, reportParams, null);
 
         QualityGateTestResults newResults = qualityReport.getNewErrorsTestResults();
-        QualityGateTestResults resurfacedResults = qualityReport.getNewErrorsTestResults();
-        QualityGateTestResults criticalResults = qualityReport.getNewErrorsTestResults();
-        QualityGateTestResults totalResults = qualityReport.getNewErrorsTestResults();
-        QualityGateTestResults uniqueResults = qualityReport.getNewErrorsTestResults();
-        QualityGateTestResults regressionResults = qualityReport.getNewErrorsTestResults();
+        QualityGateTestResults resurfacedResults = qualityReport.getResurfacedErrorsTestResults();
+        QualityGateTestResults criticalResults = qualityReport.getCriticalErrorsTestResults();
+        QualityGateTestResults totalResults = qualityReport.getTotalErrorsTestResults();
+        QualityGateTestResults uniqueResults = qualityReport.getUniqueErrorsTestResults();
+        QualityGateTestResults regressionResults = qualityReport.getRegressionErrorsTestResults();
 
         ReportVisualizationModel reportVisualizationModel = new ReportVisualizationModel();
         reportVisualizationModel.setUnstable((qualityReport.getStatusCode() == ReportStatus.WARNING) || (qualityReport.getStatusCode() == ReportStatus.FAILED));
