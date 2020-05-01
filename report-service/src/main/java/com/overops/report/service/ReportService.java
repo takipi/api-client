@@ -30,6 +30,7 @@ public class ReportService {
         GIT_LAB(80),
         TEAM_CITY(58),
         BAMBOO(52),
+        CONCOURSE(47),
         JENKINS(4);
 
         private final int id;
