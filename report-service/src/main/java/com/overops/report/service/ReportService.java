@@ -56,6 +56,8 @@ public class ReportService {
         reportParams.setServiceId("S37777");
         reportParams.setNewEvents(true);
         reportParams.setResurfacedErrors(true);
+        reportParams.setMarkUnstable(true);
+        reportParams.setMaxUniqueErrors(400);
 
         try {
             QualityReport visualizationModel;
@@ -324,14 +326,14 @@ public class ReportService {
 
         boolean checkCriticalGate = input.criticalExceptionTypes != null && (input.criticalExceptionTypes.size() > 0);
 
-        boolean hasNewErrors = (qualityGateReport.getNewErrors() != null) && (qualityGateReport.getNewErrors().size() > 0);
-        boolean hasResurfacedErrors = (qualityGateReport.getResurfacedErrors() != null) && (qualityGateReport.getResurfacedErrors().size() > 0);
-        boolean hasCriticalErrors = (qualityGateReport.getCriticalErrors() != null) && (qualityGateReport.getCriticalErrors().size() > 0);
-        boolean hasRegressions = (regressions != null) && (regressions.size() > 0);
-        boolean maxVolumeExceeded = (maxEventVolume != 0) && (qualityGateReport.getTotalErrorCount() >= maxEventVolume);
-        boolean maxUniqueErrorsExceeded = (maxUniqueVolume != 0) && (qualityGateReport.getUniqueErrorCount() >= maxUniqueVolume);
+        boolean failedNewErrorGate = (qualityGateReport.getNewErrors() != null) && (qualityGateReport.getNewErrors().size() > 0);
+        boolean failedResurfacedErrorGate = (qualityGateReport.getResurfacedErrors() != null) && (qualityGateReport.getResurfacedErrors().size() > 0);
+        boolean failedCriticalErrorGate = (qualityGateReport.getCriticalErrors() != null) && (qualityGateReport.getCriticalErrors().size() > 0);
+        boolean failedRegressionGate = (regressions != null) && (regressions.size() > 0);
+        boolean failedTotalVolumeGate = (maxEventVolume != 0) && (qualityGateReport.getTotalErrorCount() >= maxEventVolume);
+        boolean failedUniqueVolumeGate = (maxUniqueVolume != 0) && (qualityGateReport.getUniqueErrorCount() >= maxUniqueVolume);
         
-        boolean unstable = hasRegressions || maxVolumeExceeded || maxUniqueErrorsExceeded || hasNewErrors || hasResurfacedErrors || hasCriticalErrors;
+        boolean unstable = failedRegressionGate || failedTotalVolumeGate || failedUniqueVolumeGate || failedNewErrorGate || failedResurfacedErrorGate || failedCriticalErrorGate;
 
         String deploymentName = getDeploymentName(input);
         if (!unstable) {
@@ -361,9 +363,9 @@ public class ReportService {
 
         if (checkNewGate) {
             QualityGateTestResults newErrorsTestResults = new QualityGateTestResults(TestType.NEW_EVENTS_TEST);
-            newErrorsTestResults.setPassed(!hasNewErrors);
-            if (hasNewErrors) {
-                newErrorsTestResults.setEvents(qualityGateReport.getNewErrors().stream().map(e -> new QualityGateEvent(e)).collect(Collectors.toList()));
+            newErrorsTestResults.setPassed(!failedNewErrorGate);
+            newErrorsTestResults.setEvents(qualityGateReport.getNewErrors().stream().map(e -> new QualityGateEvent(e)).collect(Collectors.toList()));
+            if (failedNewErrorGate) {
                 newErrorsTestResults.setMessage("New Error Gate: Failed, OverOps detected " + newErrorsTestResults.getEvents().size() + " new error(s) in your build.");
             } else {
                 newErrorsTestResults.setMessage("New Error Gate: Passed, OverOps did not detect any new errors in your build.");
@@ -373,9 +375,9 @@ public class ReportService {
 
         if (checkCriticalGate) {
             QualityGateTestResults criticalErrorsTestResults = new QualityGateTestResults(TestType.CRITICAL_EVENTS_TEST);
-            criticalErrorsTestResults.setPassed(!hasCriticalErrors);
-            if (hasCriticalErrors) {
-                criticalErrorsTestResults.setEvents(qualityGateReport.getCriticalErrors().stream().map(e -> new QualityGateEvent(e)).collect(Collectors.toList()));
+            criticalErrorsTestResults.setPassed(!failedCriticalErrorGate);
+            criticalErrorsTestResults.setEvents(qualityGateReport.getCriticalErrors().stream().map(e -> new QualityGateEvent(e)).collect(Collectors.toList()));
+            if (failedCriticalErrorGate) {
                 criticalErrorsTestResults.setMessage("Critical Error Gate: Failed, OverOps detected " + criticalErrorsTestResults.getEvents().size() + " critical error(s) in your build.");
             } else {
                 criticalErrorsTestResults.setMessage("Critical Error Gate: Passed, OverOps did not detect any critical errors in your build.");
@@ -387,14 +389,14 @@ public class ReportService {
             String baselineTime = Objects.nonNull(input) ? input.baselineTime : "";
 
             QualityGateTestResults regressionErrorsTestResults = new QualityGateTestResults(TestType.REGRESSION_EVENTS_TEST);
-            regressionErrorsTestResults.setPassed(!hasRegressions);
-            if ((hasRegressions) &&
+            regressionErrorsTestResults.setPassed(!failedRegressionGate);
+            regressionErrorsTestResults.setEvents(regressions.stream().map(e -> new QualityGateEvent(e)).collect(Collectors.toList()));
+            if ((failedRegressionGate) &&
             	(regressions != null)) {
             	// We check regressions != null explicitly because it prevents a false positive NPE warning.
             	// While the fact that it's certainly not null is encapsulated in the fact hasRegressions is true,
             	// The IDE can't directly make that assumption.
             	//
-                regressionErrorsTestResults.setEvents(regressions.stream().map(e -> new QualityGateEvent(e)).collect(Collectors.toList()));
                 regressionErrorsTestResults.setMessage("Increasing Quality Gate: Failed, OverOps detected increasing errors in the current build against the baseline of " + baselineTime);
             } else {
                 regressionErrorsTestResults.setMessage("Increasing Quality Gate: Passed, OverOps did not detect any increasing errors in the current build against the baseline of " + baselineTime);
@@ -404,9 +406,9 @@ public class ReportService {
 
         if (checkResurfacedGate) {
             QualityGateTestResults resurfacedErrorsTestResults = new QualityGateTestResults(TestType.RESURFACED_EVENTS_TEST);
-            resurfacedErrorsTestResults.setPassed(!hasResurfacedErrors);
-            if (hasResurfacedErrors) {
-                resurfacedErrorsTestResults.setEvents(qualityGateReport.getResurfacedErrors().stream().map(e -> new QualityGateEvent(e)).collect(Collectors.toList()));
+            resurfacedErrorsTestResults.setPassed(!failedResurfacedErrorGate);
+            resurfacedErrorsTestResults.setEvents(qualityGateReport.getResurfacedErrors().stream().map(e -> new QualityGateEvent(e)).collect(Collectors.toList()));
+            if (failedResurfacedErrorGate) {
                 resurfacedErrorsTestResults.setMessage("Resurfaced Error Gate: Failed, OverOps detected " + resurfacedErrorsTestResults.getEvents().size() + " resurfaced error(s) in your build.");
             } else {
                 resurfacedErrorsTestResults.setMessage("Resurfaced Error Gate: Passed, OverOps did not detect any resurfaced errors in your build.");
@@ -418,10 +420,10 @@ public class ReportService {
             long uniqueEventsCount = qualityGateReport.getUniqueErrorCount();
 
             QualityGateTestResults uniqueErrorsTestResults = new QualityGateTestResults(TestType.UNIQUE_EVENTS_TEST);
-            uniqueErrorsTestResults.setPassed(!maxUniqueErrorsExceeded);
-            if (maxUniqueErrorsExceeded) {
+            uniqueErrorsTestResults.setPassed(!failedUniqueVolumeGate);
+            uniqueErrorsTestResults.setErrorCount(uniqueEventsCount);
+            if (failedUniqueVolumeGate) {
                 uniqueErrorsTestResults.setMessage("Unique Error Volume Gate: Failed, OverOps detected " + uniqueEventsCount + " unique error(s) which is >= the max allowable of " + maxUniqueVolume);
-                uniqueErrorsTestResults.setErrorCount(uniqueEventsCount);
             } else {
                 uniqueErrorsTestResults.setMessage("Unique Error Volume Gate: Passed, OverOps detected " + uniqueEventsCount + " unique error(s) which is < than max allowable of " + maxUniqueVolume);
             }
@@ -431,10 +433,10 @@ public class ReportService {
         if (maxEventVolume != 0) {
             long eventVolume = qualityGateReport.getTotalErrorCount();
             QualityGateTestResults totalErrorsTestResults = new QualityGateTestResults(TestType.TOTAL_EVENTS_TEST);
-            totalErrorsTestResults.setPassed(!maxVolumeExceeded);
-            if (maxVolumeExceeded) {
+            totalErrorsTestResults.setPassed(!failedTotalVolumeGate);
+            totalErrorsTestResults.setErrorCount(eventVolume);
+            if (failedTotalVolumeGate) {
                 totalErrorsTestResults.setMessage("Total Error Volume Gate: Failed, OverOps detected " + eventVolume + " total error(s) which is >= the max allowable of " + maxEventVolume);
-                totalErrorsTestResults.setErrorCount(eventVolume);
             } else {
                 totalErrorsTestResults.setMessage("Total Error Volume Gate: Passed, OverOps detected " + eventVolume + " total error(s) which is < than max allowable of " + maxEventVolume);
             }
