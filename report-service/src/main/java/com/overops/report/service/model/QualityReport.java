@@ -416,7 +416,7 @@ public class QualityReport {
                     eventHtml = eventHtml.replace("summary", convertNullToString(event.getEventSummary()));
                     eventHtml = eventHtml.replace("applications", convertNullToString(event.getApplications()));
                     eventHtml = eventHtml.replace("introducedBy", convertNullToString(event.getIntroducedBy()));
-                    eventHtml = eventHtml.replace("eventRate", convertNullToString(event.getEventRate()));
+                    eventHtml = eventHtml.replace("eventRate", Long.toString(event.getHits()));
                     if (testType == TestType.REGRESSION_EVENTS_TEST) {
                         eventHtml = eventHtml.replace("eventType", convertNullToString(event.getType()));
                     } else {
