@@ -19,11 +19,11 @@ public class QualityReport {
     }
 
     private enum WebResource {
-        DANGER_ICON("web/img/icn-danger.svg"), 
-        QUESTION_ICON("web/img/icn-question.svg"), 
-        SUCCESS_ICON("web/img/icn-success.svg"),
-        TIMES_ICON("web/img/icn-times.svg"), 
-        WARNING_ICON("web/img/icn-warning.svg"),
+        DANGER_ICON("web/img/embedded-danger.svg"),
+        QUESTION_ICON("web/img/embedded-question.svg"),
+        SUCCESS_ICON("web/img/embedded-success.svg"),
+        TIMES_ICON("web/img/embedded-times.svg"),
+        WARNING_ICON("web/img/embedded-warning.svg"),
         LOGO_ICON("web/img/overops-logo.svg"),
         CSS("web/css/style.css"),
         REPORT_HTML("web/html/report.html"),
