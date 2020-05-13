@@ -1,0 +1,270 @@
+{
+  "statusCode": "FAILED",
+  "statusMsg": "Summary",
+  "newErrorsTestResults": {
+    "testType": "NEW_EVENTS_TEST",
+    "passed": false,
+    "message": "Message for: NEW_EVENTS_TEST",
+    "errorCount": 2,
+    "events": [
+      {
+        "arcLink": "someArcLink1",
+        "type": "someType1",
+        "applications": "someApplications1",
+        "introducedBy": "someIntroducedBy1",
+        "eventSummary": "someEventSummary (NEW_EVENTS_TEST) 1",
+        "eventRate": "someEventRate1",
+        "hits": 1
+      },
+      {
+        "arcLink": "someArcLink2",
+        "type": "someType2",
+        "applications": "someApplications2",
+        "introducedBy": "someIntroducedBy2",
+        "eventSummary": "someEventSummary (NEW_EVENTS_TEST) 2",
+        "eventRate": "someEventRate2",
+        "hits": 1
+      }
+    ]
+  },
+  "resurfacedErrorsTestResults": {
+    "testType": "RESURFACED_EVENTS_TEST",
+    "passed": false,
+    "message": "Message for: RESURFACED_EVENTS_TEST",
+    "errorCount": 3,
+    "events": [
+      {
+        "arcLink": "someArcLink3",
+        "type": "someType3",
+        "applications": "someApplications3",
+        "introducedBy": "someIntroducedBy3",
+        "eventSummary": "someEventSummary (RESURFACED_EVENTS_TEST) 3",
+        "eventRate": "someEventRate3",
+        "hits": 1
+      },
+      {
+        "arcLink": "someArcLink4",
+        "type": "someType4",
+        "applications": "someApplications4",
+        "introducedBy": "someIntroducedBy4",
+        "eventSummary": "someEventSummary (RESURFACED_EVENTS_TEST) 4",
+        "eventRate": "someEventRate4",
+        "hits": 1
+      },
+      {
+        "arcLink": "someArcLink5",
+        "type": "someType5",
+        "applications": "someApplications5",
+        "introducedBy": "someIntroducedBy5",
+        "eventSummary": "someEventSummary (RESURFACED_EVENTS_TEST) 5",
+        "eventRate": "someEventRate5",
+        "hits": 1
+      }
+    ]
+  },
+  "criticalErrorsTestResults": {
+    "testType": "CRITICAL_EVENTS_TEST",
+    "passed": false,
+    "message": "Message for: CRITICAL_EVENTS_TEST",
+    "errorCount": 4,
+    "events": [
+      {
+        "arcLink": "someArcLink6",
+        "type": "someType6",
+        "applications": "someApplications6",
+        "introducedBy": "someIntroducedBy6",
+        "eventSummary": "someEventSummary (CRITICAL_EVENTS_TEST) 6",
+        "eventRate": "someEventRate6",
+        "hits": 1
+      },
+      {
+        "arcLink": "someArcLink7",
+        "type": "someType7",
+        "applications": "someApplications7",
+        "introducedBy": "someIntroducedBy7",
+        "eventSummary": "someEventSummary (CRITICAL_EVENTS_TEST) 7",
+        "eventRate": "someEventRate7",
+        "hits": 1
+      },
+      {
+        "arcLink": "someArcLink8",
+        "type": "someType8",
+        "applications": "someApplications8",
+        "introducedBy": "someIntroducedBy8",
+        "eventSummary": "someEventSummary (CRITICAL_EVENTS_TEST) 8",
+        "eventRate": "someEventRate8",
+        "hits": 1
+      },
+      {
+        "arcLink": "someArcLink9",
+        "type": "someType9",
+        "applications": "someApplications9",
+        "introducedBy": "someIntroducedBy9",
+        "eventSummary": "someEventSummary (CRITICAL_EVENTS_TEST) 9",
+        "eventRate": "someEventRate9",
+        "hits": 1
+      }
+    ]
+  },
+  "regressionErrorsTestResults": {
+    "testType": "REGRESSION_EVENTS_TEST",
+    "passed": false,
+    "message": "Message for: REGRESSION_EVENTS_TEST",
+    "errorCount": 5,
+    "events": [
+      {
+        "arcLink": "someArcLink10",
+        "type": "someType10",
+        "applications": "someApplications10",
+        "introducedBy": "someIntroducedBy10",
+        "eventSummary": "someEventSummary (REGRESSION_EVENTS_TEST) 10",
+        "eventRate": "someEventRate10",
+        "hits": 1
+      },
+      {
+        "arcLink": "someArcLink11",
+        "type": "someType11",
+        "applications": "someApplications11",
+        "introducedBy": "someIntroducedBy11",
+        "eventSummary": "someEventSummary (REGRESSION_EVENTS_TEST) 11",
+        "eventRate": "someEventRate11",
+        "hits": 1
+      },
+      {
+        "arcLink": "someArcLink12",
+        "type": "someType12",
+        "applications": "someApplications12",
+        "introducedBy": "someIntroducedBy12",
+        "eventSummary": "someEventSummary (REGRESSION_EVENTS_TEST) 12",
+        "eventRate": "someEventRate12",
+        "hits": 1
+      },
+      {
+        "arcLink": "someArcLink13",
+        "type": "someType13",
+        "applications": "someApplications13",
+        "introducedBy": "someIntroducedBy13",
+        "eventSummary": "someEventSummary (REGRESSION_EVENTS_TEST) 13",
+        "eventRate": "someEventRate13",
+        "hits": 1
+      },
+      {
+        "arcLink": "someArcLink14",
+        "type": "someType14",
+        "applications": "someApplications14",
+        "introducedBy": "someIntroducedBy14",
+        "eventSummary": "someEventSummary (REGRESSION_EVENTS_TEST) 14",
+        "eventRate": "someEventRate14",
+        "hits": 1
+      }
+    ]
+  },
+  "totalErrorsTestResults": {
+    "testType": "TOTAL_EVENTS_TEST",
+    "passed": false,
+    "message": "Message for: TOTAL_EVENTS_TEST",
+    "errorCount": 2,
+    "events": [
+      {
+        "arcLink": "someArcLink51",
+        "type": "someType51",
+        "applications": "someApplications51",
+        "introducedBy": "someIntroducedBy51",
+        "eventSummary": "someEventSummary (TOTAL_EVENTS_TEST) 51",
+        "eventRate": "someEventRate51",
+        "hits": 1
+      },
+      {
+        "arcLink": "someArcLink52",
+        "type": "someType52",
+        "applications": "someApplications52",
+        "introducedBy": "someIntroducedBy52",
+        "eventSummary": "someEventSummary (TOTAL_EVENTS_TEST) 52",
+        "eventRate": "someEventRate52",
+        "hits": 1
+      }
+    ]
+  },
+  "uniqueErrorsTestResults": {
+    "testType": "UNIQUE_EVENTS_TEST",
+    "passed": false,
+    "message": "Message for: UNIQUE_EVENTS_TEST",
+    "errorCount": 3,
+    "events": [
+      {
+        "arcLink": "someArcLink53",
+        "type": "someType53",
+        "applications": "someApplications53",
+        "introducedBy": "someIntroducedBy53",
+        "eventSummary": "someEventSummary (UNIQUE_EVENTS_TEST) 53",
+        "eventRate": "someEventRate53",
+        "hits": 1
+      },
+      {
+        "arcLink": "someArcLink54",
+        "type": "someType54",
+        "applications": "someApplications54",
+        "introducedBy": "someIntroducedBy54",
+        "eventSummary": "someEventSummary (UNIQUE_EVENTS_TEST) 54",
+        "eventRate": "someEventRate54",
+        "hits": 1
+      },
+      {
+        "arcLink": "someArcLink55",
+        "type": "someType55",
+        "applications": "someApplications55",
+        "introducedBy": "someIntroducedBy55",
+        "eventSummary": "someEventSummary (UNIQUE_EVENTS_TEST) 55",
+        "eventRate": "someEventRate55",
+        "hits": 1
+      }
+    ]
+  },
+  "topEvents": [
+    {
+      "arcLink": "someArcLink51",
+      "type": "someType51",
+      "applications": "someApplications51",
+      "introducedBy": "someIntroducedBy51",
+      "eventSummary": "someEventSummary (TOTAL_EVENTS_TEST) 51",
+      "eventRate": "someEventRate51",
+      "hits": 1
+    },
+    {
+      "arcLink": "someArcLink52",
+      "type": "someType52",
+      "applications": "someApplications52",
+      "introducedBy": "someIntroducedBy52",
+      "eventSummary": "someEventSummary (TOTAL_EVENTS_TEST) 52",
+      "eventRate": "someEventRate52",
+      "hits": 1
+    },
+    {
+      "arcLink": "someArcLink53",
+      "type": "someType53",
+      "applications": "someApplications53",
+      "introducedBy": "someIntroducedBy53",
+      "eventSummary": "someEventSummary (UNIQUE_EVENTS_TEST) 53",
+      "eventRate": "someEventRate53",
+      "hits": 1
+    },
+    {
+      "arcLink": "someArcLink54",
+      "type": "someType54",
+      "applications": "someApplications54",
+      "introducedBy": "someIntroducedBy54",
+      "eventSummary": "someEventSummary (UNIQUE_EVENTS_TEST) 54",
+      "eventRate": "someEventRate54",
+      "hits": 1
+    },
+    {
+      "arcLink": "someArcLink55",
+      "type": "someType55",
+      "applications": "someApplications55",
+      "introducedBy": "someIntroducedBy55",
+      "eventSummary": "someEventSummary (UNIQUE_EVENTS_TEST) 55",
+      "eventRate": "someEventRate55",
+      "hits": 1
+    }
+  ]
+}

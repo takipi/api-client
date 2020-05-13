@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Overops Report</title>
+        <style>.overops-quality-report a {
+    text-decoration: none;
+}
+.overops-quality-report a:hover {
+    text-decoration: underline;
+}
+.overops-quality-report h1 {
+    margin: 0;
+    font-size: 22px;
+}
+.overops-quality-report h3 {
+    margin: 0 0 0.5em;
+    font-size: 16px;
+}
+.overops-quality-report h4 {
+    margin: 0;
+    font-size: 14px;
+}
+.overops-quality-report p {
+    line-height: 1;
+    margin: 4px 0 16px 0;
+}
+.overops-quality-report .d-flex {
+    display: flex;
+}
+.overops-quality-report .align-center {
+    align-items: center;
+}
+.overops-quality-report .mr-1 {
+    margin-right: 8px;
+}
+.overops-quality-report .mr-2 {
+    margin-right: 16px;
+}
+.overops-quality-report .mx-1 {
+    margin-right: 8px;
+    margin-left: 8px;
+}
+.overops-quality-report .ml-2 {
+    margin-left: 32px;
+}
+.overops-quality-report .mb-2 {
+    margin-bottom: 16px;
+}
+.overops-quality-report .mt-3 {
+    margin-top: 32px;
+}
+.overops-quality-report .mt-4 {
+    margin-top: 40px;
+}
+.overops-quality-report .mb-5 {
+    margin-bottom: 64px;
+}
+.overops-quality-report .w-25 {
+    width: 25%!important;
+}
+.overops-quality-report .alert {
+    margin: 32px 0;
+    padding: 8px 0;
+    border-color: transparent;
+    border-width: 2px;
+    border-radius: 3px;
+    border-style: solid;
+    font-size: 14px;
+    color: #333;
+}
+.overops-quality-report .alert-success {
+    background-color: hsl(78, 100%, 97%);
+    border-color: hsl(81, 51%, 76%);
+}
+.overops-quality-report .alert-warning {
+    background-color: hsl(55, 75.0%, 96.9%);
+    border-color: hsl(55, 51%, 76%);
+}
+.overops-quality-report .alert-danger {
+    background-color: hsl(10, 75.0%, 96.9%);
+    border-color: hsl(7, 65.9%, 82.7%);
+}
+.overops-quality-report .alert-muted {
+    background-color: #f5f5f5;
+    border-color: #ccc;
+}
+.overops-quality-report .table {
+    border-collapse: collapse;
+    width: 100%;
+}
+.overops-quality-report .table thead th {
+    vertical-align: bottom;
+    text-align: left;
+    white-space: nowrap;
+    background-color: hsl(0, 0%, 81%);
+    font-size: 14px;
+}
+.overops-quality-report .table td,
+.overops-quality-report .table th {
+    line-height: 1;
+    padding: .75rem;
+    vertical-align: top;
+    white-space: nowrap;
+    max-width: calc(50vw - 360px); /* jenkins sidebar is 360px wide */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.overops-quality-report .table-striped tbody tr:nth-of-type(even) {
+    background-color: hsl(216, 100%, 98%);
+}
+.overops-quality-report .muted {
+    color: hsl(0, 0%, 60%);
+}
+.overops-quality-report hr {
+    margin: 16px 0;
+}
+.overops-quality-report code {
+    font-weight: 700;
+    display: inline-block;
+}
+.overops-quality-report ul.unstyled {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.overops-quality-report ul.unstyled > li {
+    margin: .5em 0;
+}
+
+svg:not(.overopsLogo) {
+    height: 24px;
+    width: 24px;
+    margin: 0px 8px 0px 0px;
+}
+
+.alert svg {
+    height: 48px;
+    width: 48px;
+    margin: 0px 8px 0px 8px;
+}
+
+#reportSummary svg {
+    width: 20px;
+    height: 20px;
+    margin: -5px 5px -5px -10px;
+}</style>
+    </head>
+    <body><div class="overops-quality-report">
+    <div class="d-flex align-center mt-3">
+        <div class="mr-2">
+            <svg class="overopsLogo" width="172px" height="38px" viewBox="0 0 172 38" version="1.1">
+    <g id="Assets" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="overops_logo_172" fill-rule="nonzero">
+            <g id="regular">
+                <path d="M123.613642,15.2181818 C121.970239,26.5636364 118.153305,30 109.194112,30 C100.446972,30 96.7360633,26.2909091 98.3794655,14.7818182 C99.9698548,3.87272727 103.62775,0 112.905021,0 C121.652162,0 125.257044,3.87272727 123.613642,15.2181818 Z M104.263906,15.2181818 C103.044607,23.1272727 104.15788,25.5272727 109.353151,25.5272727 C114.548423,25.5272727 116.562916,23.1272727 117.782214,14.8363636 C119.054526,6.65454545 117.835227,4.52727273 112.692969,4.52727273 C107.391671,4.47272727 105.536217,6.81818182 104.263906,15.2181818 Z" id="Shape" fill="#484848"></path>
+                <path d="M53,8.10552764 L46.2576832,24.9371859 C45.2789598,27.4170854 42.8321513,29 40.1134752,29 L40.1134752,29 L35.8723404,29 C34.9479905,29 34.2955083,28.4723618 34.1867612,27.7336683 L30,8 L35.8179669,8 L38.6453901,25.2537688 L38.9172577,25.2537688 L38.9172577,25.2537688 C40.1134752,25.2537688 41.2009456,24.5150754 41.6359338,23.4070352 L47.5082742,8 L53,8 L53,8.10552764 Z" id="Path" fill="#484848"></path>
+                <path d="M72.2789724,28.2045455 C69.489148,28.9469697 66.9181334,29 64.0736067,29 C55.9229434,29 53.1331191,25.3409091 54.2271678,18.0227273 C55.375919,10.2272727 58.6580653,8 66.9181334,8 C74.7952845,8 76.4910601,10.6515152 75.8893333,14.6287879 C75.232904,18.6590909 72.4977821,20.0909091 66.863431,20.4090909 L59.7521141,20.9393939 C59.8615189,24.3333333 61.7214018,24.969697 64.7847384,24.969697 C67.1916456,24.969697 70.2549822,24.7575758 72.9901041,24.4393939 L72.2789724,28.2045455 Z M66.4805139,17.1742424 C68.9421236,17.0151515 70.0908748,16.3787879 70.4190895,14.2575758 C70.6378992,12.030303 69.4344456,11.9772727 66.2070017,11.9772727 C62.2137238,12.030303 60.9008653,13.0378788 60.0803287,17.7045455 L66.4805139,17.1742424 Z" id="Shape" fill="#484848"></path>
+                <path d="M157.038168,19.0310539 C153.671756,17.6523698 152.335878,15.8494753 152.709924,12.9860546 C153.19084,9.22118669 156.183206,7.94855527 162.274809,8.00158158 C165.480916,8.05460789 169.541985,8.37276574 172,8.74394991 L170.717557,12.1376337 C167.885496,12.0315811 165.961832,12.0315811 162.648855,12.0315811 C159.335878,12.0315811 158.160305,12.0846074 158,13.3572388 C157.839695,14.5768439 158.801527,14.9480281 160.51145,15.6373701 L166.122137,17.9175014 C169.648855,19.3492117 171.091603,20.7278958 170.664122,23.8034217 C169.969466,28.4697369 166.335878,29 160.030534,29 C155.221374,29 154.419847,28.7348685 151,28.3636843 L152.335878,24.9169742 C154.152672,25.0230268 156.450382,25.0760531 158.427481,25.0760531 C163.877863,25.0760531 165.10687,24.7578953 165.374046,23.4852638 C165.534351,22.2656587 164.625954,22.1065798 162.70229,21.3111852 L157.038168,19.0310539 Z" id="Path" fill="#484848"></path>
+                <path d="M139.185115,8 C131.26947,8 128.038595,11.0535714 126.85394,18.6607143 C126.746244,19.25 124,38 124,38 L129.761728,38 L131.107926,28.7321429 C132.615668,29.3214286 134.231106,29.375 136.546567,29.375 C144.24682,29.375 147.585392,26.5357143 148.770046,18.875 C149.900853,11.1071429 146.885369,8 139.185115,8 Z M143.062166,18.5 C142.254447,23.75 140.692857,25.3035714 136.546567,25.3035714 C134.231106,25.3035714 131.700254,24.5535714 131.700254,24.5535714 C131.700254,24.5535714 132.238733,21.0178571 132.56182,18.875 C133.423387,13.3035714 135.038825,12.0178571 139.131267,12.0178571 C143.008318,11.9642857 143.869885,13.3571429 143.062166,18.5 Z" id="Shape" fill="#484848"></path>
+                <path d="M96,8 L88.8301887,8 C82.5309973,8 79.9191375,10.3274559 78.8436658,16.6221662 L78.8436658,16.6221662 L77,29 L82.2237197,29 L83.9649596,16.6221662 L83.9649596,16.6221662 C84.7331536,12.5491184 86.115903,11.5969773 89.1374663,11.5969773 L94.6684636,11.5969773 L96,8 Z" id="Path" fill="#484848"></path>
+                <path d="M6.2208589,15.7272727 C7.49693252,7.32727273 9.35787321,5.2 14.7280164,5.2 C18.4498978,5.2 20.0981595,6.45454545 20.2576687,10.2727273 L26,10.2727273 C25.6809816,3.72727273 22.2249489,1 15.6319018,1 L0,1 L5.68916155,3.07272727 C2.87116564,5.30909091 1.27607362,9.23636364 0.372188139,15.4545455 C0.212678937,16.7090909 0.106339468,17.3636364 0.0531697342,19 L5.84867076,19 C5.95501022,17.3636364 6.06134969,16.8727273 6.2208589,15.7272727 Z" id="Path" fill="#52B2E9"></path>
+                <path d="M20.057377,15.6513761 C18.8790984,23.5535168 16.932377,25.7889908 11.9118852,25.7889908 C8.42827869,25.7889908 6.84016393,25.0091743 6.58401639,21.3700306 L1,21.3700306 C1.40983607,27.6085627 5.04713115,30 11.7581967,30 C20.3647541,30 24.1045082,26.7767584 25.692623,15.9633028 C25.8463115,14.8715596 25.9487705,14.559633 26,13 L20.4159836,13 C20.3135246,13.6238532 20.2110656,14.7155963 20.057377,15.6513761 Z" id="Path" fill="#484848"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+        </div>
+        <h1>Quality Report</h1>
+    </div>
+    <div class="alert alert-muted d-flex align-center">
+        <svg width="24px" height="24px" aria-hidden="true" focusable="false" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="#999999" d="M504 256c0 136.997-111.043 248-248 248S8 392.997 8 256C8 119.083 119.043 8 256 8s248 111.083 248 248zM262.655 90c-54.497 0-89.255 22.957-116.549 63.758-3.536 5.286-2.353 12.415 2.715 16.258l34.699 26.31c5.205 3.947 12.621 3.008 16.665-2.122 17.864-22.658 30.113-35.797 57.303-35.797 20.429 0 45.698 13.148 45.698 32.958 0 14.976-12.363 22.667-32.534 33.976C247.128 238.528 216 254.941 216 296v4c0 6.627 5.373 12 12 12h56c6.627 0 12-5.373 12-12v-1.333c0-28.462 83.186-29.647 83.186-106.667 0-58.002-60.165-102-116.531-102zM256 338c-25.365 0-46 20.635-46 46 0 25.364 20.635 46 46 46s46-20.636 46-46c0-25.365-20.635-46-46-46z"></path>
+</svg>
+        OverOps was unable to generate a Quality Report.
+    </div>
+    <div class="d-flex align-center mb-2 mt-4">
+        <svg width="24px" height="24px" aria-hidden="true" focusable="false" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="#999999" d="M504 256c0 136.997-111.043 248-248 248S8 392.997 8 256C8 119.083 119.043 8 256 8s248 111.083 248 248zM262.655 90c-54.497 0-89.255 22.957-116.549 63.758-3.536 5.286-2.353 12.415 2.715 16.258l34.699 26.31c5.205 3.947 12.621 3.008 16.665-2.122 17.864-22.658 30.113-35.797 57.303-35.797 20.429 0 45.698 13.148 45.698 32.958 0 14.976-12.363 22.667-32.534 33.976C247.128 238.528 216 254.941 216 296v4c0 6.627 5.373 12 12 12h56c6.627 0 12-5.373 12-12v-1.333c0-28.462 83.186-29.647 83.186-106.667 0-58.002-60.165-102-116.531-102zM256 338c-25.365 0-46 20.635-46 46 0 25.364 20.635 46 46 46s46-20.636 46-46c0-25.365-20.635-46-46-46z"></path>
+</svg>
+        <h4>An error occurred while generating a Quality Report.</h4>
+    </div>
+    <ul class="unstyled">
+        <li>
+            <a href="https://support.overops.com/hc/en-us/articles/360041054474-Best-Practice-Short-lived-application-considerations" target="_blank" rel="nofollow">
+                Best practices for short lived applications &rarr;
+            </a>
+        </li>
+        <li>
+            <a href="https://support.overops.com/" target="_blank" rel="nofollow">
+                OverOps Support Portal &rarr;
+            </a>
+        </li>
+        <li>
+            <a href="mailto:support@overops.com?$model.getEmailMessage()" target="_blank" rel="nofollow">
+                Contact OverOps Support &rarr;
+            </a>
+        </li>
+    </ul>
+    <hr/>
+    <code>Some error thrown.</code>
+    <pre>java.lang.IllegalArgumentException:&dnsp;Some&dnsp;error&dnsp;thrown.<br/>	at&dnsp;com.overops.report.service.model.QualityReportTest.test4(QualityReportTest.java:82)<br/>	at&dnsp;sun.reflect.NativeMethodAccessorImpl.invoke0(Native&dnsp;Method)<br/>	at&dnsp;sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)<br/>	at&dnsp;sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)<br/>	at&dnsp;java.lang.reflect.Method.invoke(Method.java:498)<br/>	at&dnsp;org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:675)<br/>	at&dnsp;org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)<br/>	at&dnsp;org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:125)<br/>	at&dnsp;org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:132)<br/>	at&dnsp;org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:124)<br/>	at&dnsp;org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:74)<br/>	at&dnsp;org.junit.jupiter.engine.execution.ExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(ExecutableInvoker.java:115)<br/>	at&dnsp;org.junit.jupiter.engine.execution.ExecutableInvoker.lambda$invoke$0(ExecutableInvoker.java:105)<br/>	at&dnsp;org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:104)<br/>	at&dnsp;org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:62)<br/>	at&dnsp;org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:43)<br/>	at&dnsp;org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:35)<br/>	at&dnsp;org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:104)<br/>	at&dnsp;org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:98)<br/>	at&dnsp;org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$6(TestMethodTestDescriptor.java:202)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)<br/>	at&dnsp;org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:198)<br/>	at&dnsp;org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:135)<br/>	at&dnsp;org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:69)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:135)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:125)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.Node.around(Node.java:135)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:123)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:122)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:80)<br/>	at&dnsp;java.util.ArrayList.forEach(ArrayList.java:1257)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:139)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:125)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.Node.around(Node.java:135)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:123)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:122)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:80)<br/>	at&dnsp;java.util.ArrayList.forEach(ArrayList.java:1257)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:139)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:125)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.Node.around(Node.java:135)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:123)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:122)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:80)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:32)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)<br/>	at&dnsp;org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:51)<br/>	at&dnsp;org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:220)<br/>	at&dnsp;org.junit.platform.launcher.core.DefaultLauncher.lambda$execute$6(DefaultLauncher.java:188)<br/>	at&dnsp;org.junit.platform.launcher.core.DefaultLauncher.withInterceptedStreams(DefaultLauncher.java:202)<br/>	at&dnsp;org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:181)<br/>	at&dnsp;org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:128)<br/>	at&dnsp;org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor$CollectAllTestClassesExecutor.processAllTestClasses(JUnitPlatformTestClassProcessor.java:99)<br/>	at&dnsp;org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor$CollectAllTestClassesExecutor.access$000(JUnitPlatformTestClassProcessor.java:79)<br/>	at&dnsp;org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor.stop(JUnitPlatformTestClassProcessor.java:75)<br/>	at&dnsp;org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.stop(SuiteTestClassProcessor.java:61)<br/>	at&dnsp;sun.reflect.NativeMethodAccessorImpl.invoke0(Native&dnsp;Method)<br/>	at&dnsp;sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)<br/>	at&dnsp;sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)<br/>	at&dnsp;java.lang.reflect.Method.invoke(Method.java:498)<br/>	at&dnsp;org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36)<br/>	at&dnsp;org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)<br/>	at&dnsp;org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:33)<br/>	at&dnsp;org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:94)<br/>	at&dnsp;com.sun.proxy.$Proxy2.stop(Unknown&dnsp;Source)<br/>	at&dnsp;org.gradle.api.internal.tasks.testing.worker.TestWorker.stop(TestWorker.java:132)<br/>	at&dnsp;sun.reflect.NativeMethodAccessorImpl.invoke0(Native&dnsp;Method)<br/>	at&dnsp;sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)<br/>	at&dnsp;sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)<br/>	at&dnsp;java.lang.reflect.Method.invoke(Method.java:498)<br/>	at&dnsp;org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36)<br/>	at&dnsp;org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)<br/>	at&dnsp;org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:182)<br/>	at&dnsp;org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:164)<br/>	at&dnsp;org.gradle.internal.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:412)<br/>	at&dnsp;org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)<br/>	at&dnsp;org.gradle.internal.concurrent.ManagedExecutorImpl$1.run(ManagedExecutorImpl.java:48)<br/>	at&dnsp;java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)<br/>	at&dnsp;java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)<br/>	at&dnsp;org.gradle.internal.concurrent.ThreadFactoryImpl$ManagedThreadRunnable.run(ThreadFactoryImpl.java:56)<br/>	at&dnsp;java.lang.Thread.run(Thread.java:748)<br/></pre>
+</div></body>
+</html>
