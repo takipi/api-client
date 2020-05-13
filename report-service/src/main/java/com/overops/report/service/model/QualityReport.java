@@ -11,7 +11,7 @@ import java.util.List;
 import com.overops.report.service.model.QualityGateTestResults.TestType;
 
 public class QualityReport {
-  
+
     public enum ReportStatus {
         PASSED,
         FAILED,
@@ -31,7 +31,7 @@ public class QualityReport {
         ERROR_GATE_SUMMARY_HTML("web/html/errorGateSummary.html"),
         EVENT_DETAILS_HTML("web/html/eventDetails.html"),
         EVENTS_TABLE_HTML("web/html/eventsTable.html"),
-        EXCEPTION_HTML("web/html/exception.html"),
+        EXCEPTION_HTML("web/html/exception.hbs"),
         PAGE_HTML("web/html/page.html");
 
         private final String filePath;
@@ -43,7 +43,9 @@ public class QualityReport {
         public String getFilePath() {
             return filePath;
         }
-    };
+    }
+
+    ;
 
     ReportStatus statusCode = ReportStatus.FAILED;
     String statusMsg = "";
@@ -192,18 +194,8 @@ public class QualityReport {
     }
 
     private String getExceptionHtml() {
-        String exceptionHtml = getWebResource(WebResource.EXCEPTION_HTML);
-        exceptionHtml = exceptionHtml.replace("<img id=\"logo\"></img>", getWebResource(WebResource.LOGO_ICON));
-        exceptionHtml = exceptionHtml.replace("<img class=\"icon\"></img>", getWebResource(WebResource.QUESTION_ICON));
-        exceptionHtml = exceptionHtml.replace("<code></code>", "<code>" + getExceptionDetails().getExceptionMessage() + "</code>");
-
-        String stackTrace = "";
-        for (String stack : getExceptionDetails().getStackTrace()) {
-            stackTrace += stack.replace(" ", "&dnsp;") + "<br/>";
-        }
-        exceptionHtml = exceptionHtml.replace("<pre></pre>", "<pre>" + stackTrace + "</pre>");
-
-        return exceptionHtml;        
+        QualityReportGenerator generator = new QualityReportGenerator();
+        return generator.generate(this, "exception");
     }
 
     private String getReportHtml(boolean showEventsForPassedGates) {
@@ -211,7 +203,7 @@ public class QualityReport {
         reportHtml = reportHtml.replace("<img id=\"logo\"></img>", getWebResource(WebResource.LOGO_ICON));
 
         String cssClass = null;
-        String icon = null; 
+        String icon = null;
         ReportStatus statusCode = getStatusCode();
         switch (statusCode) {
             case PASSED:
@@ -256,7 +248,7 @@ public class QualityReport {
     private String getErrorGateSummaryHtml(TestType testType) {
         String html = "";
         QualityGateTestResults testResults = null;
-    
+
         boolean passed = false;
         String anchorRef = "";
         String anchorDesc = "";
@@ -265,32 +257,32 @@ public class QualityReport {
 
         switch (testType) {
             case NEW_EVENTS_TEST:
-                testResults = getNewErrorsTestResults(); 
+                testResults = getNewErrorsTestResults();
                 anchorRef = "#new-gate";
                 anchorDesc = "New";
                 break;
             case CRITICAL_EVENTS_TEST:
-                testResults = getCriticalErrorsTestResults(); 
+                testResults = getCriticalErrorsTestResults();
                 anchorRef = "#critical-gate";
                 anchorDesc = "Critical";
                 break;
             case REGRESSION_EVENTS_TEST:
-                testResults = getRegressionErrorsTestResults(); 
+                testResults = getRegressionErrorsTestResults();
                 anchorRef = "#increasing-gate";
                 anchorDesc = "Increasing";
-               break;
+                break;
             case RESURFACED_EVENTS_TEST:
-                testResults = getResurfacedErrorsTestResults(); 
+                testResults = getResurfacedErrorsTestResults();
                 anchorRef = "#resurfaced-gate";
                 anchorDesc = "Resurfaced";
                 break;
             case TOTAL_EVENTS_TEST:
-                testResults = getTotalErrorsTestResults(); 
+                testResults = getTotalErrorsTestResults();
                 anchorRef = "#total-gate";
                 anchorDesc = "Total";
                 break;
             case UNIQUE_EVENTS_TEST:
-                testResults = getUniqueErrorsTestResults(); 
+                testResults = getUniqueErrorsTestResults();
                 anchorRef = "#unique-gate";
                 anchorDesc = "Unique";
                 break;
@@ -307,41 +299,41 @@ public class QualityReport {
             html = html.replace("0", Long.toString(errorCount));
             html = html.replace("anchor-ref", anchorRef);
             html = html.replace("anchor-desc", anchorDesc);
-            html = html.replace("<img></img>", icon);    
+            html = html.replace("<img></img>", icon);
         }
-       
+
         return html;
     }
 
     private String getEventsHeader(TestType testType, boolean showEventsForPassedGates) {
         String html = "";
         QualityGateTestResults testResults = null;
-    
+
         String anchorRef = "";
 
         switch (testType) {
             case NEW_EVENTS_TEST:
-                testResults = getNewErrorsTestResults(); 
+                testResults = getNewErrorsTestResults();
                 anchorRef = "new-gate";
                 break;
             case CRITICAL_EVENTS_TEST:
-                testResults = getCriticalErrorsTestResults(); 
+                testResults = getCriticalErrorsTestResults();
                 anchorRef = "critical-gate";
                 break;
             case REGRESSION_EVENTS_TEST:
-                testResults = getRegressionErrorsTestResults(); 
+                testResults = getRegressionErrorsTestResults();
                 anchorRef = "increasing-gate";
-               break;
+                break;
             case RESURFACED_EVENTS_TEST:
-                testResults = getResurfacedErrorsTestResults(); 
+                testResults = getResurfacedErrorsTestResults();
                 anchorRef = "resurfaced-gate";
                 break;
             case TOTAL_EVENTS_TEST:
-                testResults = getTotalErrorsTestResults(); 
+                testResults = getTotalErrorsTestResults();
                 anchorRef = "total-gate";
                 break;
             case UNIQUE_EVENTS_TEST:
-                testResults = getUniqueErrorsTestResults(); 
+                testResults = getUniqueErrorsTestResults();
                 anchorRef = "unique-gate";
                 break;
         }
@@ -353,22 +345,22 @@ public class QualityReport {
             html = html.replace("summary", testResults.getMessage());
 
             if (testResults.isPassed()) {
-                if ((testType == TestType.NEW_EVENTS_TEST) || (testType == TestType.RESURFACED_EVENTS_TEST)|| (testType == TestType.REGRESSION_EVENTS_TEST)) {
+                if ((testType == TestType.NEW_EVENTS_TEST) || (testType == TestType.RESURFACED_EVENTS_TEST) || (testType == TestType.REGRESSION_EVENTS_TEST)) {
                     html = html.replace("mb-2", "");
                 }
                 html = html.replace("<img></img>", getWebResource(WebResource.SUCCESS_ICON));
                 if (!showEventsForPassedGates || (testResults.getErrorCount() == 0)) {
                     html += "<p class=\"ml-2 muted\">Nothing to report</p>";
                 }
-            }  else {
+            } else {
                 html = html.replace("<img></img>", getWebResource(WebResource.DANGER_ICON));
-            }  
-        }    
+            }
+        }
         return html;
     }
 
     private String getEventsTable(TestType testType, boolean showEventsForPassedGates) {
-        String html = "";  
+        String html = "";
         QualityGateTestResults testResults = null;
         List<QualityGateEvent> events = new ArrayList<>();
         long errorCount = 0;
@@ -444,7 +436,7 @@ public class QualityReport {
                         eventHtml = eventHtml.replace("eventType", convertNullToString(event.getType()));
                     } else {
                         eventHtml = eventHtml.replace("<td>eventType</td>", "");
-                    }   
+                    }
                     eventsHtml += eventHtml;
                 }
             }
