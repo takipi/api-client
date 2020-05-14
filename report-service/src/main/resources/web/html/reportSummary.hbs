@@ -1,0 +1,19 @@
+{{#if passed}}
+    <tr>
+        <td>
+            {{svg "web/img/embedded-success.svg"}}
+            <a href="#{{testType.anchor}}">{{testType.displayName}}</a>
+        </td>
+        <td>Passed</td>
+        <td>{{errorCount}}</td>
+    </tr>
+{{else}}
+    <tr>
+        <td>
+            {{svg "web/img/embedded-times.svg"}}
+            <a href="#{{testType.anchor}}">{{testType.displayName}}</a>
+        </td>
+        <td>Failed</td>
+        <td>{{errorCount}}</td>
+    </tr>
+{{/if}}

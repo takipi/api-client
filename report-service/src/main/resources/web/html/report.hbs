@@ -5,24 +5,10 @@
         </div>
         <h1>Quality Report</h1>
     </div>
-    {{#reportStatus 'PASSED'}}
-        <div class="alert alert-success d-flex align-center">
-            {{svg "web/img/embedded-success.svg"}}
-            {{data.statusMsg}}
-        </div>
-    {{/reportStatus}}
-    {{#reportStatus 'WARNING'}}
-        <div class="alert alert-warning d-flex align-center">
-            {{svg "web/img/embedded-warning.svg"}}
-            {{data.statusMsg}}
-        </div>
-    {{/reportStatus}}
-    {{#reportStatus 'FAILED'}}
-            <div class="alert alert-danger d-flex align-center">
-                {{svg "web/img/embedded-danger.svg"}}
-                {{data.statusMsg}}
-            </div>
-    {{/reportStatus}}
+    <div class="alert {{data.statusCode.style}} d-flex align-center">
+        {{svg data.statusCode.svg}}
+        {{data.statusMsg}}
+    </div>
     <h3>Report Summary</h3>
     <table id="reportSummary" class="table table-striped w-25 mb-5">
         <thead>
@@ -34,206 +20,32 @@
         </thead>
         <tbody>
             {{#with data.newErrorsTestResults}}
-                {{#if data.newErrorsTestResults.passed}}
-                    <tr>
-                        <td>
-                            {{svg "web/img/embedded-success.svg"}}
-                            <a href="#new-gate">New</a>
-                        </td>
-                        <td>Passed</td>
-                        <td>{{data.newErrorsTestResults.errorCount}}</td>
-                    </tr>
-                {{else}}
-                    <tr>
-                        <td>
-                            {{svg "web/img/embedded-times.svg"}}
-                            <a href="#new-gate">New</a>
-                        </td>
-                        <td>Failed</td>
-                        <td>{{data.newErrorsTestResults.errorCount}}</td>
-                    </tr>
-                {{/if}}
+                {{> reportSummary data.newErrorsTestResults}}
             {{/with}}
             {{#with data.resurfacedErrorsTestResults}}
-                {{#if data.resurfacedErrorsTestResults.passed}}
-                    <tr>
-                        <td>
-                            {{svg "web/img/embedded-success.svg"}}
-                            <a href="#resurfaced-gate">Resurfaced</a>
-                        </td>
-                        <td>Passed</td>
-                        <td>{{data.resurfacedErrorsTestResults.errorCount}}</td>
-                    </tr>
-                {{else}}
-                    <tr>
-                        <td>
-                            {{svg "web/img/embedded-times.svg"}}
-                            <a href="#resurfaced-gate">Resurfaced</a>
-                        </td>
-                        <td>Failed</td>
-                        <td>{{data.resurfacedErrorsTestResults.errorCount}}</td>
-                    </tr>
-                {{/if}}
+                {{> reportSummary data.resurfacedErrorsTestResults}}
             {{/with}}
             {{#with data.totalErrorsTestResults}}
-                {{#if data.totalErrorsTestResults.passed}}
-                    <tr>
-                        <td>
-                            {{svg "web/img/embedded-success.svg"}}
-                            <a href="#total-gate">Total</a>
-                        </td>
-                        <td>Passed</td>
-                        <td>{{data.totalErrorsTestResults.errorCount}}</td>
-                    </tr>
-                {{else}}
-                    <tr>
-                        <td>
-                            {{svg "web/img/embedded-times.svg"}}
-                            <a href="#total-gate">Total</a>
-                        </td>
-                        <td>Failed</td>
-                        <td>{{data.totalErrorsTestResults.errorCount}}</td>
-                    </tr>
-                {{/if}}
+                {{> reportSummary data.totalErrorsTestResults}}
             {{/with}}
             {{#with data.uniqueErrorsTestResults}}
-                {{#if data.uniqueErrorsTestResults.passed}}
-                    <tr>
-                        <td>
-                            {{svg "web/img/embedded-success.svg"}}
-                            <a href="#unique-gate">Unique</a>
-                        </td>
-                        <td>Passed</td>
-                        <td>{{data.uniqueErrorsTestResults.errorCount}}</td>
-                    </tr>
-                {{else}}
-                    <tr>
-                        <td>
-                            {{svg "web/img/embedded-times.svg"}}
-                            <a href="#unique-gate">Unique</a>
-                        </td>
-                        <td>Failed</td>
-                        <td>{{data.uniqueErrorsTestResults.errorCount}}</td>
-                    </tr>
-                {{/if}}
+                {{> reportSummary data.uniqueErrorsTestResults}}
             {{/with}}
             {{#with data.criticalErrorsTestResults}}
-                {{#if data.criticalErrorsTestResults.passed}}
-                    <tr>
-                        <td>
-                            {{svg "web/img/embedded-success.svg"}}
-                            <a href="#critical-gate">Critical</a>
-                        </td>
-                        <td>Passed</td>
-                        <td>{{data.criticalErrorsTestResults.errorCount}}</td>
-                    </tr>
-                {{else}}
-                    <tr>
-                        <td>
-                            {{svg "web/img/embedded-times.svg"}}
-                            <a href="#critical-gate">Critical</a>
-                        </td>
-                        <td>Failed</td>
-                        <td>{{data.criticalErrorsTestResults.errorCount}}</td>
-                    </tr>
-                {{/if}}
+                {{> reportSummary data.criticalErrorsTestResults}}
             {{/with}}
             {{#with data.regressionErrorsTestResults}}
-                {{#if data.regressionErrorsTestResults.passed}}
-                    <tr>
-                        <td>
-                            {{svg "web/img/embedded-success.svg"}}
-                            <a href="#increasing-gate">Increasing</a>
-                        </td>
-                        <td>Passed</td>
-                        <td>{{data.regressionErrorsTestResults.errorCount}}</td>
-                    </tr>
-                {{else}}
-                    <tr>
-                        <td>
-                            {{svg "web/img/embedded-times.svg"}}
-                            <a href="#increasing-gate">Increasing</a>
-                        </td>
-                        <td>Failed</td>
-                        <td>{{data.regressionErrorsTestResults.errorCount}}</td>
-                    </tr>
-                {{/if}}
+                {{> reportSummary data.regressionErrorsTestResults}}
             {{/with}}
         </tbody>
     </table>
 
     {{#with data.newErrorsTestResults}}
-        {{#if passed}}
-            <div class="d-flex align-center mt-4">
-                {{svg "web/img/embedded-success.svg"}}
-                <h4 id="{{testType.anchor}}">{{message}}</h4>
-            </div>
-            <p class="ml-2 muted">Nothing to report</p>
-        {{else}}
-            <div class="d-flex align-center mt-4 mb-2">
-                {{svg "web/img/embedded-danger.svg"}}
-                <h4 id="{{testType.anchor}}">{{message}}</h4>
-            </div>
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th>Event</th>
-                    <th>Application(s)</th>
-                    <th>Introduced by</th>
-                    <th>Volume</th>
-                </tr>
-                </thead>
-                <tbody>
-                {{#each events}}
-                    <tr>
-                        <td>
-                            <a href="{{this.arcLink}}" target="_blank">{{eventSummary}}</a>
-                        </td>
-                        <td>{{this.applications}}</td>
-                        <td>{{this.introducedBy}}</td>
-                        <td>{{this.hits}}</td>
-                    </tr>
-                {{/each}}
-                </tbody>
-            </table>
-        {{/if}}
+        {{> reportSection data.newErrorsTestResults}}
     {{/with}}
 
     {{#with data.resurfacedErrorsTestResults}}
-        {{#if passed}}
-            <div class="d-flex align-center mt-4">
-                {{svg "web/img/embedded-success.svg"}}
-                <h4 id="{{testType.anchor}}">{{message}}</h4>
-            </div>
-            <p class="ml-2 muted">Nothing to report</p>
-        {{else}}
-            <div class="d-flex align-center mt-4 mb-2">
-                {{svg "web/img/embedded-danger.svg"}}
-                <h4 id="{{testType.anchor}}">{{message}}</h4>
-            </div>
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th>Event</th>
-                    <th>Application(s)</th>
-                    <th>Introduced by</th>
-                    <th>Volume</th>
-                </tr>
-                </thead>
-                <tbody>
-                {{#each events}}
-                    <tr>
-                        <td>
-                            <a href="{{this.arcLink}}" target="_blank">{{eventSummary}}</a>
-                        </td>
-                        <td>{{this.applications}}</td>
-                        <td>{{this.introducedBy}}</td>
-                        <td>{{this.hits}}</td>
-                    </tr>
-                {{/each}}
-                </tbody>
-            </table>
-        {{/if}}
+        {{> reportSection data.resurfacedErrorsTestResults}}
     {{/with}}
 
     {{#with data.totalErrorsTestResults}}
@@ -290,40 +102,7 @@
     {{/if}}
 
     {{#with data.criticalErrorsTestResults}}
-        {{#if passed}}
-            <div class="d-flex align-center mt-4 mb-2">
-                {{svg "web/img/embedded-success.svg"}}
-                <h4 id="{{testType.anchor}}">{{message}}</h4>
-            </div>
-            <p class="ml-2 muted">Nothing to report</p>
-        {{else}}
-            <div class="d-flex align-center mt-4 mb-2">
-                {{svg "web/img/embedded-danger.svg"}}
-                <h4 id="{{testType.anchor}}">{{message}}</h4>
-            </div>
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th>Event</th>
-                    <th>Application(s)</th>
-                    <th>Introduced by</th>
-                    <th>Volume</th>
-                </tr>
-                </thead>
-                <tbody>
-                {{#each events}}
-                    <tr>
-                        <td>
-                            <a href="{{this.arcLink}}" target="_blank">{{eventSummary}}</a>
-                        </td>
-                        <td>{{this.applications}}</td>
-                        <td>{{this.introducedBy}}</td>
-                        <td>{{this.hits}}</td>
-                    </tr>
-                {{/each}}
-                </tbody>
-            </table>
-        {{/if}}
+        {{> reportSection data.criticalErrorsTestResults}}
     {{/with}}
 
     {{#with data.regressionErrorsTestResults}}

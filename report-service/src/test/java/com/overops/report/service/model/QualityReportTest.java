@@ -13,7 +13,7 @@ public class QualityReportTest extends AbstractQualityReportTest {
 
         QualityReport qualityReport = new QualityReport();
         qualityReport.setStatusMsg(String.format(SUMMARY_TEMPLATE, "Passed No Events", testResult));
-        qualityReport.setStatusCode(QualityReport.ReportStatus.PASSED);
+        qualityReport.setStatusCode(ReportStatus.PASSED);
 
         String actual = qualityReport.toHtml();
         assertEqualsWithoutWhiteSpace(expected, actual);
@@ -38,7 +38,7 @@ public class QualityReportTest extends AbstractQualityReportTest {
 
         QualityReport qualityReport = generateBaseModel();
         qualityReport.setStatusMsg(String.format(SUMMARY_TEMPLATE, "Pass All Events", testResult));
-        qualityReport.setStatusCode(QualityReport.ReportStatus.WARNING);
+        qualityReport.setStatusCode(ReportStatus.WARNING);
 
         qualityReport.getNewErrorsTestResults().setPassed(true);
         qualityReport.getResurfacedErrorsTestResults().setPassed(true);

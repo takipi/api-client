@@ -1,22 +1,9 @@
 package com.overops.report.service.model;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.overops.report.service.model.QualityGateTestResults.TestType;
-
 public class QualityReport {
-
-    public enum ReportStatus {
-        PASSED,
-        FAILED,
-        WARNING
-    }
 
     ReportStatus statusCode = ReportStatus.FAILED;
     String statusMsg = "";

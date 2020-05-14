@@ -7,7 +7,6 @@ import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
 import com.overops.quality.report.ReportGeneratorException;
 import com.overops.quality.report.SvgHelper;
-import com.overops.quality.report.ReportStatusHelper;
 
 import java.io.IOException;
 
@@ -22,7 +21,6 @@ public class QualityReportGenerator {
             Handlebars handlebars = new Handlebars(loader);
             handlebars.registerHelper("or", ConditionalHelpers.or);
             handlebars.registerHelper("eq", ConditionalHelpers.eq);
-            handlebars.registerHelper("reportStatus", new ReportStatusHelper());
             handlebars.registerHelper("svg", new SvgHelper());
             handlebars.prettyPrint(true);
             Template template = handlebars.compile(templateName);
