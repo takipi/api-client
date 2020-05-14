@@ -14,7 +14,7 @@ import java.io.IOException;
 
 public class QualityReportGenerator {
 
-    public String generate(QualityReport model, String templateName) {
+    public String generate(QualityReportTemplate model, String templateName) {
         try {
             TemplateLoader loader = new ClassPathTemplateLoader();
             loader.setPrefix("/web/html");

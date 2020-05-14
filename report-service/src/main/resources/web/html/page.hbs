@@ -3,7 +3,15 @@
     <head> 
         <meta charset="utf-8"> 
         <title>Overops Report</title>
-        <style></style>
+        <style>
+            {{> style}}
+        </style>
     </head> 
-    <body></body>
+    <body>
+    {{#if hasExceptions}}
+        {{> exception}}
+    {{else}}
+        {{> report}}
+    {{/if}}
+    </body>
 </html>

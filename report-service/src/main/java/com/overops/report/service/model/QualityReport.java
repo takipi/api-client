@@ -18,33 +18,6 @@ public class QualityReport {
         WARNING
     }
 
-    private enum WebResource {
-        DANGER_ICON("web/img/embedded-danger.svg"),
-        QUESTION_ICON("web/img/embedded-question.svg"),
-        SUCCESS_ICON("web/img/embedded-success.svg"),
-        TIMES_ICON("web/img/embedded-times.svg"),
-        WARNING_ICON("web/img/embedded-warning.svg"),
-        LOGO_ICON("web/img/overops-logo.svg"),
-        CSS("web/css/style.css"),
-        REPORT_HTML("web/html/report.hbs"),
-        ERROR_GATE_HEADER_HTML("web/html/errorGateHeader.hbs"),
-        ERROR_GATE_SUMMARY_HTML("web/html/errorGateSummary.hbs"),
-        EVENT_DETAILS_HTML("web/html/eventDetails.html"),
-        EVENTS_TABLE_HTML("web/html/eventsTable.html"),
-        EXCEPTION_HTML("web/html/exception.hbs"),
-        PAGE_HTML("web/html/page.hbs");
-
-        private final String filePath;
-
-        WebResource(String filePath) {
-            this.filePath = filePath;
-        }
-
-        public String getFilePath() {
-            return filePath;
-        }
-    }
-
     ReportStatus statusCode = ReportStatus.FAILED;
     String statusMsg = "";
     boolean showEventsForPassedTest;
@@ -59,8 +32,6 @@ public class QualityReport {
     List<QualityGateEvent> topEvents = Collections.emptyList();
 
     QualityReportExceptionDetails exceptionDetails;
-
-    private transient String[] webResources = new String[WebResource.values().length];
 
     public QualityReport() {
     }
@@ -137,6 +108,14 @@ public class QualityReport {
         this.topEvents = topEvents;
     }
 
+    public QualityReportExceptionDetails getExceptionDetails() {
+        return exceptionDetails;
+    }
+
+    public void setExceptionDetails(QualityReportExceptionDetails exceptionDetails) {
+        this.exceptionDetails = exceptionDetails;
+    }
+
     public HtmlParts getHtmlParts() {
         return this.getHtmlParts(false);
     }
@@ -148,7 +127,7 @@ public class QualityReport {
         } else {
             htmlParts.setHtml(getReportHtml(showEventsForPassedGates));
         }
-        htmlParts.setCss(getWebResource(WebResource.CSS));
+        htmlParts.setCss(getStyleHtml());
         return htmlParts;
     }
 
@@ -157,72 +136,30 @@ public class QualityReport {
     }
 
     public String toHtml(boolean showEventsForPassedGates) {
-        HtmlParts htmlParts = getHtmlParts(showEventsForPassedGates);
-        String html = getWebResource(WebResource.PAGE_HTML).replace("<style></style>", "<style>" + htmlParts.getCss() + "</style>");
-        html = html.replace("<body></body>", "<body>" + htmlParts.getHtml() + "</body>");
-        return html;
-    }
-
-    private String getWebResource(WebResource resourceType) {
-        String resource = "";
-        if (resourceType != null) {
-            resource = webResources[resourceType.ordinal()];
-            if (resource == null) {
-                try {
-                    resource = readFile(resourceType.getFilePath());
-                } catch (IOException e) {
-                    resource = "";
-                }
-                webResources[resourceType.ordinal()] = resource;
-            }
-        }
-        return resource;
-    }
-
-    private String readFile(String relativeFilePath) throws IOException {
-        String fileContents = "";
-
-        InputStream stream = this.getClass().getClassLoader().getResourceAsStream(relativeFilePath);
-        Reader reader = new InputStreamReader(stream);
-        int intValueOfChar;
-        while ((intValueOfChar = reader.read()) != -1) {
-            fileContents += (char) intValueOfChar;
-        }
-        reader.close();
-        return fileContents;
+        QualityReportGenerator generator = new QualityReportGenerator();
+        QualityReportTemplate template = new QualityReportTemplate(this);
+        template.setShowEventsForPassedGates(showEventsForPassedGates);
+        return generator.generate(template, "page");
     }
 
     private String getExceptionHtml() {
         QualityReportGenerator generator = new QualityReportGenerator();
-        return generator.generate(this, "exception");
+        QualityReportTemplate template = new QualityReportTemplate(this);
+        return generator.generate(template, "exception");
+    }
+
+    public String getStyleHtml(){
+        QualityReportGenerator generator = new QualityReportGenerator();
+        QualityReportTemplate template = new QualityReportTemplate(this);
+        return generator.generate(template, "style");
     }
 
     private String getReportHtml(boolean showEventsForPassedGates) {
         QualityReportGenerator generator = new QualityReportGenerator();
-        String reportHtml = generator.generate(this, "report");
+        QualityReportTemplate template = new QualityReportTemplate(this);
+        template.setShowEventsForPassedGates(showEventsForPassedGates);
+        String reportHtml = generator.generate(template, "report");
        return reportHtml;
     }
 
-    public QualityReportExceptionDetails getExceptionDetails() {
-        return exceptionDetails;
-    }
-
-    public void setExceptionDetails(QualityReportExceptionDetails exceptionDetails) {
-        this.exceptionDetails = exceptionDetails;
-    }
-
-    public boolean isShowTopEvents(){
-        try{
-            if (!totalErrorsTestResults.isPassed() || !uniqueErrorsTestResults.isPassed()) {
-                return true;
-            } else if (showEventsForPassedTest && topEvents != null && topEvents.size() > 0) {
-                return true;
-            }else{
-                return false;
-            }
-        }catch(NullPointerException e){
-            // TODO: This is a hack; fix me.
-            return false;
-        }
-    }
 }

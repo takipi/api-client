@@ -31,9 +31,9 @@
         </li>
     </ul>
     <hr/>
-    <code>{{exceptionDetails.exceptionMessage}}</code>
+    <code>{{data.exceptionDetails.exceptionMessage}}</code>
     <pre>
-    {{#each exceptionDetails.stackTrace}}
+    {{#each data.exceptionDetails.stackTrace}}
         {{this}}
     {{/each}}
     </pre>

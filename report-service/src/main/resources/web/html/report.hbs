@@ -8,19 +8,19 @@
     {{#reportStatus 'PASSED'}}
         <div class="alert alert-success d-flex align-center">
             {{svg "web/img/embedded-success.svg"}}
-            {{statusMsg}}
+            {{data.statusMsg}}
         </div>
     {{/reportStatus}}
     {{#reportStatus 'WARNING'}}
         <div class="alert alert-warning d-flex align-center">
             {{svg "web/img/embedded-warning.svg"}}
-            {{statusMsg}}
+            {{data.statusMsg}}
         </div>
     {{/reportStatus}}
     {{#reportStatus 'FAILED'}}
             <div class="alert alert-danger d-flex align-center">
                 {{svg "web/img/embedded-danger.svg"}}
-                {{statusMsg}}
+                {{data.statusMsg}}
             </div>
     {{/reportStatus}}
     <h3>Report Summary</h3>
@@ -33,15 +33,15 @@
             </tr>
         </thead>
         <tbody>
-            {{#with newErrorsTestResults}}
-                {{#if newErrorsTestResults.passed}}
+            {{#with data.newErrorsTestResults}}
+                {{#if data.newErrorsTestResults.passed}}
                     <tr>
                         <td>
                             {{svg "web/img/embedded-success.svg"}}
                             <a href="#new-gate">New</a>
                         </td>
                         <td>Passed</td>
-                        <td>{{newErrorsTestResults.errorCount}}</td>
+                        <td>{{data.newErrorsTestResults.errorCount}}</td>
                     </tr>
                 {{else}}
                     <tr>
@@ -50,19 +50,19 @@
                             <a href="#new-gate">New</a>
                         </td>
                         <td>Failed</td>
-                        <td>{{newErrorsTestResults.errorCount}}</td>
+                        <td>{{data.newErrorsTestResults.errorCount}}</td>
                     </tr>
                 {{/if}}
             {{/with}}
-            {{#with resurfacedErrorsTestResults}}
-                {{#if resurfacedErrorsTestResults.passed}}
+            {{#with data.resurfacedErrorsTestResults}}
+                {{#if data.resurfacedErrorsTestResults.passed}}
                     <tr>
                         <td>
                             {{svg "web/img/embedded-success.svg"}}
                             <a href="#resurfaced-gate">Resurfaced</a>
                         </td>
                         <td>Passed</td>
-                        <td>{{resurfacedErrorsTestResults.errorCount}}</td>
+                        <td>{{data.resurfacedErrorsTestResults.errorCount}}</td>
                     </tr>
                 {{else}}
                     <tr>
@@ -71,19 +71,19 @@
                             <a href="#resurfaced-gate">Resurfaced</a>
                         </td>
                         <td>Failed</td>
-                        <td>{{resurfacedErrorsTestResults.errorCount}}</td>
+                        <td>{{data.resurfacedErrorsTestResults.errorCount}}</td>
                     </tr>
                 {{/if}}
             {{/with}}
-            {{#with totalErrorsTestResults}}
-                {{#if totalErrorsTestResults.passed}}
+            {{#with data.totalErrorsTestResults}}
+                {{#if data.totalErrorsTestResults.passed}}
                     <tr>
                         <td>
                             {{svg "web/img/embedded-success.svg"}}
                             <a href="#total-gate">Total</a>
                         </td>
                         <td>Passed</td>
-                        <td>{{totalErrorsTestResults.errorCount}}</td>
+                        <td>{{data.totalErrorsTestResults.errorCount}}</td>
                     </tr>
                 {{else}}
                     <tr>
@@ -92,19 +92,19 @@
                             <a href="#total-gate">Total</a>
                         </td>
                         <td>Failed</td>
-                        <td>{{totalErrorsTestResults.errorCount}}</td>
+                        <td>{{data.totalErrorsTestResults.errorCount}}</td>
                     </tr>
                 {{/if}}
             {{/with}}
-            {{#with uniqueErrorsTestResults}}
-                {{#if uniqueErrorsTestResults.passed}}
+            {{#with data.uniqueErrorsTestResults}}
+                {{#if data.uniqueErrorsTestResults.passed}}
                     <tr>
                         <td>
                             {{svg "web/img/embedded-success.svg"}}
                             <a href="#unique-gate">Unique</a>
                         </td>
                         <td>Passed</td>
-                        <td>{{uniqueErrorsTestResults.errorCount}}</td>
+                        <td>{{data.uniqueErrorsTestResults.errorCount}}</td>
                     </tr>
                 {{else}}
                     <tr>
@@ -113,19 +113,19 @@
                             <a href="#unique-gate">Unique</a>
                         </td>
                         <td>Failed</td>
-                        <td>{{uniqueErrorsTestResults.errorCount}}</td>
+                        <td>{{data.uniqueErrorsTestResults.errorCount}}</td>
                     </tr>
                 {{/if}}
             {{/with}}
-            {{#with criticalErrorsTestResults}}
-                {{#if criticalErrorsTestResults.passed}}
+            {{#with data.criticalErrorsTestResults}}
+                {{#if data.criticalErrorsTestResults.passed}}
                     <tr>
                         <td>
                             {{svg "web/img/embedded-success.svg"}}
                             <a href="#critical-gate">Critical</a>
                         </td>
                         <td>Passed</td>
-                        <td>{{criticalErrorsTestResults.errorCount}}</td>
+                        <td>{{data.criticalErrorsTestResults.errorCount}}</td>
                     </tr>
                 {{else}}
                     <tr>
@@ -134,19 +134,19 @@
                             <a href="#critical-gate">Critical</a>
                         </td>
                         <td>Failed</td>
-                        <td>{{criticalErrorsTestResults.errorCount}}</td>
+                        <td>{{data.criticalErrorsTestResults.errorCount}}</td>
                     </tr>
                 {{/if}}
             {{/with}}
-            {{#with regressionErrorsTestResults}}
-                {{#if regressionErrorsTestResults.passed}}
+            {{#with data.regressionErrorsTestResults}}
+                {{#if data.regressionErrorsTestResults.passed}}
                     <tr>
                         <td>
                             {{svg "web/img/embedded-success.svg"}}
                             <a href="#increasing-gate">Increasing</a>
                         </td>
                         <td>Passed</td>
-                        <td>{{regressionErrorsTestResults.errorCount}}</td>
+                        <td>{{data.regressionErrorsTestResults.errorCount}}</td>
                     </tr>
                 {{else}}
                     <tr>
@@ -155,14 +155,14 @@
                             <a href="#increasing-gate">Increasing</a>
                         </td>
                         <td>Failed</td>
-                        <td>{{regressionErrorsTestResults.errorCount}}</td>
+                        <td>{{data.regressionErrorsTestResults.errorCount}}</td>
                     </tr>
                 {{/if}}
             {{/with}}
         </tbody>
     </table>
 
-    {{#with newErrorsTestResults}}
+    {{#with data.newErrorsTestResults}}
         {{#if passed}}
             <div class="d-flex align-center mt-4">
                 {{svg "web/img/embedded-success.svg"}}
@@ -199,7 +199,7 @@
         {{/if}}
     {{/with}}
 
-    {{#with resurfacedErrorsTestResults}}
+    {{#with data.resurfacedErrorsTestResults}}
         {{#if passed}}
             <div class="d-flex align-center mt-4">
                 {{svg "web/img/embedded-success.svg"}}
@@ -236,7 +236,7 @@
         {{/if}}
     {{/with}}
 
-    {{#with totalErrorsTestResults}}
+    {{#with data.totalErrorsTestResults}}
         {{#if passed}}
                 <div class="d-flex align-center mt-4 mb-2">
                     {{svg "web/img/embedded-success.svg"}}
@@ -250,7 +250,7 @@
                 </div>
         {{/if}}
     {{/with}}
-    {{#with uniqueErrorsTestResults}}
+    {{#with data.uniqueErrorsTestResults}}
         {{#if passed}}
             <div class="d-flex align-center mt-4 mb-2">
                 {{svg "web/img/embedded-success.svg"}}
@@ -275,7 +275,7 @@
         </tr>
         </thead>
         <tbody>
-        {{#each topEvents}}
+        {{#each data.topEvents}}
             <tr>
                 <td>
                     <a href="{{this.arcLink}}" target="_blank">{{eventSummary}}</a>
@@ -289,7 +289,7 @@
     </table>
     {{/if}}
 
-    {{#with criticalErrorsTestResults}}
+    {{#with data.criticalErrorsTestResults}}
         {{#if passed}}
             <div class="d-flex align-center mt-4 mb-2">
                 {{svg "web/img/embedded-success.svg"}}
@@ -326,7 +326,7 @@
         {{/if}}
     {{/with}}
 
-    {{#with regressionErrorsTestResults}}
+    {{#with data.regressionErrorsTestResults}}
         {{#if passed}}
             <div class="d-flex align-center mt-4">
                 {{svg "web/img/embedded-success.svg"}}

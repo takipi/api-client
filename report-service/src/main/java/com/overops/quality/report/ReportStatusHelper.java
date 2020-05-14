@@ -15,7 +15,7 @@ public class ReportStatusHelper implements Helper<String> {
 
     @Override
     public Object apply(String path, Options options) throws IOException {
-        QualityReport.ReportStatus reportStatus = options.get("statusCode");
+        QualityReport.ReportStatus reportStatus = options.get("data.statusCode");
         if(reportStatus.name().equals(path)){
             return options.fn(this);
         }else{
