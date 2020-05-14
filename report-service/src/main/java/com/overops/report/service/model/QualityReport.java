@@ -3,26 +3,29 @@ package com.overops.report.service.model;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Data Model for Quality Report
+ */
 public class QualityReport {
 
-    ReportStatus statusCode = ReportStatus.FAILED;
-    String statusMsg = "";
-    boolean showEventsForPassedTest;
+    private ReportStatus statusCode = ReportStatus.FAILED;
+    private String statusMsg = "";
 
-    QualityGateTestResults newErrorsTestResults;
-    QualityGateTestResults resurfacedErrorsTestResults;
-    QualityGateTestResults criticalErrorsTestResults;
-    QualityGateTestResults regressionErrorsTestResults;
-    QualityGateTestResults totalErrorsTestResults;
-    QualityGateTestResults uniqueErrorsTestResults;
+    private QualityGateTestResults newErrorsTestResults;
+    private QualityGateTestResults resurfacedErrorsTestResults;
+    private QualityGateTestResults criticalErrorsTestResults;
+    private QualityGateTestResults regressionErrorsTestResults;
+    private QualityGateTestResults totalErrorsTestResults;
+    private QualityGateTestResults uniqueErrorsTestResults;
 
-    List<QualityGateEvent> topEvents = Collections.emptyList();
+    private List<QualityGateEvent> topEvents = Collections.emptyList();
 
-    QualityReportExceptionDetails exceptionDetails;
+    private QualityReportExceptionDetails exceptionDetails;
 
     public QualityReport() {
     }
 
+    //<editor-fold desc="Getters & Setters">
     public ReportStatus getStatusCode() {
         return statusCode;
     }
@@ -102,18 +105,18 @@ public class QualityReport {
     public void setExceptionDetails(QualityReportExceptionDetails exceptionDetails) {
         this.exceptionDetails = exceptionDetails;
     }
+    //</editor-fold>
 
+    /**
+     * TODO (ccaspanello) Move this stuff out of the model and into the QualityReportGenerator class.
+     */
     public HtmlParts getHtmlParts() {
         return this.getHtmlParts(false);
     }
 
     public HtmlParts getHtmlParts(boolean showEventsForPassedGates) {
         HtmlParts htmlParts = new HtmlParts();
-        if (exceptionDetails != null) {
-            htmlParts.setHtml(getExceptionHtml());
-        } else {
-            htmlParts.setHtml(getReportHtml(showEventsForPassedGates));
-        }
+        htmlParts.setHtml(getReportHtml(showEventsForPassedGates));
         htmlParts.setCss(getStyleHtml());
         return htmlParts;
     }
@@ -129,13 +132,7 @@ public class QualityReport {
         return generator.generate(template, "page");
     }
 
-    private String getExceptionHtml() {
-        QualityReportGenerator generator = new QualityReportGenerator();
-        QualityReportTemplate template = new QualityReportTemplate(this);
-        return generator.generate(template, "exception");
-    }
-
-    public String getStyleHtml(){
+    private String getStyleHtml() {
         QualityReportGenerator generator = new QualityReportGenerator();
         QualityReportTemplate template = new QualityReportTemplate(this);
         return generator.generate(template, "style");
@@ -146,7 +143,7 @@ public class QualityReport {
         QualityReportTemplate template = new QualityReportTemplate(this);
         template.setShowEventsForPassedGates(showEventsForPassedGates);
         String reportHtml = generator.generate(template, "report");
-       return reportHtml;
+        return reportHtml;
     }
 
 }

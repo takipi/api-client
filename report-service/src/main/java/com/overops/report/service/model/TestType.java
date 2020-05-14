@@ -1,5 +1,10 @@
 package com.overops.report.service.model;
 
+/**
+ * Test Type
+ * <p>
+ * This enum is used during rendering time to help break out sections / types of quality gates
+ */
 public enum TestType {
     NEW_EVENTS_TEST("New", "new-gate"),
     RESURFACED_EVENTS_TEST("Resurfaced", "resurfaced-gate"),
@@ -16,11 +21,13 @@ public enum TestType {
         this.anchor = anchor;
     }
 
-    public String getDisplayName(){
+    //<editor-fold desc="Getters">
+    public String getDisplayName() {
         return this.displayName;
     }
 
-    public String getAnchor(){
+    public String getAnchor() {
         return this.anchor;
     }
+    //</editor-fold>
 };

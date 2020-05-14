@@ -1,4 +1,4 @@
-package com.overops.quality.report;
+package com.overops.report.service;
 
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Helper;

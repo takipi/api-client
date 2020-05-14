@@ -1,14 +1,7 @@
 package com.overops.report.service;
 
 import com.google.gson.Gson;
-import com.overops.report.service.model.OOReportRegressedEvent;
-import com.overops.report.service.model.QualityReport;
-import com.overops.report.service.model.QualityReportExceptionDetails;
-import com.overops.report.service.model.ReportVisualizationModel;
-import com.overops.report.service.model.TestType;
-import com.overops.report.service.model.ReportStatus;
-import com.overops.report.service.model.QualityGateTestResults;
-import com.overops.report.service.model.QualityGateEvent;
+import com.overops.report.service.model.*;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.RemoteApiClient;
 import com.takipi.api.client.data.view.SummarizedView;
@@ -24,138 +17,16 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * Main Entry Point to Generate Reports
+ */
 public class ReportService {
-    public enum Requestor {
-        UNKNOWN(100),
-        GIT_LAB(80),
-        TEAM_CITY(58),
-        BAMBOO(52),
-        CONCOURSE(47),
-        JENKINS(4);
-
-        private final int id;
-
-        Requestor(int id) {
-            this.id = id;
-        }
-
-        public int getId() {
-            return id;
-        }
-    }
 
     private transient Gson gson = new Gson();
 
-    public static void main(String[] args) {
-        String endPoint = "https://api.overops.com";
-        String apiKey = "";
-
-        QualityReportParams reportParams = new QualityReportParams();
-        reportParams.setApplicationName("collector-server");
-        reportParams.setDeploymentName("v4.44.3");
-        reportParams.setServiceId("S37777");
-        reportParams.setNewEvents(true);
-        reportParams.setResurfacedErrors(true);
-        reportParams.setMarkUnstable(true);
-        reportParams.setMaxUniqueErrors(400);
-
-        try {
-            QualityReport visualizationModel;
-            visualizationModel = new ReportService().runQualityReport(endPoint, apiKey, reportParams, Requestor.TEAM_CITY);
-            
-            String html = visualizationModel.toHtml();
-    
-            BufferedWriter writer = new BufferedWriter(new FileWriter("myReport.html"));
-            writer.write(html);
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Deprecated
-    public ReportVisualizationModel createReportVisualizationModel(String endPoint, String apiKey, QualityReportParams reportParams) {
-        QualityReport qualityReport = runQualityReport(endPoint, apiKey, reportParams, null);
-
-        QualityGateTestResults newResults = qualityReport.getNewErrorsTestResults();
-        QualityGateTestResults resurfacedResults = qualityReport.getResurfacedErrorsTestResults();
-        QualityGateTestResults criticalResults = qualityReport.getCriticalErrorsTestResults();
-        QualityGateTestResults totalResults = qualityReport.getTotalErrorsTestResults();
-        QualityGateTestResults uniqueResults = qualityReport.getUniqueErrorsTestResults();
-        QualityGateTestResults regressionResults = qualityReport.getRegressionErrorsTestResults();
-
-        ReportVisualizationModel reportVisualizationModel = new ReportVisualizationModel();
-        reportVisualizationModel.setUnstable((qualityReport.getStatusCode() == ReportStatus.WARNING) || (qualityReport.getStatusCode() == ReportStatus.FAILED));
-        reportVisualizationModel.setMarkedUnstable(qualityReport.getStatusCode() == ReportStatus.FAILED);
-        reportVisualizationModel.setPassedNewErrorGate((newResults != null) && newResults.isPassed());
-        reportVisualizationModel.setCheckNewEvents(newResults != null);
-        reportVisualizationModel.setPassedResurfacedErrorGate((resurfacedResults != null) && resurfacedResults.isPassed());
-        reportVisualizationModel.setCheckResurfacedEvents(resurfacedResults != null);
-        reportVisualizationModel.setPassedCriticalErrorGate((criticalResults != null) && criticalResults.isPassed());
-        reportVisualizationModel.setCheckCriticalErrors(criticalResults != null);
-        reportVisualizationModel.setPassedTotalErrorGate((totalResults != null) && totalResults.isPassed());
-        reportVisualizationModel.setCheckTotalErrors(totalResults != null);
-        reportVisualizationModel.setPassedUniqueErrorGate((uniqueResults != null) && uniqueResults.isPassed());
-        reportVisualizationModel.setCheckUniqueErrors(uniqueResults != null);
-        reportVisualizationModel.setPassedRegressedEvents((regressionResults != null) && regressionResults.isPassed());
-        reportVisualizationModel.setCheckRegressedErrors(regressionResults != null);
-        reportVisualizationModel.setHasTopErrors((uniqueResults != null && !uniqueResults.isPassed()) || (totalResults != null && !totalResults.isPassed()));
-
-        reportVisualizationModel.setSummary(qualityReport.getStatusMsg());
-
-        if (newResults != null) {
-            reportVisualizationModel.setNewErrorSummary(newResults.getMessage());
-            reportVisualizationModel.setNewEvents(newResults.getEvents());
-            reportVisualizationModel.setNewGateTotal(newResults.getErrorCount());
-        }
-
-        if (resurfacedResults != null) {
-            reportVisualizationModel.setResurfacedErrorSummary(resurfacedResults.getMessage());
-            reportVisualizationModel.setResurfacedEvents(resurfacedResults.getEvents());
-            reportVisualizationModel.setResurfacedGateTotal(resurfacedResults.getErrorCount());
-        }
-
-        if (criticalResults != null) {
-            reportVisualizationModel.setCriticalErrorSummary(criticalResults.getMessage());
-            reportVisualizationModel.setCriticalEvents(criticalResults.getEvents());
-            reportVisualizationModel.setCriticalGateTotal(criticalResults.getErrorCount());
-        }
-
-        if (regressionResults != null) {
-            reportVisualizationModel.setRegressionSummary(regressionResults.getMessage());
-            reportVisualizationModel.setRegressedEvents(regressionResults.getEvents());
-            reportVisualizationModel.setRegressionGateTotal(regressionResults.getErrorCount());
-        }
-
-        if (totalResults != null) {
-            reportVisualizationModel.setTotalErrorSummary(totalResults.getMessage());
-            reportVisualizationModel.setTotalGateTotal(totalResults.getErrorCount());
-        }
-
-        if (uniqueResults != null) {
-            reportVisualizationModel.setUniqueErrorSummary(uniqueResults.getMessage());
-            reportVisualizationModel.setUniqueGateTotal(uniqueResults.getErrorCount());
-        }
-
-        reportVisualizationModel.setTopEvents(qualityReport.getTopEvents());
-
-        QualityReportExceptionDetails exceptionDetails = qualityReport.getExceptionDetails();
-        
-        if (exceptionDetails != null)
-        {
-        	reportVisualizationModel.setHasException(true);
-            reportVisualizationModel.setExceptionMessage(exceptionDetails.getExceptionMessage());
-            reportVisualizationModel.setEmailMessage(exceptionDetails.getEmailMessage());
-            reportVisualizationModel.setStackTrace(String.join("\n", exceptionDetails.getStackTrace()));
-        }
-        else
-        {
-        	reportVisualizationModel.setHasException(false);
-        }
-
-        return reportVisualizationModel;
-    }
-
+    /**
+     * TODO (ccaspanello) Are all of these really needed
+     */
     public String getQualityReportHtml(String endPoint, String apiKey, QualityReportParams reportParams, Requestor requestor) {
         return runQualityReport(endPoint, apiKey, reportParams, requestor != null ? requestor.getId() : null, null, false).toHtml();
     }

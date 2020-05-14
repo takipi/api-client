@@ -1,355 +1,146 @@
-{{> status}}
-
-<h3>Report Summary</h3>
-<table class="table table-striped w-25 mb-5">
-    <thead>
-    <tr>
-        <th>Gate</th>
-        <th>Status</th>
-        <th>Errors</th>
-    </tr>
-    </thead>
-    <tbody>
-    {{#if checkNewEvents}}
-        {{#if passedNewErrorGate}}
-            <tr>
-                <td>
-                    {{svg "web/img/embedded-success.svg"}}
-                    <a href="#new-gate">New</a>
-                </td>
-                <td>Passed</td>
-                <td>{{newGateTotal}}</td>
-            </tr>
-        {{else}}
-            <tr>
-                <td>
-                    {{svg "web/img/embedded-times.svg"}}
-                    <a href="#new-gate">New</a>
-                </td>
-                <td>Failed</td>
-                <td>{{newGateTotal}}</td>
-            </tr>
-        {{/if}}
-    {{/if}}
-
-    {{#if checkResurfacedEvents}}
-        {{#if passedResurfacedErrorGate}}
-            <tr>
-                <td>
-                    {{svg "web/img/embedded-success.svg"}}
-                    <a href="#resurfaced-gate">Resurfaced</a>
-                </td>
-                <td>Passed</td>
-                <td>{{resurfacedGateTotal}}</td>
-            </tr>
-        {{else}}
-            <tr>
-                <td>
-                    {{svg "web/img/embedded-times.svg"}}
-                    <a href="#resurfaced-gate">Resurfaced</a>
-                </td>
-                <td>Failed</td>
-                <td>{{resurfacedGateTotal}}</td>
-            </tr>
-        {{/if}}
-    {{/if}}
-
-    {{#if checkTotalErrors}}
-        {{#if passedTotalErrorGate}}
-            <tr>
-                <td>
-                    {{svg "web/img/embedded-success.svg"}}
-                    <a href="#total-gate">Total</a>
-                </td>
-                <td>Passed</td>
-                <td>{{totalGateTotal}}</td>
-            </tr>
-        {{else}}
-            <tr>
-                <td>
-                    {{svg "web/img/embedded-times.svg"}}
-                    <a href="#total-gate">Total</a>
-                </td>
-                <td>Failed</td>
-                <td>{{totalGateTotal}}</td>
-            </tr>
-        {{/if}}
-    {{/if}}
-
-    {{#if checkUniqueErrors}}
-        {{#if passedUniqueErrorGate}}
-            <tr>
-                <td>
-                    {{svg "web/img/embedded-success.svg"}}
-                    <a href="#unique-gate">Unique</a>
-                </td>
-                <td>Passed</td>
-                <td>{{uniqueGateTotal}}</td>
-            </tr>
-        {{else}}
-            <tr>
-                <td>
-                    {{svg "web/img/embedded-times.svg"}}
-                    <a href="#unique-gate">Unique</a>
-                </td>
-                <td>Failed</td>
-                <td>{{uniqueGateTotal}}</td>
-            </tr>
-        {{/if}}
-    {{/if}}
-
-
-    {{#if checkCriticalErrors}}
-        {{#if passedCriticalErrorGate}}
-            <tr>
-                <td>
-                    {{svg "web/img/embedded-success.svg"}}
-                    <a href="#critical-gate">Critical</a>
-                </td>
-                <td>Passed</td>
-                <td>{{criticalGateTotal}}</td>
-            </tr>
-        {{else}}
-            <tr>
-                <td>
-                    {{svg "web/img/embedded-times.svg"}}
-                    <a href="#critical-gate">Critical</a>
-                </td>
-                <td>Failed</td>
-                <td>{{criticalGateTotal}}</td>
-            </tr>
-        {{/if}}
-    {{/if}}
-
-    {{#if checkRegressedErrors}}
-        {{#if passedRegressedEvents}}
-            <tr>
-                <td>
-                    {{svg "web/img/embedded-success.svg"}}
-                    <a href="#increasing-gate">Increasing</a>
-                </td>
-                <td>Passed</td>
-                <td>{{regressionGateTotal}}</td>
-            </tr>
-        {{else}}
-            <tr>
-                <td>
-                    {{svg "web/img/embedded-times.svg"}}
-                    <a href="#increasing-gate">Increasing</a>
-                </td>
-                <td>Failed</td>
-                <td>{{regressionGateTotal}}</td>
-            </tr>
-        {{/if}}
-    {{/if}}
-
-    </tbody>
-</table>
-
-{{#if checkNewEvents}}
-    {{#if passedNewErrorGate}}
-        <div class="d-flex align-center mt-4">
-            {{svg "web/img/embedded-success.svg"}}
-            <h4 id="new-gate">{{newErrorSummary}}</h4>
+<div class="overops-quality-report">
+    <div class="d-flex align-center mt-3">
+        <div class="mr-2">
+            {{svg "web/img/overops-logo.svg"}}
         </div>
-        <p class="ml-2 muted">Nothing to report</p>
-    {{else}}
-        <div class="d-flex align-center mb-2 mt-4">
-            {{svg "web/img/embedded-danger.svg"}}
-            <h4 id="new-gate">{{newErrorSummary}}</h4>
-        </div>
-        <table class="table table-striped">
-            <thead>
+        <h1>Quality Report</h1>
+    </div>
+    <div class="alert {{data.statusCode.style}} d-flex align-center">
+        {{svg data.statusCode.svg}}
+        {{data.statusMsg}}
+    </div>
+    <h3>Report Summary</h3>
+    <table id="reportSummary" class="table table-striped w-25 mb-5">
+        <thead>
             <tr>
-                <th>Event</th>
-                <th>Application(s)</th>
-                <th>Introduced by</th>
-                <th>Volume</th>
+                <th>Gate</th>
+                <th>Status</th>
+                <th>Errors</th>
             </tr>
-            </thead>
-            <tbody>
-            {{#each newEvents}}
-                <tr>
-                    <td>
-                        <a href="{{this.arcLink}}" target="_blank">{{eventSummary}}</a>
-                    </td>
-                    <td>{{this.applications}}</td>
-                    <td>{{this.introducedBy}}</td>
-                    <td>{{this.hits}}</td>
-                </tr>
-            {{/each}}
-            </tbody>
-        </table>
-    {{/if}}
-{{/if}}
+        </thead>
+        <tbody>
+            {{#with data.newErrorsTestResults}}
+                {{> reportSummary data.newErrorsTestResults}}
+            {{/with}}
+            {{#with data.resurfacedErrorsTestResults}}
+                {{> reportSummary data.resurfacedErrorsTestResults}}
+            {{/with}}
+            {{#with data.totalErrorsTestResults}}
+                {{> reportSummary data.totalErrorsTestResults}}
+            {{/with}}
+            {{#with data.uniqueErrorsTestResults}}
+                {{> reportSummary data.uniqueErrorsTestResults}}
+            {{/with}}
+            {{#with data.criticalErrorsTestResults}}
+                {{> reportSummary data.criticalErrorsTestResults}}
+            {{/with}}
+            {{#with data.regressionErrorsTestResults}}
+                {{> reportSummary data.regressionErrorsTestResults}}
+            {{/with}}
+        </tbody>
+    </table>
 
-{{#if checkResurfacedEvents}}
-    {{#if passedResurfacedErrorGate}}
-        <div class="d-flex align-center mt-4">
-            {{svg "web/img/embedded-success.svg"}}
-            <h4 id="resurfaced-gate">{{resurfacedErrorSummary}}</h4>
-        </div>
-        <p class="ml-2 muted">Nothing to report</p>
-    {{else}}
-        <div class="d-flex align-center mb-2 mt-4">
-            {{svg "web/img/embedded-danger.svg"}}
-            <h4 id="resurfaced-gate">{{resurfacedErrorSummary}}</h4>
-        </div>
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>Event</th>
-                <th>Application(s)</th>
-                <th>Introduced by</th>
-                <th>Volume</th>
-            </tr>
-            </thead>
-            <tbody>
-            {{#each resurfacedEvents}}
-                <tr>
-                    <td>
-                        <a href="{{this.arcLink}}" target="_blank">{{this.eventSummary}}</a>
-                    </td>
-                    <td>{{this.applications}}</td>
-                    <td>{{this.introducedBy}}</td>
-                    <td>{{this.hits}}</td>
-                </tr>
-            {{/each}}
-            </tbody>
-        </table>
-    {{/if}}
-{{/if}}
+    {{#with data.newErrorsTestResults}}
+        {{> reportSection data.newErrorsTestResults}}
+    {{/with}}
 
-{{#or checkTotalErrors checkUniqueErrors}}
-    {{#if checkTotalErrors}}
-        {{#if passedTotalErrorGate}}
+    {{#with data.resurfacedErrorsTestResults}}
+        {{> reportSection data.resurfacedErrorsTestResults}}
+    {{/with}}
+
+    {{#with data.totalErrorsTestResults}}
+        {{#if passed}}
+                <div class="d-flex align-center mt-4 mb-2">
+                    {{svg "web/img/embedded-success.svg"}}
+                    <h4 id="{{testType.anchor}}">{{message}}</h4>
+                </div>
+                <p class="ml-2 muted">Nothing to report</p>
+        {{else}}
+                <div class="d-flex align-center mt-4 mb-2">
+                    {{svg "web/img/embedded-danger.svg"}}
+                    <h4 id="{{testType.anchor}}">{{message}}</h4>
+                </div>
+        {{/if}}
+    {{/with}}
+    {{#with data.uniqueErrorsTestResults}}
+        {{#if passed}}
             <div class="d-flex align-center mt-4 mb-2">
                 {{svg "web/img/embedded-success.svg"}}
-                <h4 id="total-gate">{{totalErrorSummary}}</h4>
+                <h4 id="{{testType.anchor}}">{{message}}</h4>
             </div>
+            <p class="ml-2 muted">Nothing to report</p>
         {{else}}
             <div class="d-flex align-center mt-4 mb-2">
                 {{svg "web/img/embedded-danger.svg"}}
-                <h4 id="total-gate">{{totalErrorSummary}}</h4>
+                <h4 id="{{testType.anchor}}">{{message}}</h4>
             </div>
         {{/if}}
+    {{/with}}
+    {{#if showTopEvents}}
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Event</th>
+            <th>Application(s)</th>
+            <th>Introduced by</th>
+            <th>Volume</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each data.topEvents}}
+            <tr>
+                <td>
+                    <a href="{{this.arcLink}}" target="_blank">{{eventSummary}}</a>
+                </td>
+                <td>{{this.applications}}</td>
+                <td>{{this.introducedBy}}</td>
+                <td>{{this.hits}}</td>
+            </tr>
+        {{/each}}
+        </tbody>
+    </table>
     {{/if}}
-    {{# if checkUniqueErrors}}
-        {{# if passedUniqueErrorGate}}
-            <div class="d-flex align-center mt-4 mb-2">
+
+    {{#with data.criticalErrorsTestResults}}
+        {{> reportSection data.criticalErrorsTestResults}}
+    {{/with}}
+
+    {{#with data.regressionErrorsTestResults}}
+        {{#if passed}}
+            <div class="d-flex align-center mt-4">
                 {{svg "web/img/embedded-success.svg"}}
-                <h4 id="unique-gate">{{uniqueErrorSummary}}</h4>
+                <h4 id="{{testType.anchor}}">{{message}}</h4>
             </div>
+            <p class="ml-2 muted">Nothing to report</p>
         {{else}}
             <div class="d-flex align-center mt-4 mb-2">
                 {{svg "web/img/embedded-danger.svg"}}
-                <h4 id="unique-gate">{{uniqueErrorSummary}}</h4>
+                <h4 id="{{testType.anchor}}">{{message}}</h4>
             </div>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Event</th>
+                    <th>Application(s)</th>
+                    <th>Introduced by</th>
+                    <th>Volume/Rate</th>
+                    <th>Type</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#each events}}
+                    <tr>
+                        <td>
+                            <a href="{{this.arcLink}}" target="_blank">{{eventSummary}}</a>
+                        </td>
+                        <td>{{this.applications}}</td>
+                        <td>{{this.introducedBy}}</td>
+                        <td>{{this.hits}}</td>
+                        <td>{{this.type}}</td>
+                    </tr>
+                {{/each}}
+                </tbody>
+            </table>
         {{/if}}
-    {{/if}}
-
-    {{#if hasTopErrors}}
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>Top Events Affecting Unique/Total Error Gates</th>
-                <th>Application(s)</th>
-                <th>Introduced by</th>
-                <th>Volume</th>
-            </tr>
-            </thead>
-            <tbody>
-            {{#each topEvents}}
-                <tr>
-                    <td>
-                        <a href="{{this.arcLink}}" target="_blank">{{this.eventSummary}}</a>
-                    </td>
-                    <td>{{this.applications}}</td>
-                    <td>{{this.introducedBy}}</td>
-                    <td>{{this.hits}}</td>
-                </tr>
-            {{/each}}
-            </tbody>
-        </table>
-    {{else}}
-        <p class="ml-2 muted">Nothing to report</p>
-    {{/if}}
-{{/or}}
-
-{{#if checkCriticalErrors}}
-    {{#if passedCriticalErrorGate}}
-        <div class="d-flex align-center mt-4">
-            {{svg "web/img/embedded-success.svg"}}
-            <h4 id="critical-gate">{{criticalErrorSummary}}</h4>
-        </div>
-        <p class="ml-2 muted">Nothing to report</p>
-    {{else}}
-        <div class="d-flex align-center mb-2 mt-4">
-            {{svg "web/img/embedded-danger.svg"}}
-            <h4 id="critical-gate">{{criticalErrorSummary}}</h4>
-        </div>
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>Event</th>
-                <th>Application(s)</th>
-                <th>Introduced by</th>
-                <th>Volume</th>
-            </tr>
-            </thead>
-            <tbody>
-            {{#each criticalEvents}}
-                <tr>
-                    <td>
-                        <a href="{{this.arcLink}}" target="_blank">{{this.eventSummary}}</a>
-                    </td>
-                    <td>{{this.applications}}</td>
-                    <td>{{this.introducedBy}}</td>
-                    <td>{{this.hits}}</td>
-                </tr>
-            {{/each}}
-            </tbody>
-        </table>
-    {{/if}}
-{{/if}}
-
-{{#if checkRegressedErrors}}
-    {{#if passedRegressedEvents}}
-        <div class="d-flex align-center mt-4">
-            {{svg "web/img/embedded-success.svg"}}
-            <h4 id="increasing-gate">{{regressionSummary}}</h4>
-        </div>
-        <p class="ml-2 muted">Nothing to report</p>
-    {{else}}
-        <div class="d-flex align-center mb-2 mt-4">
-            {{svg "web/img/embedded-danger.svg"}}
-            <h4 id="increasing-gate">{{regressionSummary}}</h4>
-        </div>
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>Event</th>
-                <th>Application(s)</th>
-                <th>Introduced by</th>
-                <th>Volume / Rate</th>
-                <th>Type</th>
-            </tr>
-            </thead>
-            <tbody>
-            {{#each regressedEvents}}
-                <tr>
-                    <td>
-                        <a href="{{this.arcLink}}" target="_blank">{{this.eventSummary}}</a>
-                    </td>
-                    <td>{{this.applications}}</td>
-                    <td>{{this.introducedBy}}</td>
-                    <td>{{this.eventRate}}</td>
-                    <td>{{this.type}}</td>
-                </tr>
-            {{/each}}
-            </tbody>
-        </table>
-    {{/if}}
-
-{{/if}}
-
+    {{/with}}
+</div>

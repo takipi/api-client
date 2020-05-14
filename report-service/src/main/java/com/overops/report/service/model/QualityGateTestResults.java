@@ -2,6 +2,11 @@ package com.overops.report.service.model;
 
 import java.util.List;
 
+/**
+ * Quality Gate Test Results
+ *
+ * Describes the Quality Gate category and references all the events associated with it
+ */
 public class QualityGateTestResults {
     private TestType testType;
     private boolean passed = false;
@@ -19,6 +24,7 @@ public class QualityGateTestResults {
         this.message = message;
     }
 
+    //<editor-fold desc="Getters & Setters">
     public boolean isPassed() {
         return passed;
     }
@@ -39,6 +45,15 @@ public class QualityGateTestResults {
         return events;
     }
 
+    public TestType getTestType() {
+        return testType;
+    }
+
+    public void setTestType(TestType testType) {
+        this.testType = testType;
+    }
+    //</editor-fold>
+
     public void setEvents(List<QualityGateEvent> events) {
         this.events = events;
         errorCount = events != null ? events.size() : 0;
@@ -53,13 +68,5 @@ public class QualityGateTestResults {
             throw new IllegalStateException("Can not set error count when event list is not null.");
         }
         this.errorCount = errorCount;
-    }
-
-    public TestType getTestType() {
-        return testType;
-    }
-
-    public void setTestType(TestType testType) {
-        this.testType = testType;
     }
 }

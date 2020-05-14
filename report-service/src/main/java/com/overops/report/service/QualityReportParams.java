@@ -1,6 +1,13 @@
 package com.overops.report.service;
 
+/**
+ * Quality Report Query Parameters
+ * <p>
+ * This object model is filled out by the user interface and passed into the Client API to generate the Quality Report
+ */
 public class QualityReportParams {
+
+    // TODO Document and use Bean Validation annotations instead of manually doing it (See JSR 303)
     private String applicationName = "";
     private String deploymentName = "";
     private String serviceId = "";
@@ -24,6 +31,7 @@ public class QualityReportParams {
     private boolean debug = false;
     private boolean errorSuccess = false;
 
+    //<editor-fold desc="Getters & Setters">
     public String getApplicationName() {
         return applicationName;
     }
@@ -192,5 +200,6 @@ public class QualityReportParams {
 
     public void setErrorSuccess(boolean errorSuccess) {
         this.errorSuccess = errorSuccess;
-    } 
+    }
+    //</editor-fold>
 }

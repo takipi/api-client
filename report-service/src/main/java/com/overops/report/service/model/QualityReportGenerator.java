@@ -5,18 +5,20 @@ import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.helper.ConditionalHelpers;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
-import com.overops.quality.report.ReportGeneratorException;
-import com.overops.quality.report.SvgHelper;
+import com.overops.report.service.ReportGeneratorException;
+import com.overops.report.service.SvgHelper;
 
 import java.io.IOException;
 
-
+/**
+ * Generates HBS templates with the QualityReportTemplate model
+ */
 public class QualityReportGenerator {
 
     public String generate(QualityReportTemplate model, String templateName) {
         try {
             TemplateLoader loader = new ClassPathTemplateLoader();
-            loader.setPrefix("/web/html");
+            loader.setPrefix("/web/template");
             loader.setSuffix(".hbs");
             Handlebars handlebars = new Handlebars(loader);
             handlebars.registerHelper("or", ConditionalHelpers.or);

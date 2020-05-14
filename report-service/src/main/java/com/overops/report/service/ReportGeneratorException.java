@@ -1,4 +1,4 @@
-package com.overops.quality.report;
+package com.overops.report.service;
 
 /**
  * Generic exception to throw for this integration project
