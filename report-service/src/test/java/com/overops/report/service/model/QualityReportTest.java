@@ -50,6 +50,4 @@ public class QualityReportTest extends AbstractQualityReportTest {
         String actual = qualityReport.toHtml(false);
         assertEqualsWithoutWhiteSpace(expected, actual);
     }
-
-
 }
