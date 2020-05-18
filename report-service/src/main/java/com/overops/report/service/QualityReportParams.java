@@ -12,6 +12,12 @@ public class QualityReportParams {
     private String deploymentName = "";
     private String serviceId = "";
     private String regexFilter = "";
+
+    /**
+     * If quality gates fail; determine if we should pass the build or not
+     * true - If gates fail or there is an exception; mark unstable
+     * false - If gates fail; don't mark unstable
+     */
     private boolean markUnstable = false;
     private int printTopIssues = 5;
     private boolean newEvents = false;
@@ -29,7 +35,20 @@ public class QualityReportParams {
     private boolean applySeasonality = false;
 
     private boolean debug = false;
+
+    /**
+     * If any exception occurs determine if the build should fail or not
+     * true - pass the build
+     * false - fail the build
+     */
     private boolean errorSuccess = false;
+
+    /**
+     * If gates fail determine if events should still show
+     * true - show events for failed gates
+     * false - do not show events for failed gates
+     */
+    private boolean showEventsForPassedGates = false;
 
     //<editor-fold desc="Getters & Setters">
     public String getApplicationName() {
@@ -200,6 +219,14 @@ public class QualityReportParams {
 
     public void setErrorSuccess(boolean errorSuccess) {
         this.errorSuccess = errorSuccess;
+    }
+
+    public boolean isShowEventsForPassedGates() {
+        return showEventsForPassedGates;
+    }
+
+    public void setShowEventsForPassedGates(boolean showEventsForPassedGates) {
+        this.showEventsForPassedGates = showEventsForPassedGates;
     }
     //</editor-fold>
 }

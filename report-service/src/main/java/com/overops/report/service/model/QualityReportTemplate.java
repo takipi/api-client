@@ -34,7 +34,7 @@ public class QualityReportTemplate {
     //</editor-fold>
 
     /**
-     * HBS 'getter' tod determine if there are exceptions
+     * HBS 'getter' to determine if there are exceptions
      *
      * @return
      */

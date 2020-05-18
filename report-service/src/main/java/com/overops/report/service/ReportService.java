@@ -11,6 +11,8 @@ import com.takipi.api.client.util.cicd.ProcessQualityGates;
 import com.takipi.api.client.util.cicd.QualityGateReport;
 import com.takipi.api.client.util.regression.*;
 import com.takipi.api.client.util.view.ViewUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.*;
@@ -19,8 +21,21 @@ import java.util.stream.Collectors;
 
 /**
  * Main Entry Point to Generate Reports
+ *
+ * Current usage:
+ * - GitLab
+ * - Bamboo
+ * - Concourse
+ * - TeamCity
+ * - Jenkins
  */
 public class ReportService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(QualityReport.class);
+
+    private static final String PLAN_HEAD = "<head><title>OverOps Error</title></head>";
+    private static final String PLAN_BODY = "<body>An error occurred while generating a Quality Report.<br/>%s</body>";
+    private static final String PLAN_TEMPLATE = "<!doctype html><html>" + PLAN_HEAD + PLAN_BODY +"</html>";
 
     private transient Gson gson = new Gson();
 
@@ -491,6 +506,32 @@ public class ReportService {
         boolean result = !pattern.matcher(json).find();
 
         return result;
+    }
+
+    /**
+     * Creates an HTML page for errors even if there is an issue with the template engine.
+     * @param exception
+     * @return
+     */
+    public String exceptionHtml(Exception exception) {
+        try {
+            // Write stacktrace to string for template
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            exception.printStackTrace(pw);
+
+            QualityReport qualityReport = new QualityReport();
+            QualityReportExceptionDetails details = new QualityReportExceptionDetails();
+            details.setExceptionMessage(exception.getMessage());
+            details.setStackTrace(sw.toString().split("\n"));
+            qualityReport.setExceptionDetails(details);
+
+            return qualityReport.toHtml();
+        } catch (Exception e) {
+            LOG.error("Error creating report with template engine:", e);
+            // (Rare Case) If for some reason there is an error at the template layer spit out plan text error.
+            return String.format(PLAN_TEMPLATE, "Error: " + exception.getMessage());
+        }
     }
 
 }
