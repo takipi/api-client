@@ -19,9 +19,12 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.overops.report.service.model.QualityReport.ReportStatus;
+import static com.overops.report.service.model.QualityGateTestResults.TestType;
+
 /**
  * Main Entry Point to Generate Reports
- *
+ * <p>
  * Current usage:
  * - GitLab
  * - Bamboo
@@ -35,7 +38,7 @@ public class ReportService {
 
     private static final String PLAN_HEAD = "<head><title>OverOps Error</title></head>";
     private static final String PLAN_BODY = "<body>An error occurred while generating a Quality Report.<br/>%s</body>";
-    private static final String PLAN_TEMPLATE = "<!doctype html><html>" + PLAN_HEAD + PLAN_BODY +"</html>";
+    private static final String PLAN_TEMPLATE = "<!doctype html><html>" + PLAN_HEAD + PLAN_BODY + "</html>";
 
     private transient Gson gson = new Gson();
 
@@ -64,7 +67,7 @@ public class ReportService {
 
     public QualityReport runQualityReport(String endPoint, String apiKey, QualityReportParams reportParams, Integer requestorId, PrintStream outputStream, boolean debug) {
         Integer actualRequestorId = ((requestorId != null) ? requestorId : Requestor.UNKNOWN.getId());
-        
+
         try {
             boolean runRegressions = convertToMinutes(reportParams.getBaselineTimespan()) > 0;
 
@@ -218,7 +221,7 @@ public class ReportService {
         boolean failedRegressionGate = (regressions != null) && (regressions.size() > 0);
         boolean failedTotalVolumeGate = (maxEventVolume != 0) && (qualityGateReport.getTotalErrorCount() >= maxEventVolume);
         boolean failedUniqueVolumeGate = (maxUniqueVolume != 0) && (qualityGateReport.getUniqueErrorCount() >= maxUniqueVolume);
-        
+
         boolean unstable = failedRegressionGate || failedTotalVolumeGate || failedUniqueVolumeGate || failedNewErrorGate || failedResurfacedErrorGate || failedCriticalErrorGate;
 
         String deploymentName = getDeploymentName(input);
@@ -229,18 +232,20 @@ public class ReportService {
             } else {
                 reportModel.setStatusMsg("Congratulations, the build  has passed all quality gates!");
             }
-        }  else {
+        } else {
             if (markedUnstable) {
                 reportModel.setStatusCode(ReportStatus.FAILED);
                 if ((deploymentName != null) && (deploymentName.trim().length() > 0)) {
-                    reportModel.setStatusMsg("OverOps has marked build "+ deploymentName + " as \"failed\"."); ;
+                    reportModel.setStatusMsg("OverOps has marked build " + deploymentName + " as \"failed\".");
+                    ;
                 } else {
-                    reportModel.setStatusMsg("OverOps has marked the build as \"failed\"."); ;
+                    reportModel.setStatusMsg("OverOps has marked the build as \"failed\".");
+                    ;
                 }
             } else {
                 reportModel.setStatusCode(ReportStatus.WARNING);
                 if ((deploymentName != null) && (deploymentName.trim().length() > 0)) {
-                    reportModel.setStatusMsg("OverOps has detected issues with build "+ deploymentName + " but did not mark the build as \"failed\".");
+                    reportModel.setStatusMsg("OverOps has detected issues with build " + deploymentName + " but did not mark the build as \"failed\".");
                 } else {
                     reportModel.setStatusMsg("OverOps has detected issues with the build but did not mark the build as \"failed\".");
                 }
@@ -278,11 +283,11 @@ public class ReportService {
             regressionErrorsTestResults.setPassed(!failedRegressionGate);
             regressionErrorsTestResults.setEvents(regressions.stream().map(e -> new QualityGateEvent(e)).collect(Collectors.toList()));
             if ((failedRegressionGate) &&
-            	(regressions != null)) {
-            	// We check regressions != null explicitly because it prevents a false positive NPE warning.
-            	// While the fact that it's certainly not null is encapsulated in the fact hasRegressions is true,
-            	// The IDE can't directly make that assumption.
-            	//
+                    (regressions != null)) {
+                // We check regressions != null explicitly because it prevents a false positive NPE warning.
+                // While the fact that it's certainly not null is encapsulated in the fact hasRegressions is true,
+                // The IDE can't directly make that assumption.
+                //
                 regressionErrorsTestResults.setMessage("Increasing Quality Gate: Failed, OverOps detected increasing errors in the current build against the baseline of " + baselineTime);
             } else {
                 regressionErrorsTestResults.setMessage("Increasing Quality Gate: Passed, OverOps did not detect any increasing errors in the current build against the baseline of " + baselineTime);
@@ -475,7 +480,7 @@ public class ReportService {
         if (events != null) {
             String match = "&source=(\\d)+";  // matches at least one digit
             String replace = "&source=" + requestorId;    // replace with 58
-    
+
             for (OOReportEvent event : events) {
                 String arcLink = event.getARCLink();
                 if (arcLink != null) {
@@ -510,6 +515,7 @@ public class ReportService {
 
     /**
      * Creates an HTML page for errors even if there is an issue with the template engine.
+     *
      * @param exception
      * @return
      */
@@ -534,4 +540,29 @@ public class ReportService {
         }
     }
 
+    /**
+     * Requestor
+     * <p>
+     * This enum ID represents the integration using the ARC screen links.  This is used for analytics / marketing.  This
+     * list should be in sync with Confluence (https://overopshq.atlassian.net/wiki/spaces/PP/pages/1529872385/Hit+Sources)
+     * and there is a JIRA ticket to clean this up (https://overopshq.atlassian.net/browse/OO-10236)
+     */
+    public enum Requestor {
+        UNKNOWN(100),
+        GIT_LAB(80),
+        TEAM_CITY(58),
+        BAMBOO(52),
+        CONCOURSE(47),
+        JENKINS(4);
+
+        private final int id;
+
+        Requestor(int id) {
+            this.id = id;
+        }
+
+        public int getId() {
+            return id;
+        }
+    }
 }

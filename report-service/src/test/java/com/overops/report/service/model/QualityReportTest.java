@@ -1,6 +1,7 @@
 package com.overops.report.service.model;
 
 import org.junit.jupiter.api.Test;
+import static com.overops.report.service.model.QualityReport.ReportStatus;
 
 public class QualityReportTest extends AbstractQualityReportTest {
 
