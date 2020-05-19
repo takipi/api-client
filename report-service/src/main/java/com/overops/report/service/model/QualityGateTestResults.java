@@ -2,21 +2,18 @@ package com.overops.report.service.model;
 
 import java.util.List;
 
+/**
+ * Quality Gate Test Results
+ *
+ * Describes the Quality Gate category and references all the events associated with it
+ */
 public class QualityGateTestResults {
+
     private TestType testType;
     private boolean passed = false;
     private String message = "";
     private long errorCount = 0;
     private List<QualityGateEvent> events = null;
-
-    public enum TestType {
-        NEW_EVENTS_TEST, 
-        RESURFACED_EVENTS_TEST, 
-        TOTAL_EVENTS_TEST,
-        UNIQUE_EVENTS_TEST, 
-        CRITICAL_EVENTS_TEST,
-        REGRESSION_EVENTS_TEST
-    };
 
     public QualityGateTestResults(TestType testType) {
         this.testType = testType;
@@ -28,6 +25,7 @@ public class QualityGateTestResults {
         this.message = message;
     }
 
+    //<editor-fold desc="Getters & Setters">
     public boolean isPassed() {
         return passed;
     }
@@ -48,6 +46,15 @@ public class QualityGateTestResults {
         return events;
     }
 
+    public TestType getTestType() {
+        return testType;
+    }
+
+    public void setTestType(TestType testType) {
+        this.testType = testType;
+    }
+    //</editor-fold>
+
     public void setEvents(List<QualityGateEvent> events) {
         this.events = events;
         errorCount = events != null ? events.size() : 0;
@@ -64,11 +71,36 @@ public class QualityGateTestResults {
         this.errorCount = errorCount;
     }
 
-    public TestType getTestType() {
-        return testType;
-    }
 
-    public void setTestType(TestType testType) {
-        this.testType = testType;
+    /**
+     * Test Type
+     * <p>
+     * This enum is used during rendering time to help break out sections / types of quality gates
+     */
+    public enum TestType {
+        NEW_EVENTS_TEST("New", "new-gate"),
+        RESURFACED_EVENTS_TEST("Resurfaced", "resurfaced-gate"),
+        TOTAL_EVENTS_TEST("Total", "total-gate"),
+        UNIQUE_EVENTS_TEST("Unique", "unique-gate"),
+        CRITICAL_EVENTS_TEST("Critical", "critical-gate"),
+        REGRESSION_EVENTS_TEST("Increasing", "increasing-gate");
+
+        private String displayName;
+        private String anchor;
+
+        TestType(String displayName, String anchor) {
+            this.displayName = displayName;
+            this.anchor = anchor;
+        }
+
+        //<editor-fold desc="Getters">
+        public String getDisplayName() {
+            return this.displayName;
+        }
+
+        public String getAnchor() {
+            return this.anchor;
+        }
+        //</editor-fold>
     }
 }

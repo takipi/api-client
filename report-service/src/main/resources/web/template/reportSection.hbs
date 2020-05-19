@@ -1,0 +1,34 @@
+{{#if passed}}
+    <div class="d-flex align-center mt-4">
+        {{svg "web/img/embedded-success.svg"}}
+        <h4 id="{{testType.anchor}}">{{message}}</h4>
+    </div>
+    <p class="ml-2 muted">Nothing to report</p>
+{{else}}
+    <div class="d-flex align-center mt-4 mb-2">
+        {{svg "web/img/embedded-danger.svg"}}
+        <h4 id="{{testType.anchor}}">{{message}}</h4>
+    </div>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Event</th>
+            <th>Application(s)</th>
+            <th>Introduced by</th>
+            <th>Volume</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each events}}
+            <tr>
+                <td>
+                    <a href="{{this.arcLink}}" target="_blank">{{eventSummary}}</a>
+                </td>
+                <td>{{this.applications}}</td>
+                <td>{{this.introducedBy}}</td>
+                <td>{{this.hits}}</td>
+            </tr>
+        {{/each}}
+        </tbody>
+    </table>
+{{/if}}

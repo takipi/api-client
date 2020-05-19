@@ -1,0 +1,17 @@
+<!doctype html> 
+<html lang="en"> 
+    <head> 
+        <meta charset="utf-8"> 
+        <title>Overops Report</title>
+        <style>
+            {{> style}}
+        </style>
+    </head> 
+    <body>
+    {{#if hasExceptions}}
+        {{> exception}}
+    {{else}}
+        {{> report}}
+    {{/if}}
+    </body>
+</html>

@@ -1,0 +1,64 @@
+package com.overops.report.service.model;
+
+/**
+ * Template Model for Quality Report
+ */
+public class QualityReportTemplate {
+
+    /**
+     * Quality Report Data
+     */
+    private final QualityReport data;
+
+    /**
+     * Determines if we should show events (if exists) even though the quality gate has passed
+     */
+    private boolean showEventsForPassedGates;
+
+    public QualityReportTemplate(QualityReport data) {
+        this.data = data;
+    }
+
+    public QualityReport getData() {
+        return data;
+    }
+
+    //<editor-fold desc="Getters & Setters">
+    public boolean isShowEventsForPassedGates() {
+        return showEventsForPassedGates;
+    }
+
+    public void setShowEventsForPassedGates(boolean showEventsForPassedGates) {
+        this.showEventsForPassedGates = showEventsForPassedGates;
+    }
+    //</editor-fold>
+
+    /**
+     * HBS 'getter' to determine if there are exceptions
+     *
+     * @return
+     */
+    public boolean isHasExceptions() {
+        return data.getExceptionDetails() != null;
+    }
+
+    /**
+     * HBS 'getter' to determine if we should show top events or not
+     *
+     * @return
+     */
+    public boolean isShowTopEvents() {
+        try {
+            if (!data.getTotalErrorsTestResults().isPassed() || !data.getUniqueErrorsTestResults().isPassed()) {
+                return true;
+            } else if (showEventsForPassedGates && data.getTopEvents() != null && data.getTopEvents().size() > 0) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (NullPointerException e) {
+            // TODO: This is a hack; fix me.
+            return false;
+        }
+    }
+}

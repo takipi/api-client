@@ -2,6 +2,11 @@ package com.overops.report.service.model;
 
 import com.takipi.api.client.util.cicd.OOReportEvent;
 
+/**
+ * Quality Gate Event
+ * <p>
+ * Describes the event that was detected
+ */
 public class QualityGateEvent {
 
     private String arcLink = "";
@@ -12,7 +17,8 @@ public class QualityGateEvent {
     private String eventRate = "";
     private long hits;
 
-    public QualityGateEvent(){
+    public QualityGateEvent() {
+        // No arg constructor for object mapping.
     }
 
     public QualityGateEvent(OOReportEvent event) {
@@ -25,6 +31,7 @@ public class QualityGateEvent {
         this.applications = event.getApplications();
     }
 
+    //<editor-fold desc="Getters & Setters">
     public String getArcLink() {
         return arcLink;
     }
@@ -80,4 +87,5 @@ public class QualityGateEvent {
     public void setHits(long hits) {
         this.hits = hits;
     }
+    //</editor-fold>
 }
