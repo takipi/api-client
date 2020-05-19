@@ -42,9 +42,6 @@ public class ReportService {
 
     private transient Gson gson = new Gson();
 
-    /**
-     * TODO (ccaspanello) Are all of these really needed
-     */
     public String getQualityReportHtml(String endPoint, String apiKey, QualityReportParams reportParams, Requestor requestor) {
         return runQualityReport(endPoint, apiKey, reportParams, requestor != null ? requestor.getId() : null, null, false).toHtml();
     }

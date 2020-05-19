@@ -7,7 +7,6 @@ package com.overops.report.service;
  */
 public class QualityReportParams {
 
-    // TODO Document and use Bean Validation annotations instead of manually doing it (See JSR 303)
     private String applicationName = "";
     private String deploymentName = "";
     private String serviceId = "";
