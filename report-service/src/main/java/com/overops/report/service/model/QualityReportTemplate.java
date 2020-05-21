@@ -61,4 +61,25 @@ public class QualityReportTemplate {
             return false;
         }
     }
+
+    /**
+     * HBS 'getter' to determine if we should show top events or not
+     *
+     * @return
+     */
+    public boolean isRenderTotalEventsTable() {
+        QualityGateTestResults testResults = data.getTotalErrorsTestResults();
+        return (testResults != null) && (!testResults.isPassed() || (showEventsForPassedGates && (testResults.getErrorCount() > 0)));
+    }
+
+    /**
+     * HBS 'getter' to determine if we should show top events or not
+     *
+     * @return
+     */
+    public boolean isRenderUniqueEventsTable() {
+        QualityGateTestResults testResults = data.getUniqueErrorsTestResults();
+        return (testResults != null) && (!testResults.isPassed() || (showEventsForPassedGates && (testResults.getErrorCount() > 0)));
+    }
+
 }
