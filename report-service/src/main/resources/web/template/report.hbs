@@ -50,16 +50,42 @@
 
     {{#with data.totalErrorsTestResults}}
         {{#if passed}}
-                <div class="d-flex align-center mt-4 mb-2">
-                    {{svg "web/img/embedded-success.svg"}}
-                    <h4 id="{{testType.anchor}}">{{message}}</h4>
-                </div>
+            <div class="d-flex align-center mt-4 mb-2">
+                {{svg "web/img/embedded-success.svg"}}
+                <h4 id="{{testType.anchor}}">{{message}}</h4>
+            </div>
+            {{#unless renderTotalEventsTable}}
                 <p class="ml-2 muted">Nothing to report</p>
+            {{/unless}}
         {{else}}
-                <div class="d-flex align-center mt-4 mb-2">
-                    {{svg "web/img/embedded-danger.svg"}}
-                    <h4 id="{{testType.anchor}}">{{message}}</h4>
-                </div>
+            <div class="d-flex align-center mt-4 mb-2">
+                {{svg "web/img/embedded-danger.svg"}}
+                <h4 id="{{testType.anchor}}">{{message}}</h4>
+            </div>
+        {{/if}}
+        {{#if renderTotalEventsTable}}
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Top Events Affecting Total Error Gates</th>
+                    <th>Application(s)</th>
+                    <th>Introduced by</th>
+                    <th>Volume</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#each data.topEvents}}
+                    <tr>
+                        <td>
+                            <a href="{{this.arcLink}}" target="_blank">{{this.eventSummary}}</a>
+                        </td>
+                        <td>{{this.applications}}</td>
+                        <td>{{this.introducedBy}}</td>
+                        <td>{{this.hits}}</td>
+                    </tr>
+                {{/each}}
+                </tbody>
+            </table>
         {{/if}}
     {{/with}}
     {{#with data.uniqueErrorsTestResults}}
@@ -68,38 +94,40 @@
                 {{svg "web/img/embedded-success.svg"}}
                 <h4 id="{{testType.anchor}}">{{message}}</h4>
             </div>
-            <p class="ml-2 muted">Nothing to report</p>
+            {{#unless renderUniqueEventsTable}}
+                <p class="ml-2 muted">Nothing to report</p>
+            {{/unless}}
         {{else}}
             <div class="d-flex align-center mt-4 mb-2">
                 {{svg "web/img/embedded-danger.svg"}}
                 <h4 id="{{testType.anchor}}">{{message}}</h4>
             </div>
         {{/if}}
+        {{#if renderUniqueEventsTable}}
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Top Events Affecting Unique Error Gates</th>
+                    <th>Application(s)</th>
+                    <th>Introduced by</th>
+                    <th>Volume</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#each data.topEvents}}
+                    <tr>
+                        <td>
+                            <a href="{{this.arcLink}}" target="_blank">{{this.eventSummary}}</a>
+                        </td>
+                        <td>{{this.applications}}</td>
+                        <td>{{this.introducedBy}}</td>
+                        <td>{{this.hits}}</td>
+                    </tr>
+                {{/each}}
+                </tbody>
+            </table>
+        {{/if}}
     {{/with}}
-    {{#if showTopEvents}}
-    <table class="table table-striped">
-        <thead>
-        <tr>
-            <th>Event</th>
-            <th>Application(s)</th>
-            <th>Introduced by</th>
-            <th>Volume</th>
-        </tr>
-        </thead>
-        <tbody>
-        {{#each data.topEvents}}
-            <tr>
-                <td>
-                    <a href="{{this.arcLink}}" target="_blank">{{eventSummary}}</a>
-                </td>
-                <td>{{this.applications}}</td>
-                <td>{{this.introducedBy}}</td>
-                <td>{{this.hits}}</td>
-            </tr>
-        {{/each}}
-        </tbody>
-    </table>
-    {{/if}}
 
     {{#with data.criticalErrorsTestResults}}
         {{> reportSection data.criticalErrorsTestResults}}
