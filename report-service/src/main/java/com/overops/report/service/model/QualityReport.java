@@ -142,8 +142,7 @@ public class QualityReport {
         QualityReportGenerator generator = new QualityReportGenerator();
         QualityReportTemplate template = new QualityReportTemplate(this);
         template.setShowEventsForPassedGates(showEventsForPassedGates);
-        String reportHtml = generator.generate(template, "report");
-        return reportHtml;
+        return (exceptionDetails == null) ? generator.generate(template, "report") : generator.generate(template, "exception");
     }
 
     /**
