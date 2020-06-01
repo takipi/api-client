@@ -1,0 +1,41 @@
+apply plugin: 'maven'
+
+archivesBaseName = 'report-service'
+
+sourceSets {
+  main {
+    resources {
+      srcDirs "src/main/resources/**, src/main/resources/web/css**"
+    }
+  }
+}
+
+if (project.ext.has("backendJavac")) {
+  compileJava {
+    options.forkOptions.executable = project.ext.get("backendJavac")
+  }
+}
+
+dependencies {
+    compile(
+            project(':api-client'),
+            project(':api-client-util')
+    )
+}
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      pom.project {
+        name 'report-service'
+        description 'OverOps API Client, interacts with OverOps Server REST API'
+
+        scm {
+          connection 'scm:git:https://github.com/takipi/api-client/tree/master/api-client'
+          developerConnection 'scm:git:https://github.com/takipi/api-client/tree/master/api-client'
+          url 'https://github.com/takipi/api-client/tree/master/api-client'
+        }
+      }
+    }
+  }
+}

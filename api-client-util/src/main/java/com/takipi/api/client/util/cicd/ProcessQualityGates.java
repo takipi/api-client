@@ -31,13 +31,19 @@ public class ProcessQualityGates {
 
 		qualityReport = new QualityGateReport();
 		
-		Pair<DateTime, DateTime> deploymentsActiveWindow = RegressionUtil.getDeploymentsActiveWindow(apiClient,
-				input.serviceId, input.deployments);
-		
-		if ((deploymentsActiveWindow == null) ||
-			(deploymentsActiveWindow.getFirst() == null)) {
-			throw new IllegalStateException("Deployments " + Arrays.toString(input.deployments.toArray())
+		Pair<DateTime, DateTime> deploymentsActiveWindow = null;
+		if ((input.deployments == null) || (input.deployments.size() == 0)) {
+			deploymentsActiveWindow = RegressionUtil.getDeploymentsActiveWindow(apiClient, input.serviceId);
+		} else {
+			deploymentsActiveWindow = RegressionUtil.getDeploymentsActiveWindow(apiClient, input.serviceId, input.deployments);
+		}
+		if ((deploymentsActiveWindow == null) || (deploymentsActiveWindow.getFirst() == null)) {
+			if ((input.deployments == null) || (input.deployments.size() == 0)) {
+				throw new IllegalStateException("Unable to determine active window for report.");
+			} else {
+				throw new IllegalStateException("Deployments " + Arrays.toString(input.deployments.toArray())
 					+ " not found. Please ensure your collector and CI/CD configuration are pointing to the same environment.");
+			}
 		}
 		
 		DateTime deploymentStart = deploymentsActiveWindow.getFirst();
@@ -88,7 +94,7 @@ public class ProcessQualityGates {
 		//
 		events = RegressionUtil.getActiveEventVolume(apiClient, input, deploymentStart, printStream, true);
 		
-		if (CollectionUtil.safeIsEmpty(events)) {
+		if (CollectionUtil.safeIsEmpty(events) || CollectionUtil.safeIsEmpty(input.applictations)) {
 			// Sadly, still no events.
 			//
 			return events;
@@ -96,14 +102,13 @@ public class ProcessQualityGates {
 		
 		// Now filter by app name for app tier
 		//
-		return filterByLabel(events, input);
+		return filterByLabel(events, (List<String>)input.applictations);
 	}
 	
 	// This is for app tiers.
 	//
-	private static List<EventResult> filterByLabel(Collection<EventResult> inputEvents, RegressionInput input) {
+	private static List<EventResult> filterByLabel(Collection<EventResult> inputEvents, List<String> list) {
 		//this will only find the first app by design. We may need to find multiple in the future
-		List<String> list = (List<String>)input.applictations;
 		String appName = list.get(0) + ".app";
 		
 		List<EventResult> result = new ArrayList<EventResult>();
@@ -115,7 +120,7 @@ public class ProcessQualityGates {
 		}
 		
 		if (CollectionUtil.safeIsEmpty(result)) {
-			throw new IllegalStateException("Application(s) " + Arrays.toString(input.applictations.toArray())
+			throw new IllegalStateException("Application(s) " + Arrays.toString(list.toArray())
 			+ " not found. Please ensure Application names(s) provided are correct.");
 		}
 		
@@ -176,7 +181,7 @@ public class ProcessQualityGates {
 			Collection<EventResult> events, DateTime deploymentStart) {
 		List<OOReportEvent> result = new ArrayList<OOReportEvent>();
 		for (EventResult event : events) {
-			if (!input.deployments.contains(event.introduced_by)) {
+			if ((input.deployments != null) && (input.deployments.size() > 0) && !input.deployments.contains(event.introduced_by)) {
 				continue;
 			}
 			String arcLink = getArcLink(apiClient, event.id, input, deploymentStart);
