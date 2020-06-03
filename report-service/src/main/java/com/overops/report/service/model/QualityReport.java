@@ -126,9 +126,14 @@ public class QualityReport {
     }
 
     public String toHtml(boolean showEventsForPassedGates) {
+        return toHtml(showEventsForPassedGates, false);
+    }
+
+    public String toHtml(boolean showEventsForPassedGates, boolean isStandalone) {
         QualityReportGenerator generator = new QualityReportGenerator();
         QualityReportTemplate template = new QualityReportTemplate(this);
         template.setShowEventsForPassedGates(showEventsForPassedGates);
+        template.setIsStandalone(isStandalone);
         return generator.generate(template, "page");
     }
 

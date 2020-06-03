@@ -15,6 +15,11 @@ public class QualityReportTemplate {
      */
     private boolean showEventsForPassedGates;
 
+    /**
+     * Determine if we should add extra html and css for standalone quality report
+     */
+    private boolean isStandalone;
+
     public QualityReportTemplate(QualityReport data) {
         this.data = data;
     }
@@ -30,6 +35,14 @@ public class QualityReportTemplate {
 
     public void setShowEventsForPassedGates(boolean showEventsForPassedGates) {
         this.showEventsForPassedGates = showEventsForPassedGates;
+    }
+
+    public boolean isStandalone() {
+        return isStandalone;
+    }
+
+    public void setIsStandalone(boolean isStandalone) {
+        this.isStandalone = isStandalone;
     }
     //</editor-fold>
 
