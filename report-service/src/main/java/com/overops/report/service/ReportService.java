@@ -546,6 +546,7 @@ public class ReportService {
      */
     public enum Requestor {
         UNKNOWN(100),
+        QUALITY_REPORT_DIRECT(90),
         GIT_LAB(80),
         TEAM_CITY(58),
         BAMBOO(52),
