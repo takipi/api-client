@@ -11,13 +11,8 @@ public class QualityReportParams {
     private String deploymentName = "";
     private String serviceId = "";
     private String regexFilter = "";
-
-    /**
-     * If quality gates fail; determine if we should pass the build or not
-     * true - If gates fail or there is an exception; mark unstable
-     * false - If gates fail; don't mark unstable
-     */
-    private boolean markUnstable = false;
+    
+    private MarkUnstable markUnstable = MarkUnstable.FALSE;
     private int printTopIssues = 5;
     private boolean newEvents = false;
     private boolean resurfacedErrors = false;
@@ -82,11 +77,11 @@ public class QualityReportParams {
         this.regexFilter = regexFilter;
     }
 
-    public boolean isMarkUnstable() {
+    public MarkUnstable getMarkUnstable() {
         return markUnstable;
     }
 
-    public void setMarkUnstable(boolean markUnstable) {
+    public void setMarkUnstable(MarkUnstable markUnstable) {
         this.markUnstable = markUnstable;
     }
 

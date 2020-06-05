@@ -165,7 +165,7 @@ public class ReportService {
             replaceSourceId(qualityGateReport.getCriticalErrors(), actualRequestorId);
             replaceSourceId(qualityGateReport.getTopErrors(), actualRequestorId);
 
-            return runQualityReport(qualityGateReport, input, regressions, newEvents, resurfacedEvents, runRegressions, maxEventVolume, maxUniqueErrors, reportParams.isMarkUnstable());
+            return runQualityReport(qualityGateReport, input, regressions, newEvents, resurfacedEvents, runRegressions, maxEventVolume, maxUniqueErrors, reportParams.getMarkUnstable());
         } catch (Throwable ex) {
             QualityReport qualityReport = new QualityReport();
 
@@ -178,10 +178,16 @@ public class ReportService {
             stackTrace.addAll(stackElements.stream().map(stack -> stack.toString()).collect(Collectors.toList()));
             exceptionDetails.setStackTrace(stackTrace.toArray(new String[stackTrace.size()]));
 
-            if (reportParams.isMarkUnstable()) {
-                qualityReport.setStatusCode(ReportStatus.FAILED);
-            } else {
-                qualityReport.setStatusCode(ReportStatus.WARNING);
+            switch(reportParams.getMarkUnstable()){
+                case TRUE:
+                    qualityReport.setStatusCode(ReportStatus.FAILED);
+                    break;
+                case FALSE:
+                    qualityReport.setStatusCode(ReportStatus.WARNING);
+                    break;
+                case LINK:
+                default:
+                    break;
             }
             qualityReport.setExceptionDetails(exceptionDetails);
 
@@ -207,7 +213,7 @@ public class ReportService {
         return 0;
     }
 
-    private QualityReport runQualityReport(QualityGateReport qualityGateReport, RegressionInput input, List<OOReportRegressedEvent> regressions, boolean checkNewGate, boolean checkResurfacedGate, boolean checkRegressionGate, Integer maxEventVolume, Integer maxUniqueVolume, boolean markedUnstable) {
+    private QualityReport runQualityReport(QualityGateReport qualityGateReport, RegressionInput input, List<OOReportRegressedEvent> regressions, boolean checkNewGate, boolean checkResurfacedGate, boolean checkRegressionGate, Integer maxEventVolume, Integer maxUniqueVolume, MarkUnstable markedUnstable) {
         QualityReport reportModel = new QualityReport();
 
         boolean checkCriticalGate = input.criticalExceptionTypes != null && (input.criticalExceptionTypes.size() > 0);
@@ -230,22 +236,30 @@ public class ReportService {
                 reportModel.setStatusMsg("Congratulations, the build  has passed all quality gates!");
             }
         } else {
-            if (markedUnstable) {
-                reportModel.setStatusCode(ReportStatus.FAILED);
-                if ((deploymentName != null) && (deploymentName.trim().length() > 0)) {
-                    reportModel.setStatusMsg("OverOps has marked build " + deploymentName + " as \"failed\".");
-                    ;
-                } else {
-                    reportModel.setStatusMsg("OverOps has marked the build as \"failed\".");
-                    ;
-                }
-            } else {
-                reportModel.setStatusCode(ReportStatus.WARNING);
-                if ((deploymentName != null) && (deploymentName.trim().length() > 0)) {
-                    reportModel.setStatusMsg("OverOps has detected issues with build " + deploymentName + " but did not mark the build as \"failed\".");
-                } else {
-                    reportModel.setStatusMsg("OverOps has detected issues with the build but did not mark the build as \"failed\".");
-                }
+            switch(markedUnstable){
+                case TRUE:
+                    reportModel.setStatusCode(ReportStatus.FAILED);
+                    if ((deploymentName != null) && (deploymentName.trim().length() > 0)) {
+                        reportModel.setStatusMsg("OverOps has marked build " + deploymentName + " as \"failed\".");
+                        ;
+                    } else {
+                        reportModel.setStatusMsg("OverOps has marked the build as \"failed\".");
+                        ;
+                    }
+                    break;
+                case FALSE:
+                    reportModel.setStatusCode(ReportStatus.WARNING);
+                    if ((deploymentName != null) && (deploymentName.trim().length() > 0)) {
+                        reportModel.setStatusMsg("OverOps has detected issues with build " + deploymentName + " but did not mark the build as \"failed\".");
+                    } else {
+                        reportModel.setStatusMsg("OverOps has detected issues with the build but did not mark the build as \"failed\".");
+                    }
+                    break;
+				case LINK:
+					// TODO @BGro - I think this is where we would add that new link; simply put it in the ReportModel.statusMessage
+					break;
+				default:
+					throw new RuntimeException("Unknown enum not supported.");
             }
         }
 
