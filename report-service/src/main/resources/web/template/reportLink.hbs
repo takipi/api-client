@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="shortcut icon" type="image/png" sizes="48x48" href="/overops-favicon-48x48.png">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;500&display=swap" rel="stylesheet">
+    <title>OverOps Quality Report</title>
+    <style>
+        {{> standaloneStyle}}
+        {{> style}}
+    </style>
+</head>
+<body>
+<div class="overops-quality-report">
+    <div class="d-flex align-center mt-3">
+        <div class="mr-2">
+            {{svg "web/img/overops-logo.svg"}}
+        </div>
+        <h1>Quality Report Link</h1>
+    </div>
+    {{#if link}}
+    <ul class="unstyled">
+        <li>
+            <a href="{{link}}">
+                OverOps Quality Report &rarr;
+            </a>
+        </li>
+    </ul>
+    {{else}}
+    <div class="d-flex align-center mb-2 mt-4">
+        {{svg "web/img/embedded-question.svg"}}
+        <h4>An error occurred while generating a Quality Report link.</h4>
+    </div>
+    {{/if}}
+</div>
+</body>
+</html>

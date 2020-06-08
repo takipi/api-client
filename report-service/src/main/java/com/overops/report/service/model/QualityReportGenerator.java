@@ -15,7 +15,7 @@ import java.io.IOException;
  */
 public class QualityReportGenerator {
 
-    public String generate(QualityReportTemplate model, String templateName) {
+    public String generate(Object model, String templateName) {
         try {
             TemplateLoader loader = new ClassPathTemplateLoader();
             loader.setPrefix("/web/template");
@@ -28,7 +28,8 @@ public class QualityReportGenerator {
             Template template = handlebars.compile(templateName);
             return template.apply(model);
         } catch (IOException e) {
-            throw new ReportGeneratorException("Unexpected exception generating report.hbs.", e);
+            String message = "Unexpected exception generating " + templateName + " html.";
+            throw new ReportGeneratorException(message, e);
         }
     }
 
