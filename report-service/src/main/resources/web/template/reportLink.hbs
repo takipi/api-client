@@ -18,20 +18,50 @@
         </div>
         <h1>Quality Report Link</h1>
     </div>
-    {{#if link}}
-    <ul class="unstyled">
-        <li>
-            <a href="{{link}}">
-                OverOps Quality Report &rarr;
-            </a>
-        </li>
-    </ul>
-    {{else}}
     <div class="d-flex align-center mb-2 mt-4">
+    {{#if link}}
+      <div id="processingItem">
+        <h1>Sorry for the wait. Events are still being processed.</h1>
+        <p>Your report will be ready in <strong id="countDown" class="bold"></strong> seconds</p>
+      </div>
+      <div id="linkItem" hidden>
+          <a id="theLink" href="{{link}}">OverOps Quality Report &rarr;</a>
+      </div>
+    {{else}}
         {{svg "web/img/embedded-question.svg"}}
         <h4>An error occurred while generating a Quality Report link.</h4>
     </div>
     {{/if}}
 </div>
+
+<script>
+
+  const CREATION_TIMESTAMP = {{this.urlCreationTimestamp}}
+  const TIME_TO_WAIT = 90;
+  const processingItem = document.getElementById("processingItem");
+  const linkItem = document.getElementById("linkItem");
+  const countDown = document.getElementById("countDown");
+  const theLink = document.getElementById("theLink");
+
+  function updateClock(){
+  	let input = new Date(CREATION_TIMESTAMP);
+    let current = new Date();
+    // Elapsed time in seconds
+    let elapsed = Math.round((current - input) / 1000);
+    let secondsLeft = TIME_TO_WAIT - elapsed;
+    if(secondsLeft <= 0){
+      linkItem.hidden = false;
+      processingItem.hidden = true;
+    }else{
+      countDown.innerText = secondsLeft;
+      // Update every second
+      setTimeout(updateClock, 1000);
+    }
+  }
+
+  updateClock();
+
+</script>
+
 </body>
 </html>

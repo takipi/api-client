@@ -56,9 +56,7 @@ public class ReportService {
             URIBuilder uriBuilder = new URIBuilder(endPoint);
             uriBuilder.setPath(REPORT_SERVICE);
             String jsonReportParams = gson.toJson(reportParams);
-            uriBuilder
-                .addParameter(QUERY, jsonReportParams)
-                .addParameter(URL_CREATION_TIMESTAMP, Long.toString(DateTime.now().getMillis() / 1000L));
+            uriBuilder.addParameter(QUERY, jsonReportParams);
 
             return uriBuilder.toString();
         }
@@ -69,45 +67,9 @@ public class ReportService {
     }
 
     public String generateReportLinkHtml(String endpoint, QualityReportParams reportParams) {
-        QualityReportLinkTemplate qualityReportLinkTemplate = new QualityReportLinkTemplate(generateReportLink(endpoint, reportParams));
+        long urlCreationTimestamp = DateTime.now().getMillis();
+        QualityReportLinkTemplate qualityReportLinkTemplate = new QualityReportLinkTemplate(urlCreationTimestamp, generateReportLink(endpoint, reportParams));
         return new QualityReportGenerator().generate(qualityReportLinkTemplate, "reportLink");
-    }
-
-    public String generateStillProcessingHtml(String url, String creationTimestamp) {
-        long delay = secondsLeftForQualityReport(creationTimestamp);
-        return new QualityReportGenerator().generate(new QualityReportProcessingTemplate(delay), "processingReport");
-    }
-
-    /**
-     * Get the time in seconds to delay the report otherwise 0.
-     *
-     * @param creationTimestamp the time the report was created
-     * @return time in seconds to delay the report otherwise 0
-     */
-    public long secondsLeftForQualityReport(String creationTimestamp)
-    {
-        long now = DateTime.now().getMillis() / 1000L;
-        long secondsDelay = Long.parseLong(creationTimestamp) + DELAY_REPORT - now;
-        if (secondsDelay < 0) {
-            secondsDelay = 0;
-        }
-
-        return secondsDelay;
-    }
-
-    /**
-     * Determine if the quality report is ready to be displayed
-     *
-     * @param creationTimestamp timestamp to compare if enough time has elapsed
-     * @return true if the report is ready otherwise false
-     */
-    public boolean isQualityReportReady(String creationTimestamp)
-    {
-        if (secondsLeftForQualityReport(creationTimestamp) == 0)
-        {
-            return true;
-        }
-        return false;
     }
 
     public String getQualityReportHtml(String endPoint, String apiKey, QualityReportParams reportParams, Requestor requestor) {
