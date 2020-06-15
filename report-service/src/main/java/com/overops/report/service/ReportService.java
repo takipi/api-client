@@ -604,7 +604,24 @@ public class ReportService {
             return String.format(PLAN_TEMPLATE, "Error: " + exception.getMessage());
         }
     }
-
+    
+    public static void pauseForTheCause(PrintStream printStream) {
+        if (Objects.nonNull(printStream)) {
+            printStream.println("Build Step: Starting OverOps Quality Gate....");
+        }
+        try {
+            Thread.sleep(30000);
+        } catch (Exception e) {
+            if (Objects.nonNull(printStream)) {
+                printStream.println("Can not hold the process.");
+            }
+        }
+    }
+    
+    public static void pauseForTheCause() {
+        pauseForTheCause(System.out);
+    }
+    
     /**
      * Requestor
      * <p>
