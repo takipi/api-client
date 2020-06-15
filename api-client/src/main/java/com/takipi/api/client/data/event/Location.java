@@ -11,6 +11,7 @@ public class Location {
 	public int original_line_number = -1;
 	public int method_position = -1;
 	public boolean in_filter;
+	public String source_file_path;
 
 	@Override
 	public boolean equals(Object obj) {
