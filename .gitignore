@@ -4,6 +4,7 @@
 *.swp
 *~.nib
 .vscode
+.DS_Store
 
 .metadata
 .gradle

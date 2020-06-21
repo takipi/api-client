@@ -1,10 +1,17 @@
 package com.overops.report.service.model;
 
+/**
+ * Quality Report Exception Details Model
+ * <p>
+ * If for some reason the report cannot be generated this model houses the details needed to display the error
+ */
 public class QualityReportExceptionDetails {
+
     private String exceptionMessage;
     private String[] stackTrace;
     private String emailMessage;
 
+    //<editor-fold desc="Getters & Setters">
     public String getExceptionMessage() {
         return exceptionMessage;
     }
@@ -28,4 +35,5 @@ public class QualityReportExceptionDetails {
     public void setEmailMessage(String emailMessage) {
         this.emailMessage = emailMessage;
     }
+    //</editor-fold>
 }

@@ -1,13 +1,7 @@
 package com.overops.report.service;
 
 import com.google.gson.Gson;
-import com.overops.report.service.model.OOReportRegressedEvent;
-import com.overops.report.service.model.QualityReport;
-import com.overops.report.service.model.QualityReportExceptionDetails;
-import com.overops.report.service.model.ReportVisualizationModel;
-import com.overops.report.service.model.QualityReport.ReportStatus;
-import com.overops.report.service.model.QualityGateTestResults;
-import com.overops.report.service.model.QualityGateEvent;
+import com.overops.report.service.model.*;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.RemoteApiClient;
 import com.takipi.api.client.data.view.SummarizedView;
@@ -17,139 +11,103 @@ import com.takipi.api.client.util.cicd.ProcessQualityGates;
 import com.takipi.api.client.util.cicd.QualityGateReport;
 import com.takipi.api.client.util.regression.*;
 import com.takipi.api.client.util.view.ViewUtil;
+import org.apache.http.client.utils.URIBuilder;
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.overops.report.service.model.QualityReport.ReportStatus;
+import static com.overops.report.service.model.QualityGateTestResults.TestType;
+
+/**
+ * Main Entry Point to Generate Reports
+ * <p>
+ * Current usage:
+ * - GitLab
+ * - Bamboo
+ * - Concourse
+ * - TeamCity
+ * - Jenkins
+ */
 public class ReportService {
-    public enum Requestor {
-        UNKNOWN(100),
-        GIT_LAB(80),
-        TEAM_CITY(58),
-        BAMBOO(52),
-        JENKINS(4);
 
-        private final int id;
+    private static final Logger LOG = LoggerFactory.getLogger(QualityReport.class);
 
-        Requestor(int id) {
-            this.id = id;
-        }
+    private static final String PLAN_HEAD = "<head><title>OverOps Error</title></head>";
+    private static final String PLAN_BODY = "<body>An error occurred while generating a Quality Report.<br/>%s</body>";
+    private static final String PLAN_TEMPLATE = "<!doctype html><html>" + PLAN_HEAD + PLAN_BODY + "</html>";
 
-        public int getId() {
-            return id;
-        }
-    }
+    private static final String REPORT_SERVICE = "quality-report";
+    public static final Long DELAY_REPORT = 90L;
+    public static final String URL_CREATION_TIMESTAMP = "urlCreationTimestamp";
+    public static final String QUERY = "query";
 
     private transient Gson gson = new Gson();
 
-    public static void main(String[] args) {
-        String endPoint = "https://api.overops.com";
-        String apiKey = "";
+    public String generateReportLink(String endPoint, QualityReportParams reportParams) {
+        try
+        {
+            URIBuilder uriBuilder = new URIBuilder(endPoint);
+            uriBuilder.setPath(REPORT_SERVICE);
+            String jsonReportParams = gson.toJson(reportParams);
+            uriBuilder
+                .addParameter(QUERY, jsonReportParams)
+                .addParameter(URL_CREATION_TIMESTAMP, Long.toString(DateTime.now().getMillis() / 1000L));
 
-        QualityReportParams reportParams = new QualityReportParams();
-        reportParams.setApplicationName("collector-server");
-        reportParams.setDeploymentName("v4.44.3");
-        reportParams.setServiceId("S37777");
-        reportParams.setNewEvents(true);
-        reportParams.setResurfacedErrors(true);
-
-        try {
-            QualityReport visualizationModel;
-            visualizationModel = new ReportService().runQualityReport(endPoint, apiKey, reportParams, Requestor.TEAM_CITY);
-            
-            String html = visualizationModel.toHtml();
-    
-            BufferedWriter writer = new BufferedWriter(new FileWriter("myReport.html"));
-            writer.write(html);
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+            return uriBuilder.toString();
+        }
+        catch (URISyntaxException e)
+        {
+            throw new ReportGeneratorException("Unable to generate report link from URL: " + endPoint, e);
         }
     }
 
-    @Deprecated
-    public ReportVisualizationModel createReportVisualizationModel(String endPoint, String apiKey, QualityReportParams reportParams) {
-        QualityReport qualityReport = runQualityReport(endPoint, apiKey, reportParams, null);
+    public String generateReportLinkHtml(String endpoint, QualityReportParams reportParams) {
+        QualityReportLinkTemplate qualityReportLinkTemplate = new QualityReportLinkTemplate(generateReportLink(endpoint, reportParams));
+        return new QualityReportGenerator().generate(qualityReportLinkTemplate, "reportLink");
+    }
 
-        QualityGateTestResults newResults = qualityReport.getNewErrorsTestResults();
-        QualityGateTestResults resurfacedResults = qualityReport.getNewErrorsTestResults();
-        QualityGateTestResults criticalResults = qualityReport.getNewErrorsTestResults();
-        QualityGateTestResults totalResults = qualityReport.getNewErrorsTestResults();
-        QualityGateTestResults uniqueResults = qualityReport.getNewErrorsTestResults();
-        QualityGateTestResults regressionResults = qualityReport.getNewErrorsTestResults();
+    public String generateStillProcessingHtml(String url, String creationTimestamp) {
+        long delay = secondsLeftForQualityReport(creationTimestamp);
+        return new QualityReportGenerator().generate(new QualityReportProcessingTemplate(delay), "processingReport");
+    }
 
-        ReportVisualizationModel reportVisualizationModel = new ReportVisualizationModel();
-        reportVisualizationModel.setUnstable((qualityReport.getStatusCode() == ReportStatus.WARNING) || (qualityReport.getStatusCode() == ReportStatus.FAILED));
-        reportVisualizationModel.setMarkedUnstable(qualityReport.getStatusCode() == ReportStatus.FAILED);
-        reportVisualizationModel.setPassedNewErrorGate((newResults != null) && newResults.isPassed());
-        reportVisualizationModel.setCheckNewEvents(newResults != null);
-        reportVisualizationModel.setPassedResurfacedErrorGate((resurfacedResults != null) && resurfacedResults.isPassed());
-        reportVisualizationModel.setCheckResurfacedEvents(resurfacedResults != null);
-        reportVisualizationModel.setPassedCriticalErrorGate((criticalResults != null) && criticalResults.isPassed());
-        reportVisualizationModel.setCheckCriticalErrors(criticalResults != null);
-        reportVisualizationModel.setPassedTotalErrorGate((totalResults != null) && totalResults.isPassed());
-        reportVisualizationModel.setCheckTotalErrors(totalResults != null);
-        reportVisualizationModel.setPassedUniqueErrorGate((uniqueResults != null) && uniqueResults.isPassed());
-        reportVisualizationModel.setCheckUniqueErrors(uniqueResults != null);
-        reportVisualizationModel.setPassedRegressedEvents((regressionResults != null) && regressionResults.isPassed());
-        reportVisualizationModel.setCheckRegressedErrors(regressionResults != null);
-        reportVisualizationModel.setHasTopErrors((uniqueResults != null && !uniqueResults.isPassed()) || (totalResults != null && !totalResults.isPassed()));
-
-        reportVisualizationModel.setSummary(qualityReport.getStatusMsg());
-
-        if (newResults != null) {
-            reportVisualizationModel.setNewErrorSummary(newResults.getMessage());
-            reportVisualizationModel.setNewEvents(newResults.getEvents());
-            reportVisualizationModel.setNewGateTotal(newResults.getErrorCount());
+    /**
+     * Get the time in seconds to delay the report otherwise 0.
+     *
+     * @param creationTimestamp the time the report was created
+     * @return time in seconds to delay the report otherwise 0
+     */
+    public long secondsLeftForQualityReport(String creationTimestamp)
+    {
+        long now = DateTime.now().getMillis() / 1000L;
+        long secondsDelay = Long.parseLong(creationTimestamp) + DELAY_REPORT - now;
+        if (secondsDelay < 0) {
+            secondsDelay = 0;
         }
 
-        if (resurfacedResults != null) {
-            reportVisualizationModel.setResurfacedErrorSummary(resurfacedResults.getMessage());
-            reportVisualizationModel.setResurfacedEvents(resurfacedResults.getEvents());
-            reportVisualizationModel.setResurfacedGateTotal(resurfacedResults.getErrorCount());
-        }
+        return secondsDelay;
+    }
 
-        if (criticalResults != null) {
-            reportVisualizationModel.setCriticalErrorSummary(criticalResults.getMessage());
-            reportVisualizationModel.setCriticalEvents(criticalResults.getEvents());
-            reportVisualizationModel.setCriticalGateTotal(criticalResults.getErrorCount());
-        }
-
-        if (regressionResults != null) {
-            reportVisualizationModel.setRegressionSummary(regressionResults.getMessage());
-            reportVisualizationModel.setRegressedEvents(regressionResults.getEvents());
-            reportVisualizationModel.setRegressionGateTotal(regressionResults.getErrorCount());
-        }
-
-        if (totalResults != null) {
-            reportVisualizationModel.setTotalErrorSummary(totalResults.getMessage());
-            reportVisualizationModel.setTotalGateTotal(totalResults.getErrorCount());
-        }
-
-        if (uniqueResults != null) {
-            reportVisualizationModel.setUniqueErrorSummary(uniqueResults.getMessage());
-            reportVisualizationModel.setUniqueGateTotal(uniqueResults.getErrorCount());
-        }
-
-        reportVisualizationModel.setTopEvents(qualityReport.getTopEvents());
-
-        QualityReportExceptionDetails exceptionDetails = qualityReport.getExceptionDetails();
-        
-        if (exceptionDetails != null)
+    /**
+     * Determine if the quality report is ready to be displayed
+     *
+     * @param creationTimestamp timestamp to compare if enough time has elapsed
+     * @return true if the report is ready otherwise false
+     */
+    public boolean isQualityReportReady(String creationTimestamp)
+    {
+        if (secondsLeftForQualityReport(creationTimestamp) == 0)
         {
-        	reportVisualizationModel.setHasException(true);
-            reportVisualizationModel.setExceptionMessage(exceptionDetails.getExceptionMessage());
-            reportVisualizationModel.setEmailMessage(exceptionDetails.getEmailMessage());
-            reportVisualizationModel.setStackTrace(String.join("\n", exceptionDetails.getStackTrace()));
+            return true;
         }
-        else
-        {
-        	reportVisualizationModel.setHasException(false);
-        }
-
-        return reportVisualizationModel;
+        return false;
     }
 
     public String getQualityReportHtml(String endPoint, String apiKey, QualityReportParams reportParams, Requestor requestor) {
@@ -174,7 +132,7 @@ public class ReportService {
 
     public QualityReport runQualityReport(String endPoint, String apiKey, QualityReportParams reportParams, Integer requestorId, PrintStream outputStream, boolean debug) {
         Integer actualRequestorId = ((requestorId != null) ? requestorId : Requestor.UNKNOWN.getId());
-        
+
         try {
             boolean runRegressions = convertToMinutes(reportParams.getBaselineTimespan()) > 0;
 
@@ -322,14 +280,14 @@ public class ReportService {
 
         boolean checkCriticalGate = input.criticalExceptionTypes != null && (input.criticalExceptionTypes.size() > 0);
 
-        boolean hasNewErrors = (qualityGateReport.getNewErrors() != null) && (qualityGateReport.getNewErrors().size() > 0);
-        boolean hasResurfacedErrors = (qualityGateReport.getResurfacedErrors() != null) && (qualityGateReport.getResurfacedErrors().size() > 0);
-        boolean hasCriticalErrors = (qualityGateReport.getCriticalErrors() != null) && (qualityGateReport.getCriticalErrors().size() > 0);
-        boolean hasRegressions = (regressions != null) && (regressions.size() > 0);
-        boolean maxVolumeExceeded = (maxEventVolume != 0) && (qualityGateReport.getTotalErrorCount() >= maxEventVolume);
-        boolean maxUniqueErrorsExceeded = (maxUniqueVolume != 0) && (qualityGateReport.getUniqueErrorCount() >= maxUniqueVolume);
-        
-        boolean unstable = hasRegressions || maxVolumeExceeded || maxUniqueErrorsExceeded || hasNewErrors || hasResurfacedErrors || hasCriticalErrors;
+        boolean failedNewErrorGate = (qualityGateReport.getNewErrors() != null) && (qualityGateReport.getNewErrors().size() > 0);
+        boolean failedResurfacedErrorGate = (qualityGateReport.getResurfacedErrors() != null) && (qualityGateReport.getResurfacedErrors().size() > 0);
+        boolean failedCriticalErrorGate = (qualityGateReport.getCriticalErrors() != null) && (qualityGateReport.getCriticalErrors().size() > 0);
+        boolean failedRegressionGate = (regressions != null) && (regressions.size() > 0);
+        boolean failedTotalVolumeGate = (maxEventVolume != 0) && (qualityGateReport.getTotalErrorCount() >= maxEventVolume);
+        boolean failedUniqueVolumeGate = (maxUniqueVolume != 0) && (qualityGateReport.getUniqueErrorCount() >= maxUniqueVolume);
+
+        boolean unstable = failedRegressionGate || failedTotalVolumeGate || failedUniqueVolumeGate || failedNewErrorGate || failedResurfacedErrorGate || failedCriticalErrorGate;
 
         String deploymentName = getDeploymentName(input);
         if (!unstable) {
@@ -339,18 +297,20 @@ public class ReportService {
             } else {
                 reportModel.setStatusMsg("Congratulations, the build  has passed all quality gates!");
             }
-        }  else {
+        } else {
             if (markedUnstable) {
                 reportModel.setStatusCode(ReportStatus.FAILED);
                 if ((deploymentName != null) && (deploymentName.trim().length() > 0)) {
-                    reportModel.setStatusMsg("OverOps has marked build "+ deploymentName + " as \"failed\"."); ;
+                    reportModel.setStatusMsg("OverOps has marked build " + deploymentName + " as \"failed\".");
+                    ;
                 } else {
-                    reportModel.setStatusMsg("OverOps has marked the build as \"failed\"."); ;
+                    reportModel.setStatusMsg("OverOps has marked the build as \"failed\".");
+                    ;
                 }
             } else {
                 reportModel.setStatusCode(ReportStatus.WARNING);
                 if ((deploymentName != null) && (deploymentName.trim().length() > 0)) {
-                    reportModel.setStatusMsg("OverOps has detected issues with build "+ deploymentName + " but did not mark the build as \"failed\".");
+                    reportModel.setStatusMsg("OverOps has detected issues with build " + deploymentName + " but did not mark the build as \"failed\".");
                 } else {
                     reportModel.setStatusMsg("OverOps has detected issues with the build but did not mark the build as \"failed\".");
                 }
@@ -358,10 +318,10 @@ public class ReportService {
         }
 
         if (checkNewGate) {
-            QualityGateTestResults newErrorsTestResults = new QualityGateTestResults();
-            newErrorsTestResults.setPassed(!hasNewErrors);
-            if (hasNewErrors) {
-                newErrorsTestResults.setEvents(qualityGateReport.getNewErrors().stream().map(e -> new QualityGateEvent(e)).collect(Collectors.toList()));
+            QualityGateTestResults newErrorsTestResults = new QualityGateTestResults(TestType.NEW_EVENTS_TEST);
+            newErrorsTestResults.setPassed(!failedNewErrorGate);
+            newErrorsTestResults.setEvents(qualityGateReport.getNewErrors().stream().map(e -> new QualityGateEvent(e)).collect(Collectors.toList()));
+            if (failedNewErrorGate) {
                 newErrorsTestResults.setMessage("New Error Gate: Failed, OverOps detected " + newErrorsTestResults.getEvents().size() + " new error(s) in your build.");
             } else {
                 newErrorsTestResults.setMessage("New Error Gate: Passed, OverOps did not detect any new errors in your build.");
@@ -370,10 +330,10 @@ public class ReportService {
         }
 
         if (checkCriticalGate) {
-            QualityGateTestResults criticalErrorsTestResults = new QualityGateTestResults();
-            criticalErrorsTestResults.setPassed(!hasCriticalErrors);
-            if (hasCriticalErrors) {
-                criticalErrorsTestResults.setEvents(qualityGateReport.getCriticalErrors().stream().map(e -> new QualityGateEvent(e)).collect(Collectors.toList()));
+            QualityGateTestResults criticalErrorsTestResults = new QualityGateTestResults(TestType.CRITICAL_EVENTS_TEST);
+            criticalErrorsTestResults.setPassed(!failedCriticalErrorGate);
+            criticalErrorsTestResults.setEvents(qualityGateReport.getCriticalErrors().stream().map(e -> new QualityGateEvent(e)).collect(Collectors.toList()));
+            if (failedCriticalErrorGate) {
                 criticalErrorsTestResults.setMessage("Critical Error Gate: Failed, OverOps detected " + criticalErrorsTestResults.getEvents().size() + " critical error(s) in your build.");
             } else {
                 criticalErrorsTestResults.setMessage("Critical Error Gate: Passed, OverOps did not detect any critical errors in your build.");
@@ -384,15 +344,15 @@ public class ReportService {
         if (checkRegressionGate) {
             String baselineTime = Objects.nonNull(input) ? input.baselineTime : "";
 
-            QualityGateTestResults regressionErrorsTestResults = new QualityGateTestResults();
-            regressionErrorsTestResults.setPassed(!hasRegressions);
-            if ((hasRegressions) &&
-            	(regressions != null)) {
-            	// We check regressions != null explicitly because it prevents a false positive NPE warning.
-            	// While the fact that it's certainly not null is encapsulated in the fact hasRegressions is true,
-            	// The IDE can't directly make that assumption.
-            	//
-                regressionErrorsTestResults.setEvents(regressions.stream().map(e -> new QualityGateEvent(e)).collect(Collectors.toList()));
+            QualityGateTestResults regressionErrorsTestResults = new QualityGateTestResults(TestType.REGRESSION_EVENTS_TEST);
+            regressionErrorsTestResults.setPassed(!failedRegressionGate);
+            regressionErrorsTestResults.setEvents(regressions.stream().map(e -> new QualityGateEvent(e)).collect(Collectors.toList()));
+            if ((failedRegressionGate) &&
+                    (regressions != null)) {
+                // We check regressions != null explicitly because it prevents a false positive NPE warning.
+                // While the fact that it's certainly not null is encapsulated in the fact hasRegressions is true,
+                // The IDE can't directly make that assumption.
+                //
                 regressionErrorsTestResults.setMessage("Increasing Quality Gate: Failed, OverOps detected increasing errors in the current build against the baseline of " + baselineTime);
             } else {
                 regressionErrorsTestResults.setMessage("Increasing Quality Gate: Passed, OverOps did not detect any increasing errors in the current build against the baseline of " + baselineTime);
@@ -401,10 +361,10 @@ public class ReportService {
         }
 
         if (checkResurfacedGate) {
-            QualityGateTestResults resurfacedErrorsTestResults = new QualityGateTestResults();
-            resurfacedErrorsTestResults.setPassed(!hasResurfacedErrors);
-            if (hasResurfacedErrors) {
-                resurfacedErrorsTestResults.setEvents(qualityGateReport.getResurfacedErrors().stream().map(e -> new QualityGateEvent(e)).collect(Collectors.toList()));
+            QualityGateTestResults resurfacedErrorsTestResults = new QualityGateTestResults(TestType.RESURFACED_EVENTS_TEST);
+            resurfacedErrorsTestResults.setPassed(!failedResurfacedErrorGate);
+            resurfacedErrorsTestResults.setEvents(qualityGateReport.getResurfacedErrors().stream().map(e -> new QualityGateEvent(e)).collect(Collectors.toList()));
+            if (failedResurfacedErrorGate) {
                 resurfacedErrorsTestResults.setMessage("Resurfaced Error Gate: Failed, OverOps detected " + resurfacedErrorsTestResults.getEvents().size() + " resurfaced error(s) in your build.");
             } else {
                 resurfacedErrorsTestResults.setMessage("Resurfaced Error Gate: Passed, OverOps did not detect any resurfaced errors in your build.");
@@ -415,11 +375,11 @@ public class ReportService {
         if (maxUniqueVolume != 0) {
             long uniqueEventsCount = qualityGateReport.getUniqueErrorCount();
 
-            QualityGateTestResults uniqueErrorsTestResults = new QualityGateTestResults();
-            uniqueErrorsTestResults.setPassed(!maxUniqueErrorsExceeded);
-            if (maxUniqueErrorsExceeded) {
+            QualityGateTestResults uniqueErrorsTestResults = new QualityGateTestResults(TestType.UNIQUE_EVENTS_TEST);
+            uniqueErrorsTestResults.setPassed(!failedUniqueVolumeGate);
+            uniqueErrorsTestResults.setErrorCount(uniqueEventsCount);
+            if (failedUniqueVolumeGate) {
                 uniqueErrorsTestResults.setMessage("Unique Error Volume Gate: Failed, OverOps detected " + uniqueEventsCount + " unique error(s) which is >= the max allowable of " + maxUniqueVolume);
-                uniqueErrorsTestResults.setErrorCount(uniqueEventsCount);
             } else {
                 uniqueErrorsTestResults.setMessage("Unique Error Volume Gate: Passed, OverOps detected " + uniqueEventsCount + " unique error(s) which is < than max allowable of " + maxUniqueVolume);
             }
@@ -428,11 +388,11 @@ public class ReportService {
 
         if (maxEventVolume != 0) {
             long eventVolume = qualityGateReport.getTotalErrorCount();
-            QualityGateTestResults totalErrorsTestResults = new QualityGateTestResults();
-            totalErrorsTestResults.setPassed(!maxVolumeExceeded);
-            if (maxVolumeExceeded) {
+            QualityGateTestResults totalErrorsTestResults = new QualityGateTestResults(TestType.TOTAL_EVENTS_TEST);
+            totalErrorsTestResults.setPassed(!failedTotalVolumeGate);
+            totalErrorsTestResults.setErrorCount(eventVolume);
+            if (failedTotalVolumeGate) {
                 totalErrorsTestResults.setMessage("Total Error Volume Gate: Failed, OverOps detected " + eventVolume + " total error(s) which is >= the max allowable of " + maxEventVolume);
-                totalErrorsTestResults.setErrorCount(eventVolume);
             } else {
                 totalErrorsTestResults.setMessage("Total Error Volume Gate: Passed, OverOps detected " + eventVolume + " total error(s) which is < than max allowable of " + maxEventVolume);
             }
@@ -585,7 +545,7 @@ public class ReportService {
         if (events != null) {
             String match = "&source=(\\d)+";  // matches at least one digit
             String replace = "&source=" + requestorId;    // replace with 58
-    
+
             for (OOReportEvent event : events) {
                 String arcLink = event.getARCLink();
                 if (arcLink != null) {
@@ -618,4 +578,57 @@ public class ReportService {
         return result;
     }
 
+    /**
+     * Creates an HTML page for errors even if there is an issue with the template engine.
+     *
+     * @param exception
+     * @return
+     */
+    public String exceptionHtml(Exception exception) {
+        try {
+            // Write stacktrace to string for template
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            exception.printStackTrace(pw);
+
+            QualityReport qualityReport = new QualityReport();
+            QualityReportExceptionDetails details = new QualityReportExceptionDetails();
+            details.setExceptionMessage(exception.getMessage());
+            details.setStackTrace(sw.toString().split("\n"));
+            qualityReport.setExceptionDetails(details);
+
+            return qualityReport.toHtml();
+        } catch (Exception e) {
+            LOG.error("Error creating report with template engine:", e);
+            // (Rare Case) If for some reason there is an error at the template layer spit out plan text error.
+            return String.format(PLAN_TEMPLATE, "Error: " + exception.getMessage());
+        }
+    }
+
+    /**
+     * Requestor
+     * <p>
+     * This enum ID represents the integration using the ARC screen links.  This is used for analytics / marketing.  This
+     * list should be in sync with Confluence (https://overopshq.atlassian.net/wiki/spaces/PP/pages/1529872385/Hit+Sources)
+     * and there is a JIRA ticket to clean this up (https://overopshq.atlassian.net/browse/OO-10236)
+     */
+    public enum Requestor {
+        UNKNOWN(100),
+        QUALITY_REPORT_DIRECT(90),
+        GIT_LAB(80),
+        TEAM_CITY(58),
+        BAMBOO(52),
+        CONCOURSE(47),
+        JENKINS(4);
+
+        private final int id;
+
+        Requestor(int id) {
+            this.id = id;
+        }
+
+        public int getId() {
+            return id;
+        }
+    }
 }

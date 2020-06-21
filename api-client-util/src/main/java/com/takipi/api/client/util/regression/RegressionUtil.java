@@ -575,33 +575,19 @@ public class RegressionUtil {
 
 	public static Pair<DateTime, DateTime> getDeploymentsActiveWindow(ApiClient apiClient, String serviceId) {
 		
-		Collection<SummarizedDeployment> activeSummarizedDeployments = ClientUtil.getSummarizedDeployments(apiClient, serviceId, true);
-		
-		Pair<DateTime, DateTime> activeDeploymentsTimespan = getDeploymentsActiveWindow(activeSummarizedDeployments);
-		
-		if (activeDeploymentsTimespan != null) {
-			return activeDeploymentsTimespan;
-		}
-		
-		Collection<SummarizedDeployment> nonActiveSummarizedDeployments = ClientUtil.getSummarizedDeployments(apiClient, serviceId, false);
-		
-		return getDeploymentsActiveWindow(nonActiveSummarizedDeployments);
+		// get *all* deployments, both active and inactive
+		Collection<SummarizedDeployment> activeSummarizedDeployments = ClientUtil.getSummarizedDeployments(apiClient, serviceId, false);
+
+		return getDeploymentsActiveWindow(activeSummarizedDeployments);
 	}
 
 	
 	public static Pair<DateTime, DateTime> getDeploymentsActiveWindow(ApiClient apiClient, String serviceId, Collection<String> deployments) {
 		
-		Collection<SummarizedDeployment> activeSummarizedDeployments = ClientUtil.getSummarizedDeployments(apiClient, serviceId, true);
+		// get *all* deployments, both active and inactive
+		Collection<SummarizedDeployment> activeSummarizedDeployments = ClientUtil.getSummarizedDeployments(apiClient, serviceId, false);
 		
-		Pair<DateTime, DateTime> activeDeploymentsTimespan = getDeploymentsActiveWindow(deployments, activeSummarizedDeployments);
-		
-		if (activeDeploymentsTimespan != null) {
-			return activeDeploymentsTimespan;
-		}
-		
-		Collection<SummarizedDeployment> nonActiveSummarizedDeployments = ClientUtil.getSummarizedDeployments(apiClient, serviceId, false);
-		
-		return getDeploymentsActiveWindow(deployments, nonActiveSummarizedDeployments);
+		return getDeploymentsActiveWindow(deployments, activeSummarizedDeployments);
 	}
 
 	private static Pair<DateTime, DateTime> getDeploymentsActiveWindow(Collection<SummarizedDeployment> summarizedDeployments) {

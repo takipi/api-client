@@ -18,6 +18,8 @@ if (project.ext.has("backendJavac")) {
 
 dependencies {
     compile(
+            "com.github.jknack:handlebars:4.1.2",
+            "org.apache.httpcomponents:httpclient:4.5.9",
             project(':api-client'),
             project(':api-client-util')
     )

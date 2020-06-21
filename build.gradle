@@ -1,3 +1,5 @@
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
 subprojects {
   apply plugin: 'java'
   apply plugin: 'maven'
@@ -6,7 +8,7 @@ subprojects {
   apply plugin: 'idea'
 
   group = 'com.takipi'
-  version = '2.32.0'
+  version = '2.33.1'
 
   repositories {
       mavenCentral()
@@ -27,6 +29,37 @@ subprojects {
       required { gradle.taskGraph.hasTask("uploadArchives") }
       sign configurations.archives
   }
+
+  test {
+		useJUnitPlatform()
+		
+		onlyIf { !Boolean.getBoolean('do.tests') }
+		
+		testLogging {
+			events TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED, TestLogEvent.STANDARD_ERROR, TestLogEvent.STANDARD_OUT
+			exceptionFormat = 'full'
+		}
+		
+		options {
+			systemProperties(System.getProperties())
+		}
+	}
+	
+	dependencies {
+		testCompile(
+			'org.junit.jupiter:junit-jupiter-api:5.5.2',
+			'org.junit.jupiter:junit-jupiter-params:5.5.2',
+			'org.assertj:assertj-core:3.13.2'
+		)
+		
+		testRuntime(
+			'org.junit.jupiter:junit-jupiter-engine:5.5.2',
+			'ch.qos.logback:logback-classic:1.2.3'
+		)
+	}
+
+	test.outputs.upToDateWhen { false }
+
   uploadArchives {
     repositories {
       mavenDeployer {
