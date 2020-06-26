@@ -24,11 +24,12 @@ public class ReportServiceTest
 	public void reportLink() throws URISyntaxException
 	{
 		QualityReportParams params = new QualityReportParams();
+		params.setServiceId("S1");
 		params.setMarkUnstable(true);
 		params.setApplicationName("NewApp");
 		ReportService reportService = new ReportService();
 
-		String reportLink = reportService.generateReportLink("http://localhost", params);
+		String reportLink = reportService.generateReportLink("http://localhost", params, null, false);
 
 		URIBuilder uriBuilder = new URIBuilder(reportLink);
 		List<NameValuePair> queryParams = uriBuilder.getQueryParams();
