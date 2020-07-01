@@ -11,6 +11,7 @@ import com.takipi.api.client.util.cicd.ProcessQualityGates;
 import com.takipi.api.client.util.cicd.QualityGateReport;
 import com.takipi.api.client.util.regression.*;
 import com.takipi.api.client.util.view.ViewUtil;
+import com.takipi.common.util.StringUtil;
 import org.apache.http.client.utils.URIBuilder;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -50,9 +51,10 @@ public class ReportService {
 
     private transient Gson gson = new Gson();
 
-    public String generateReportLink(String endPoint, QualityReportParams reportParams) {
+    public String generateReportLink(String endPoint, QualityReportParams reportParams, PrintStream printStream, boolean debug) {
         try
         {
+            validateLinkInputs(endPoint, reportParams, printStream, debug);
             URIBuilder uriBuilder = new URIBuilder(endPoint);
             uriBuilder.setPath(REPORT_SERVICE);
             String jsonReportParams = gson.toJson(reportParams);
@@ -68,8 +70,8 @@ public class ReportService {
         }
     }
 
-    public String generateReportLinkHtml(String endpoint, QualityReportParams reportParams) {
-        QualityReportLinkTemplate qualityReportLinkTemplate = new QualityReportLinkTemplate(generateReportLink(endpoint, reportParams));
+    public String generateReportLinkHtml(String endpoint, QualityReportParams reportParams, PrintStream printStream, boolean debug) {
+        QualityReportLinkTemplate qualityReportLinkTemplate = new QualityReportLinkTemplate(generateReportLink(endpoint, reportParams, printStream, debug));
         return new QualityReportGenerator().generate(qualityReportLinkTemplate, "reportLink");
     }
 
@@ -136,7 +138,7 @@ public class ReportService {
         try {
             boolean runRegressions = convertToMinutes(reportParams.getBaselineTimespan()) > 0;
 
-            validateInputs(endPoint, apiKey, reportParams);
+            validateInputs(endPoint, apiKey, reportParams, outputStream, debug);
 
             RemoteApiClient apiClient = (RemoteApiClient) RemoteApiClient.newBuilder().setHostname(endPoint).setApiKey(apiKey).build();
 
@@ -416,7 +418,46 @@ public class ReportService {
         return "";
     }
 
-    private void validateInputs(String endPoint, String apiKey, QualityReportParams reportParams) {
+    private void debugLinkInputs(String appUrl, QualityReportParams reportParams, PrintStream printStream, boolean debug)
+    {
+        if (debug && Objects.nonNull(printStream))
+        {
+            printStream.println("APP URL: " + appUrl);
+            debugInputs(reportParams, printStream);
+        }
+    }
+
+    private void debugInputs(String apiUrl, String apiKey, QualityReportParams reportParams, PrintStream printStream, boolean debug)
+    {
+        if (debug && Objects.nonNull(printStream))
+        {
+            printStream.println("API URL: " + apiUrl);
+            String apiKeyMessage = StringUtil.isNullOrEmpty(apiKey) ? "is empty" : "is not empty";
+            printStream.println("API Key: " + apiKeyMessage);
+            debugInputs(reportParams, printStream);
+        }
+    }
+
+    private void debugInputs(QualityReportParams reportParams, PrintStream printStream) {
+        printStream.println("SID: " + reportParams.getServiceId());
+        printStream.println("Application Name: " + reportParams.getApplicationName());
+        printStream.println("Deployment Name: " + reportParams.getDeploymentName());
+    }
+
+    private void validateLinkInputs(String appUrl, QualityReportParams reportParams, PrintStream printStream, boolean debug)
+    {
+        debugLinkInputs(appUrl, reportParams, printStream, debug);
+
+        if (isEmptyString(appUrl)) {
+            throw new IllegalArgumentException("Missing APP URL");
+        }
+
+        validateInputs(reportParams);
+    }
+
+    private void validateInputs(String endPoint, String apiKey, QualityReportParams reportParams, PrintStream printStream, boolean debug) {
+        debugInputs(endPoint, apiKey, reportParams, printStream, debug);
+
         if (isEmptyString(endPoint)) {
             throw new IllegalArgumentException("Missing host name");
         }
@@ -425,6 +466,11 @@ public class ReportService {
             throw new IllegalArgumentException("Missing api key");
         }
 
+        validateInputs(reportParams);
+    }
+
+    private void validateInputs(QualityReportParams reportParams)
+    {
         if (reportParams.isCheckRegressionErrors()) {
             if (!"0".equalsIgnoreCase(reportParams.getActiveTimespan())) {
                 if (convertToMinutes(reportParams.getActiveTimespan()) == 0) {
@@ -604,7 +650,24 @@ public class ReportService {
             return String.format(PLAN_TEMPLATE, "Error: " + exception.getMessage());
         }
     }
-
+    
+    public static void pauseForTheCause(PrintStream printStream) {
+        if (Objects.nonNull(printStream)) {
+            printStream.println("Build Step: Starting OverOps Quality Gate....");
+        }
+        try {
+            Thread.sleep(30000);
+        } catch (Exception e) {
+            if (Objects.nonNull(printStream)) {
+                printStream.println("Can not hold the process.");
+            }
+        }
+    }
+    
+    public static void pauseForTheCause() {
+        pauseForTheCause(System.out);
+    }
+    
     /**
      * Requestor
      * <p>
