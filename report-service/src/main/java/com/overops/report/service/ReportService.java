@@ -75,7 +75,7 @@ public class ReportService {
         return new QualityReportGenerator().generate(qualityReportLinkTemplate, "reportLink");
     }
 
-    public String generateStillProcessingHtml(String url, String creationTimestamp) {
+    public String generateStillProcessingHtml(@SuppressWarnings("unused") String url, String creationTimestamp) {
         long delay = secondsLeftForQualityReport(creationTimestamp);
         return new QualityReportGenerator().generate(new QualityReportProcessingTemplate(delay), "processingReport");
     }
