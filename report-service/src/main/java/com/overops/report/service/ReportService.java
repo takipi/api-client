@@ -343,18 +343,14 @@ public class ReportService {
             reportModel.setCriticalErrorsTestResults(criticalErrorsTestResults);
         }
 
-        if (checkRegressionGate) {
+        if ((checkRegressionGate) &&
+        	(regressions != null)) {
             String baselineTime = Objects.nonNull(input) ? input.baselineTime : "";
 
             QualityGateTestResults regressionErrorsTestResults = new QualityGateTestResults(TestType.REGRESSION_EVENTS_TEST);
             regressionErrorsTestResults.setPassed(!failedRegressionGate);
             regressionErrorsTestResults.setEvents(regressions.stream().map(e -> new QualityGateEvent(e)).collect(Collectors.toList()));
-            if ((failedRegressionGate) &&
-                    (regressions != null)) {
-                // We check regressions != null explicitly because it prevents a false positive NPE warning.
-                // While the fact that it's certainly not null is encapsulated in the fact hasRegressions is true,
-                // The IDE can't directly make that assumption.
-                //
+            if (failedRegressionGate) {
                 regressionErrorsTestResults.setMessage("Increasing Quality Gate: Failed, OverOps detected increasing errors in the current build against the baseline of " + baselineTime);
             } else {
                 regressionErrorsTestResults.setMessage("Increasing Quality Gate: Passed, OverOps did not detect any increasing errors in the current build against the baseline of " + baselineTime);
