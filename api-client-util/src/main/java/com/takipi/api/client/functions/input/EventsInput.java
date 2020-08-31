@@ -98,6 +98,8 @@ public class EventsInput extends BaseEventVolumeInput {
 	public static final String RATE_DELTA_DESC = "rate_delta_desc";
 	public static final String RANK = "rank";
 	public static final String ENTRY_POINT_NAME = "entry_point_name";
+	public static final String SOURCE_FILE_PATH = "source_file_path";
+	public static final String ORIGINAL_LINE_NUMBER = "original_line_number";
 	
 	public static final List<String> DEFAULT_FIELDS = Arrays.asList(new String[] {
 			ENV_ID, ID, SUMMARY, NAME, MESSAGE, TYPE, FIRST_SEEN, ERROR_LOCATION, ERROR_ORIGIN,
