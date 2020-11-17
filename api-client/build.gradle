@@ -2,12 +2,6 @@ apply plugin: 'maven'
 
 archivesBaseName = 'api-client'
 
-if (project.ext.has("backendJavac")) {
-  compileJava {
-    options.forkOptions.executable = project.ext.get("backendJavac")
-  }
-}
-
 dependencies {
 	compile(
 		"joda-time:joda-time:2.8.2",
