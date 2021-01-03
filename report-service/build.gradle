@@ -10,12 +10,6 @@ sourceSets {
   }
 }
 
-if (project.ext.has("backendJavac")) {
-  compileJava {
-    options.forkOptions.executable = project.ext.get("backendJavac")
-  }
-}
-
 dependencies {
     compile(
             "com.github.jknack:handlebars:4.1.2",
