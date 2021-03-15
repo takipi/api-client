@@ -2,6 +2,7 @@ package com.overops.report.service.model;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Data Model for Quality Report
@@ -134,6 +135,7 @@ public class QualityReport {
         QualityReportTemplate template = new QualityReportTemplate(this);
         template.setShowEventsForPassedGates(showEventsForPassedGates);
         template.setIsStandalone(isStandalone);
+        visitorToRemoveHidden(template);
         return generator.generate(template, "page");
     }
 
@@ -147,7 +149,34 @@ public class QualityReport {
         QualityReportGenerator generator = new QualityReportGenerator();
         QualityReportTemplate template = new QualityReportTemplate(this);
         template.setShowEventsForPassedGates(showEventsForPassedGates);
+        visitorToRemoveHidden(template);
         return (exceptionDetails == null) ? generator.generate(template, "report") : generator.generate(template, "exception");
+    }
+
+    private void visitorToRemoveHidden(QualityReportTemplate template){
+        removeHidden(template.getData().getNewErrorsTestResults());
+        removeHidden(template.getData().getResurfacedErrorsTestResults());
+        removeHidden(template.getData().getCriticalErrorsTestResults());
+        removeHidden(template.getData().getRegressionErrorsTestResults());
+        removeHidden(template.getData().getTotalErrorsTestResults());
+        removeHidden(template.getData().getUniqueErrorsTestResults());
+        removeHidden(template.getData().getTopEvents());
+    }
+
+    private void removeHidden(QualityGateTestResults results){
+        if(results != null){
+            removeHidden(results.getEvents());
+            // This seems a little odd but there is a guard on the setErrorCount forcing us to reset events to update
+            // the error count (not sure why we can't just call `.size()` on the list)
+            results.setEvents(results.getEvents());
+        }
+    }
+
+    private void removeHidden(List<QualityGateEvent> results){
+        List<QualityGateEvent> toRemove = results.stream()
+                .filter(event->event.getLabels() != null && event.getLabels().contains("Archive"))
+                .collect(Collectors.toList());
+        results.removeAll(toRemove);
     }
 
     /**
