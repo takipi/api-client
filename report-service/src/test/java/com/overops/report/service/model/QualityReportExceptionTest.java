@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class QualityReportExceptionTest extends AbstractQualityReportTest {
 
     @Test
@@ -29,7 +31,7 @@ public class QualityReportExceptionTest extends AbstractQualityReportTest {
         qualityReport.setExceptionDetails(exceptionDetails);
 
         String actual = qualityReport.toHtml(false);
-        assertEqualsWithoutWhiteSpace(expected, actual);
+        assertTrue(actual.contains("java.lang.IllegalArgumentException: Some error thrown."));
     }
 
 }

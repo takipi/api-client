@@ -3,12 +3,15 @@ package com.takipi.api.client.util.cicd;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.util.regression.RegressionStringUtil;
 
+import java.util.List;
+
 public class OOReportEvent {
 
 	private EventResult event;
 	private String arcLink;
 	private String type;
 	private String applications;
+	private List<String> labels;
 
 	public OOReportEvent(EventResult event, String arcLink) {
 		this(event, null, arcLink);
@@ -18,6 +21,7 @@ public class OOReportEvent {
 		this.event = event;
 		this.arcLink = arcLink;
 		this.type = type;
+		this.labels = event.labels;
 	}
 
 	public EventResult getEvent() {
@@ -69,6 +73,10 @@ public class OOReportEvent {
 
 	public long getCalls() {
 		return event.stats.invocations;
+	}
+
+	public List<String> getLabels() {
+		return this.labels;
 	}
 
 	@Override
