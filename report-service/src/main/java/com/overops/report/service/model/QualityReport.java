@@ -173,10 +173,12 @@ public class QualityReport {
     }
 
     private void removeHidden(List<QualityGateEvent> results){
-        List<QualityGateEvent> toRemove = results.stream()
-                .filter(event->event.getLabels() != null && event.getLabels().contains("Archive"))
-                .collect(Collectors.toList());
-        results.removeAll(toRemove);
+        if(results != null){
+            List<QualityGateEvent> toRemove = results.stream()
+                    .filter(event->event.getLabels() != null && event.getLabels().contains("Archive"))
+                    .collect(Collectors.toList());
+            results.removeAll(toRemove);
+        }
     }
 
     /**
