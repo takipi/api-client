@@ -1,13 +1,14 @@
 package com.takipi.api.client.util.cicd;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class QualityGateReport {
 
-	private List<OOReportEvent> newErrors;
-	private List<OOReportEvent> resurfacedErrors;
-	private List<OOReportEvent> criticalErrors;
-	private List<OOReportEvent> topErrors;
+	private List<OOReportEvent> newErrors = new ArrayList<>();
+	private List<OOReportEvent> resurfacedErrors = new ArrayList<>();
+	private List<OOReportEvent> criticalErrors = new ArrayList<>();
+	private List<OOReportEvent> topErrors = new ArrayList<>();
 	private long totalErrorCount = 0;
 	private int uniqueErrorCount = 0;
 

@@ -1,5 +1,6 @@
 package com.overops.report.service.model;
 
+import com.takipi.api.client.data.event.Location;
 import com.takipi.api.client.util.cicd.OOReportEvent;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class QualityGateEvent {
     private String eventSummary = "";
     private String eventRate = "";
     private long hits;
-    private List<String> labels;
+    private String location;
 
     public QualityGateEvent() {
         // No arg constructor for object mapping.
@@ -32,7 +33,10 @@ public class QualityGateEvent {
         this.eventRate = event.getEventRate();
         this.hits = event.getHits();
         this.applications = event.getApplications();
-        this.labels = event.getLabels();
+        if(event.getEvent() != null && event.getEvent().error_location != null){
+            Location location = event.getEvent().error_location;
+            this.location = location.prettified_name +":"+ location.original_line_number;
+        }
     }
 
     //<editor-fold desc="Getters & Setters">
@@ -92,12 +96,12 @@ public class QualityGateEvent {
         this.hits = hits;
     }
 
-    public List<String> getLabels() {
-        return labels;
+    public String getLocation() {
+        return location;
     }
 
-    public void setLabels(List<String> labels) {
-        this.labels = labels;
+    public void setLocation(String location) {
+        this.location = location;
     }
     //</editor-fold>
 }
