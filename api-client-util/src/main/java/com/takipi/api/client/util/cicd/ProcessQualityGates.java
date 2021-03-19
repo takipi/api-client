@@ -95,9 +95,9 @@ public class ProcessQualityGates {
 			ApiClient apiClient, RegressionInput input, DateTime deploymentStart, PrintStream printStream) {
 		
 		Collection<EventResult> events = RegressionUtil.getActiveEventVolume(apiClient, input, deploymentStart, printStream);
-        filterHidden(events);
 
 		if (!CollectionUtil.safeIsEmpty(events)) {
+		    filterHidden(events);
 			return events;
 		}
 		
@@ -108,6 +108,7 @@ public class ProcessQualityGates {
 		if (CollectionUtil.safeIsEmpty(events) || CollectionUtil.safeIsEmpty(input.applictations)) {
 			// Sadly, still no events.
 			//
+            filterHidden(events);
 			return events;
 		}
 		
@@ -134,8 +135,8 @@ public class ProcessQualityGates {
 			throw new IllegalStateException("Application(s) " + Arrays.toString(list.toArray())
 			+ " not found. Please ensure Application names(s) provided are correct.");
 		}
-		
-		return result;
+		filterHidden(result);
+        return result;
 	}
 	
 	private static List<OOReportEvent> getTopXEvents(ApiClient apiClient, RegressionInput input,
