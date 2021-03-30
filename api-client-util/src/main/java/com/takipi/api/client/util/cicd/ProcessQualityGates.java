@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
 
@@ -81,12 +82,22 @@ public class ProcessQualityGates {
 		return qualityReport;
 	}
 
+    private static void filterHidden(Collection<EventResult> events) {
+        if(events != null){
+            List<EventResult> toRemove = events.stream()
+                    .filter(e -> e.labels.contains("Archive"))
+                    .collect(Collectors.toList());
+            events.removeAll(toRemove);
+        }
+    }
+
 	private static Collection<EventResult> getEvents(
 			ApiClient apiClient, RegressionInput input, DateTime deploymentStart, PrintStream printStream) {
 		
 		Collection<EventResult> events = RegressionUtil.getActiveEventVolume(apiClient, input, deploymentStart, printStream);
-		
+
 		if (!CollectionUtil.safeIsEmpty(events)) {
+		    filterHidden(events);
 			return events;
 		}
 		
@@ -97,6 +108,7 @@ public class ProcessQualityGates {
 		if (CollectionUtil.safeIsEmpty(events) || CollectionUtil.safeIsEmpty(input.applictations)) {
 			// Sadly, still no events.
 			//
+            filterHidden(events);
 			return events;
 		}
 		
@@ -123,8 +135,8 @@ public class ProcessQualityGates {
 			throw new IllegalStateException("Application(s) " + Arrays.toString(list.toArray())
 			+ " not found. Please ensure Application names(s) provided are correct.");
 		}
-		
-		return result;
+		filterHidden(result);
+        return result;
 	}
 	
 	private static List<OOReportEvent> getTopXEvents(ApiClient apiClient, RegressionInput input,
@@ -238,9 +250,11 @@ public class ProcessQualityGates {
 		for (EventResult event : events) {
 			if (evaluateEvent(event, getPattern(regexFilter))) {
 				returnEvents.add(event);
-				// now increment counters
-				qualityReport.addToTotalErrorCount(event.stats.hits);
-				qualityReport.addToUniqueErrorCount(1);
+				// now increment counters if events are not hidden
+                if(!event.labels.contains("Archive")){
+                    qualityReport.addToTotalErrorCount(event.stats.hits);
+                    qualityReport.addToUniqueErrorCount(1);
+                }
 			}
 		}
 		return returnEvents;

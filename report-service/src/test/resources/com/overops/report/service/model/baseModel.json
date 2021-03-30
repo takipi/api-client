@@ -14,7 +14,8 @@
         "introducedBy": "someIntroducedBy1",
         "eventSummary": "someEventSummary (NEW_EVENTS_TEST) 1",
         "eventRate": "someEventRate1",
-        "hits": 1
+        "hits": 1,
+        "location": "MyClass:1"
       },
       {
         "arcLink": "someArcLink2",
@@ -23,7 +24,8 @@
         "introducedBy": "someIntroducedBy2",
         "eventSummary": "someEventSummary (NEW_EVENTS_TEST) 2",
         "eventRate": "someEventRate2",
-        "hits": 1
+        "hits": 1,
+        "location": "MyClass:2"
       }
     ]
   },
@@ -40,7 +42,8 @@
         "introducedBy": "someIntroducedBy3",
         "eventSummary": "someEventSummary (RESURFACED_EVENTS_TEST) 3",
         "eventRate": "someEventRate3",
-        "hits": 1
+        "hits": 1,
+        "location": "MyClass:3"
       },
       {
         "arcLink": "someArcLink4",
@@ -49,7 +52,8 @@
         "introducedBy": "someIntroducedBy4",
         "eventSummary": "someEventSummary (RESURFACED_EVENTS_TEST) 4",
         "eventRate": "someEventRate4",
-        "hits": 1
+        "hits": 1,
+        "location": "MyClass:4"
       },
       {
         "arcLink": "someArcLink5",
@@ -58,7 +62,8 @@
         "introducedBy": "someIntroducedBy5",
         "eventSummary": "someEventSummary (RESURFACED_EVENTS_TEST) 5",
         "eventRate": "someEventRate5",
-        "hits": 1
+        "hits": 1,
+        "location": "MyClass:5"
       }
     ]
   },
@@ -75,7 +80,8 @@
         "introducedBy": "someIntroducedBy6",
         "eventSummary": "someEventSummary (CRITICAL_EVENTS_TEST) 6",
         "eventRate": "someEventRate6",
-        "hits": 1
+        "hits": 1,
+        "location": "MyClass:6"
       },
       {
         "arcLink": "someArcLink7",
@@ -84,7 +90,8 @@
         "introducedBy": "someIntroducedBy7",
         "eventSummary": "someEventSummary (CRITICAL_EVENTS_TEST) 7",
         "eventRate": "someEventRate7",
-        "hits": 1
+        "hits": 1,
+        "location": "MyClass:7"
       },
       {
         "arcLink": "someArcLink8",
@@ -93,7 +100,8 @@
         "introducedBy": "someIntroducedBy8",
         "eventSummary": "someEventSummary (CRITICAL_EVENTS_TEST) 8",
         "eventRate": "someEventRate8",
-        "hits": 1
+        "hits": 1,
+        "location": "MyClass:8"
       },
       {
         "arcLink": "someArcLink9",
@@ -102,7 +110,8 @@
         "introducedBy": "someIntroducedBy9",
         "eventSummary": "someEventSummary (CRITICAL_EVENTS_TEST) 9",
         "eventRate": "someEventRate9",
-        "hits": 1
+        "hits": 1,
+        "location": "MyClass:9"
       }
     ]
   },
@@ -119,7 +128,8 @@
         "introducedBy": "someIntroducedBy10",
         "eventSummary": "someEventSummary (REGRESSION_EVENTS_TEST) 10",
         "eventRate": "someEventRate10",
-        "hits": 1
+        "hits": 1,
+        "location": "MyClass:10"
       },
       {
         "arcLink": "someArcLink11",
@@ -128,7 +138,8 @@
         "introducedBy": "someIntroducedBy11",
         "eventSummary": "someEventSummary (REGRESSION_EVENTS_TEST) 11",
         "eventRate": "someEventRate11",
-        "hits": 1
+        "hits": 1,
+        "location": "MyClass:11"
       },
       {
         "arcLink": "someArcLink12",
@@ -137,7 +148,8 @@
         "introducedBy": "someIntroducedBy12",
         "eventSummary": "someEventSummary (REGRESSION_EVENTS_TEST) 12",
         "eventRate": "someEventRate12",
-        "hits": 1
+        "hits": 1,
+        "location": "MyClass:12"
       },
       {
         "arcLink": "someArcLink13",
@@ -146,7 +158,8 @@
         "introducedBy": "someIntroducedBy13",
         "eventSummary": "someEventSummary (REGRESSION_EVENTS_TEST) 13",
         "eventRate": "someEventRate13",
-        "hits": 1
+        "hits": 1,
+        "location": "MyClass:13"
       },
       {
         "arcLink": "someArcLink14",
@@ -155,7 +168,8 @@
         "introducedBy": "someIntroducedBy14",
         "eventSummary": "someEventSummary (REGRESSION_EVENTS_TEST) 14",
         "eventRate": "someEventRate14",
-        "hits": 1
+        "hits": 1,
+        "location": "MyClass:14"
       }
     ]
   },
@@ -172,7 +186,8 @@
         "introducedBy": "someIntroducedBy51",
         "eventSummary": "someEventSummary (TOTAL_EVENTS_TEST) 51",
         "eventRate": "someEventRate51",
-        "hits": 1
+        "hits": 1,
+        "location": "MyClass:51"
       },
       {
         "arcLink": "someArcLink52",
@@ -181,6 +196,7 @@
         "introducedBy": "someIntroducedBy52",
         "eventSummary": "someEventSummary (TOTAL_EVENTS_TEST) 52",
         "eventRate": "someEventRate52",
+        "location": "MyClass:52",
         "hits": 1
       }
     ]
@@ -198,7 +214,8 @@
         "introducedBy": "someIntroducedBy53",
         "eventSummary": "someEventSummary (UNIQUE_EVENTS_TEST) 53",
         "eventRate": "someEventRate53",
-        "hits": 1
+        "hits": 1,
+        "location": "MyClass:54"
       },
       {
         "arcLink": "someArcLink54",
@@ -207,7 +224,8 @@
         "introducedBy": "someIntroducedBy54",
         "eventSummary": "someEventSummary (UNIQUE_EVENTS_TEST) 54",
         "eventRate": "someEventRate54",
-        "hits": 1
+        "hits": 1,
+        "location": "MyClass:54"
       },
       {
         "arcLink": "someArcLink55",
@@ -216,7 +234,8 @@
         "introducedBy": "someIntroducedBy55",
         "eventSummary": "someEventSummary (UNIQUE_EVENTS_TEST) 55",
         "eventRate": "someEventRate55",
-        "hits": 1
+        "hits": 1,
+        "location": "MyClass:55"
       }
     ]
   },
@@ -228,7 +247,8 @@
       "introducedBy": "someIntroducedBy51",
       "eventSummary": "someEventSummary (TOTAL_EVENTS_TEST) 51",
       "eventRate": "someEventRate51",
-      "hits": 1
+      "hits": 1,
+      "location": "MyClass:51"
     },
     {
       "arcLink": "someArcLink52",
@@ -237,7 +257,8 @@
       "introducedBy": "someIntroducedBy52",
       "eventSummary": "someEventSummary (TOTAL_EVENTS_TEST) 52",
       "eventRate": "someEventRate52",
-      "hits": 1
+      "hits": 1,
+      "location": "MyClass:52"
     },
     {
       "arcLink": "someArcLink53",
@@ -246,7 +267,8 @@
       "introducedBy": "someIntroducedBy53",
       "eventSummary": "someEventSummary (UNIQUE_EVENTS_TEST) 53",
       "eventRate": "someEventRate53",
-      "hits": 1
+      "hits": 1,
+      "location": "MyClass:53"
     },
     {
       "arcLink": "someArcLink54",
@@ -255,7 +277,8 @@
       "introducedBy": "someIntroducedBy54",
       "eventSummary": "someEventSummary (UNIQUE_EVENTS_TEST) 54",
       "eventRate": "someEventRate54",
-      "hits": 1
+      "hits": 1,
+      "location": "MyClass:54"
     },
     {
       "arcLink": "someArcLink55",
@@ -264,7 +287,8 @@
       "introducedBy": "someIntroducedBy55",
       "eventSummary": "someEventSummary (UNIQUE_EVENTS_TEST) 55",
       "eventRate": "someEventRate55",
-      "hits": 1
+      "hits": 1,
+      "location": "MyClass:55"
     }
   ]
 }
