@@ -303,6 +303,11 @@ public class TimeUtil {
 		
 		String result = timeFilter.substring(LAST_TIME_WINDOW.length(), timeFilter.length());
 
+		int toExprIndex = result.indexOf(" and time <= now()");
+		if (toExprIndex != -1) {
+			result = result.substring(0, toExprIndex).trim();
+		}
+
 		return result;
 	}
 	
