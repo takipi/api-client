@@ -191,6 +191,16 @@ public class TimeUtil {
 		return DateTime.now(DateTimeZone.UTC);
 	}
 	
+	private static DateTime parseToFilter(String toFilter) {
+		String timeWithUnit = toFilter.replace("time <= now()", "").trim();
+		
+		if (timeWithUnit.equals("")) {
+			return now();
+		}
+		
+		return now().minusMinutes(parseInterval(timeWithUnit));
+	}
+	
 	public static Pair<DateTime, DateTime> getTimeFilter(String timeFilter) {
 		if ((timeFilter == null) || (timeFilter.isEmpty())) {
 			throw new IllegalArgumentException("timeFilter cannot be empty");
@@ -200,8 +210,15 @@ public class TimeUtil {
 		DateTime to;
 
 		if (timeFilter.startsWith(LAST_TIME_WINDOW)) {
-			to =  now();
-			from = to.minusMinutes(getTimeDelta(timeFilter));
+			int toExprIndex = timeFilter.indexOf(" and time <= now()");
+			if (toExprIndex != -1) {
+				timeFilter = timeFilter.substring(0, toExprIndex);
+				to = parseToFilter(timeFilter.substring(toExprIndex + 4).trim());		
+			} else {
+				to = now();
+			}
+			
+			from = now().minusMinutes(getTimeDelta(timeFilter));
 			return Pair.of(from, to);
 		}
 
