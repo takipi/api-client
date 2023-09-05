@@ -212,8 +212,9 @@ public class TimeUtil {
 		if (timeFilter.startsWith(LAST_TIME_WINDOW)) {
 			int toExprIndex = timeFilter.indexOf(" and time <= now()");
 			if (toExprIndex != -1) {
+				toFilter = timeFilter.substring(toExprIndex + 4).trim();
 				timeFilter = timeFilter.substring(0, toExprIndex);
-				to = parseToFilter(timeFilter.substring(toExprIndex + 4).trim());		
+				to = parseToFilter(toFilter);
 			} else {
 				to = now();
 			}
