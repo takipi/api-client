@@ -3,10 +3,14 @@ apply plugin: 'maven-publish'
 archivesBaseName = 'api-client-util'
 
 dependencies {
-	implementation(
-		project(':api-client'),
-		"org.ocpsoft.prettytime:prettytime:4.0.2.Final"
-	)
+  implementation(
+    project(':api-client'),
+    "commons-io:commons-io:2.6",
+    "joda-time:joda-time:2.8.2",
+    "com.google.code.gson:gson:2.8.2",
+    "org.slf4j:slf4j-api:1.7.28",
+    "org.ocpsoft.prettytime:prettytime:4.0.2.Final"
+  )
 }
 publishing {
   publications {
