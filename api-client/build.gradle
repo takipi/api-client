@@ -5,9 +5,9 @@ archivesBaseName = 'api-client'
 dependencies {
 	implementation(
 		"joda-time:joda-time:2.8.2",
-		"commons-codec:commons-codec:1.10",
+		"commons-codec:commons-codec:1.14",
 		"commons-io:commons-io:2.6",
-		"com.google.code.gson:gson:2.8.2",
+		"com.google.code.gson:gson:2.10.1",
 		"org.slf4j:slf4j-api:1.7.28"
 	)
 }
