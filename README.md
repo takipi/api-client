@@ -57,7 +57,7 @@ Gradle:
 
 ```gradle
 dependencies {
-  compile (
+  implementation (
     "com.takipi:api-client:2.30.0",
     "com.takipi:api-client-util:2.30.0",
   )

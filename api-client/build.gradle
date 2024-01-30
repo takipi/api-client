@@ -1,27 +1,27 @@
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
 archivesBaseName = 'api-client'
 
 dependencies {
-	compile(
+	implementation(
 		"joda-time:joda-time:2.8.2",
-		"commons-codec:commons-codec:1.10",
+		"commons-codec:commons-codec:1.14",
 		"commons-io:commons-io:2.6",
-		"com.google.code.gson:gson:2.8.2",
+		"com.google.code.gson:gson:2.10.1",
 		"org.slf4j:slf4j-api:1.7.28"
 	)
 }
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      pom.project {
-        name 'api-client'
+publishing {
+  publications {
+    maven(MavenPublication) {
+      pom {
+        artifactId 'api-client'
         description 'OverOps API Client, interacts with OverOps Server REST API'
         
         scm {
-          connection 'scm:git:https://github.com/takipi/api-client/tree/master/api-client'
-          developerConnection 'scm:git:https://github.com/takipi/api-client/tree/master/api-client'
-          url 'https://github.com/takipi/api-client/tree/master/api-client'
+          connection = 'scm:git:https://github.com/takipi/api-client/tree/master/api-client'
+          developerConnection = 'scm:git:https://github.com/takipi/api-client/tree/master/api-client'
+          url = 'https://github.com/takipi/api-client/tree/master/api-client'
         }
       }
     }
