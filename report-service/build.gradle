@@ -1,4 +1,4 @@
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
 archivesBaseName = 'report-service'
 
@@ -11,7 +11,7 @@ sourceSets {
 }
 
 dependencies {
-    compile(
+    implementation(
             "com.github.jknack:handlebars:4.1.2",
             "org.apache.httpcomponents:httpclient:4.5.13",
             project(':api-client'),
@@ -19,19 +19,18 @@ dependencies {
     )
 }
 
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      pom.project {
-        name 'report-service'
-        description 'OverOps API Client, interacts with OverOps Server REST API'
-
-        scm {
-          connection 'scm:git:https://github.com/takipi/api-client/tree/master/api-client'
-          developerConnection 'scm:git:https://github.com/takipi/api-client/tree/master/api-client'
-          url 'https://github.com/takipi/api-client/tree/master/api-client'
-        }
-      }
-    }
-  }
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			pom {
+				name = 'report-service'
+				description = 'OverOps API Client, interacts with OverOps Server REST API'
+				scm {
+          connection = 'scm:git:https://github.com/takipi/api-client/tree/master/api-client'
+          developerConnection = 'scm:git:https://github.com/takipi/api-client/tree/master/api-client'
+          url = 'https://github.com/takipi/api-client/tree/master/api-client'
+				}
+			}
+		}
+	}
 }
